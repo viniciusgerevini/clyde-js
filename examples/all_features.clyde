@@ -19,7 +19,7 @@ player: This is a line with another speaker
     player: line inside a topic
     NPC: another line inside a topic
     a line without speaker inside the topic
-    a line with id inside the topic #id: this_is_an_id
+    a line with id inside the topic $id: this_is_an_id
     <-
   * one more topic
     speaker: love is all you need
@@ -30,6 +30,9 @@ player: This is a line with another speaker
     just a line
     <-
 <<
+
+!!sequence
+!!
 
 == another_block
 >>
