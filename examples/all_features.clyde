@@ -31,8 +31,8 @@ player: This is a line with another speaker
     <-
 <<
 
-!!sequence
-!!
+# !!sequence
+# !!
 
 == another_block
 >>
