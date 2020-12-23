@@ -24,6 +24,7 @@
 - [ ] line tags? (this is a line $sometag)
 - [ ] maybe change id syntax, as it may conflict with comments ($id:)
 - [ ] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (!!sequence)
+- [ ] glue to cocatenate blocks (`<>`)
 
 ### Improvements
 
