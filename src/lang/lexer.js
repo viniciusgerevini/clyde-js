@@ -71,8 +71,8 @@ lexer.addRule(/\+\s*.+[^\r\n]+/m, function (lexeme) {
   return "STICKY_TOPIC";
 });
 
-lexer.addRule(/\#id\:\s*[^\r\n|\s]*/, function (lexeme) {
-  this.yytext = lexeme.replace(/\#id\:\s*/, '');
+lexer.addRule(/\$id\:\s*[^\r\n|\s]*/, function (lexeme) {
+  this.yytext = lexeme.replace(/\$id\:\s*/, '');
   setLoc(this, lexeme);
   return "LINE_ID";
 });
@@ -83,7 +83,7 @@ lexer.addRule(/[A-z|0-9]+\:/gm, function (lexeme) {
   return "SPEAKER";
 });
 
-lexer.addRule(/[^\r\n\#]+/, function (lexeme) {
+lexer.addRule(/[^\r\n\#\$]+/, function (lexeme) {
   this.yytext = lexeme;
   setLoc(this, lexeme);
   return "LINE";

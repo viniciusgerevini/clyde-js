@@ -11,7 +11,6 @@
 - [x] topic block with description line (>> some line here)
 - [x] topics (*)
 - [x] sticky topic (+)
-- [ ] gather element (-)
 - [ ] end of line comments
 - [ ] string with quotes for special characters
 - [x] line id (this is a line #id: hey)
@@ -22,7 +21,7 @@
 - [ ] block divert (-> block_name)
 - [ ] parent divert (<-)
 - [ ] line tags? (this is a line $sometag)
-- [ ] maybe change id syntax, as it may conflict with comments ($id:)
+- [x] maybe change id syntax, as it may conflict with comments ($id:)
 - [ ] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (!!sequence)
 - [ ] glue to cocatenate blocks (`<>`)
 
