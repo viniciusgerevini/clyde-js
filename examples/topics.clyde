@@ -12,4 +12,11 @@ npc: what do you want to talk about?
     player: What about everything else?
     npc: I don't have time for this...
 <<
+# example of topic with description
+>> What's in your mind?
+  * Nothing
+    npc: That's a hard state to achieve.
+  * Everything
+    npc: You should try to empty it.
+<<
 

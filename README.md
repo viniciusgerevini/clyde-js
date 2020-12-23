@@ -8,7 +8,7 @@
 - [x] comments (#)
 - [x] blocks (== this_is_a_block)
 - [x] topic block (>>)
-- [ ] topic block with description line (>> some line here)
+- [x] topic block with description line (>> some line here)
 - [x] topics (*)
 - [x] sticky topic (+)
 - [ ] gather element (-)

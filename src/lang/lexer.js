@@ -42,8 +42,11 @@ lexer.addRule(/\=\=\s*[A-z|0-9]+[^\r\n]+/m, function (lexeme) {
   return "BLOCK_START";
 });
 
-lexer.addRule(/^\>\>\s*\n+/m, function (lexeme) {
-  this.yytext = lexeme;
+lexer.addRule(/^\>\>.*\n+/m, function (lexeme) {
+  this.yytext = lexeme.replace(/^\>\>\s*/, '').replace(/\n/, '');
+  if (this.yytext === "") {
+    this.yytext = undefined;
+  }
   setLoc(this, lexeme);
   row += 1;
   return "TOPIC_LIST_START";

@@ -39,7 +39,7 @@ line
 
 topic_block
   : TOPIC_LIST_START INDENT topics DEDENT TOPIC_LIST_END
-    { $$ = DialogTopicList($3) }
+    { $$ = DialogTopicList($1, $3) }
   ;
 
 topics
@@ -66,8 +66,8 @@ function DialogBlock(blockName, content = []) {
   return { type: 'block', name: blockName, content };
 }
 
-function DialogTopicList(content = []) {
-  return { type: 'topics', content };
+function DialogTopicList(name, content = []) {
+  return { type: 'topics', name, content };
 }
 
 function DialogTopic(name, mode, content = []) {

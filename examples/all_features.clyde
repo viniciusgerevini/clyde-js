@@ -14,7 +14,7 @@ player: This is a line with another speaker
   * the second topic
     player: a line in the second topic, with speaker defined.
 <<
->>
+>> Those are the topics available:
   * another topic
     player: line inside a topic
     NPC: another line inside a topic
