@@ -34,7 +34,8 @@ line
   | SPEAKER LINE LINE_ID NEWLINE { $$ = DialogLine($2, $1, $3); }
   | LINE LINE_ID NEWLINE { $$ = DialogLine($1, undefined, $2); }
   | LINE NEWLINE { $$ = DialogLine(yytext); }
-  | DIVERT { $$ = Divert($1)}
+  | DIVERT { $$ = Divert($1); }
+  | DIVERT_PARENT { $$ = Divert('<parent>'); }
   | topic_block
   ;
 

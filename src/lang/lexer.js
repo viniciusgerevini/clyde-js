@@ -77,6 +77,12 @@ lexer.addRule(/\-\>\s*[A-z|0-9]+\n+/m, function (lexeme) {
   return "DIVERT";
 });
 
+lexer.addRule(/\<\-\s*\n+/m, function (lexeme) {
+  this.yytext = lexeme.replace(/\<\-\s*/, '').replace('\n', '');
+  setLoc(this, lexeme);
+  return "DIVERT_PARENT";
+});
+
 lexer.addRule(/\$id\:\s*[^\r\n|\s]*/, function (lexeme) {
   this.yytext = lexeme.replace(/\$id\:\s*/, '');
   setLoc(this, lexeme);

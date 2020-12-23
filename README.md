@@ -5,23 +5,24 @@
 
 ### Language
 - [x] lines
-- [x] comments (#)
+- [x] comments (`#`)
 - [x] blocks (== this_is_a_block)
-- [x] topic block (>>)
-- [x] topic block with description line (>> some line here)
-- [x] topics (*)
-- [x] sticky topic (+)
+- [x] topic block (`>>`)
+- [x] topic block with description line (`>> some line here`)
+- [x] topics (`*`)
+- [x] sticky topic (`+`)
 - [ ] string with quotes for special characters
-- [x] line id (this is a line #id: hey)
+- [x] line id (`this is a line #id: hey`)
 - [x] speaker (speaker: this is a line)
 - [ ] define variables, global and local.
-- [ ] set variables ({ set var=true })
-- [ ] conditional lines ({ is_first_run && speaker_hp > 10 })
-- [x] block divert (-> block_name)
-- [ ] parent divert (<-)
-- [ ] line tags? (this is a line $sometag)
-- [x] maybe change id syntax, as it may conflict with comments ($id:)
-- [ ] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (!!sequence)
+- [ ] set variables (`{ set var=true }`)
+- [ ] conditional lines (`{ is_first_run && speaker_hp > 10 }`)
+- [x] block divert (`-> block_name`)
+- [x] parent divert (`<-`). Goes to parent block, topic list, or divert
+- [ ] anchors, like in `(some_anchor)`, where we can divert like this `> some_anchor`
+- [ ] line tags? (`this is a line $sometag`)
+- [x] maybe change id syntax, as it may conflict with comments (`$id:`)
+- [ ] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (`!!sequence`)
 - [ ] glue to cocatenate blocks (`<>`)
 
 ### Improvements
