@@ -34,6 +34,7 @@ line
   | SPEAKER LINE LINE_ID NEWLINE { $$ = DialogLine($2, $1, $3); }
   | LINE LINE_ID NEWLINE { $$ = DialogLine($1, undefined, $2); }
   | LINE NEWLINE { $$ = DialogLine(yytext); }
+  | DIVERT { $$ = Divert($1)}
   | topic_block
   ;
 
@@ -72,6 +73,10 @@ function DialogTopicList(name, content = []) {
 
 function DialogTopic(name, mode, content = []) {
   return { type: 'topic', name, mode, content };
+}
+
+function Divert(target) {
+  return { type: 'divert', target };
 }
 
 /* "NEWLINE INDENT lines DEDENT" */

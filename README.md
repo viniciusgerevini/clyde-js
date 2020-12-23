@@ -11,14 +11,13 @@
 - [x] topic block with description line (>> some line here)
 - [x] topics (*)
 - [x] sticky topic (+)
-- [ ] end of line comments
 - [ ] string with quotes for special characters
 - [x] line id (this is a line #id: hey)
 - [x] speaker (speaker: this is a line)
 - [ ] define variables, global and local.
 - [ ] set variables ({ set var=true })
 - [ ] conditional lines ({ is_first_run && speaker_hp > 10 })
-- [ ] block divert (-> block_name)
+- [x] block divert (-> block_name)
 - [ ] parent divert (<-)
 - [ ] line tags? (this is a line $sometag)
 - [x] maybe change id syntax, as it may conflict with comments ($id:)
