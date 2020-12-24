@@ -19,7 +19,6 @@ blocks
 
 block
   : BLOCK_START NEWLINE lines { $$ = DialogBlock($1, $3) }
-  /* : BLOCK_START NEWLINE INDENT lines DEDENT { $$ = DialogBlock($1, $2) } */
   ;
 
 lines
@@ -89,6 +88,4 @@ function DialogAlternativeList(mode, content = []) {
 function Divert(target) {
   return { type: 'divert', target };
 }
-
-/* "NEWLINE INDENT lines DEDENT" */
 

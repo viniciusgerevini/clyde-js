@@ -45,7 +45,7 @@ lexer.addRule(/\=\=\s*[A-z|0-9]+[^\r\n]+/m, function (lexeme) {
   return "BLOCK_START";
 });
 
-lexer.addRule(/^\>\>.*\n+/m, function (lexeme) {
+lexer.addRule(/\>\>.*\n+/m, function (lexeme) {
   this.yytext = lexeme.replace(/^\>\>\s*/, '').replace(/\n/, '');
   if (this.yytext === "") {
     this.yytext = undefined;
@@ -72,7 +72,7 @@ lexer.addRule(/\+\s*.+[^\r\n]+/m, function (lexeme) {
   return "STICKY_TOPIC";
 });
 
-lexer.addRule(/^\[\s*(shuffle){0,1}\s?(once|sequence|cycle){0,1}\n+/m, function (lexeme) {
+lexer.addRule(/\[\s*(shuffle){0,1}\s?(once|sequence|cycle){0,1}\n+/m, function (lexeme) {
   this.yytext = lexeme.replace(/^\[\s*/, '').replace(/\n/, '');
   if (this.yytext === "") {
     this.yytext = undefined;

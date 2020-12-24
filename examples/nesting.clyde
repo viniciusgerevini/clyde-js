@@ -1,0 +1,20 @@
+# topics
+
+npc: what do you want to talk about?
+>>
+  * Life
+    player: I want to talk about life!
+    >>
+      * nested life
+        npc: Well! That's too complicated...
+    <<
+  * The universe
+    [
+      player: I want to talk about the universe!
+      npc: That's too complex!
+    ]
+  * Everything else...
+    player: What about everything else?
+    npc: I don't have time for this...
+<<
+
