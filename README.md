@@ -21,10 +21,8 @@
 - [x] block divert (`-> block_name`)
 - [x] parent divert (`<-`). Goes to parent block, topic list, or divert
 - [ ] anchors, like in `(some_anchor)`, where we can divert like this `> some_anchor`
-- [ ] line tags? (`this is a line $sometag`)
 - [x] maybe change id syntax, as it may conflict with comments (`$id:`)
 - [x] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (`!!sequence`)
-- [ ] glue to cocatenate blocks (`<>`)
 
 ### Improvements
 
