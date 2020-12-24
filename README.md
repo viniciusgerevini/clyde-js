@@ -11,7 +11,7 @@
 - [x] topic block with description line (`>> some line here`)
 - [x] topics (`*`)
 - [x] sticky topic (`+`)
-- [ ] string with quotes for special characters
+- [x] string with quotes for special characters
 - [x] line id (`this is a line #id: hey`)
 - [x] speaker (speaker: this is a line)
 - [ ] define variables, global and local.

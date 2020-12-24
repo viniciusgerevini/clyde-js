@@ -36,6 +36,9 @@ lexer.addRule(/^[\t ]*/gm, function (lexeme) {
   if (tokens.length) return tokens;
 });
 
+lexer.addRule(/\s+/gm, (lexeme) => {
+});
+
 lexer.addRule(/\=\=\s*[A-z|0-9]+[^\r\n]+/m, function (lexeme) {
   this.yytext = lexeme.replace(/\={2}\s*/, '');
   setLoc(this, lexeme);
@@ -108,7 +111,14 @@ lexer.addRule(/[A-z|0-9]+\:/gm, function (lexeme) {
   return "SPEAKER";
 });
 
-lexer.addRule(/[^\r\n\#\$]+/, function (lexeme) {
+
+lexer.addRule(/\".*\"/, function (lexeme) {
+  this.yytext = lexeme.replace(/\"(.*)\"/,"$1");
+  setLoc(this, lexeme);
+  return "LINE";
+});
+
+lexer.addRule(/[^\r\n|\#|\$]+/, function (lexeme) {
   this.yytext = lexeme;
   setLoc(this, lexeme);
   return "LINE";

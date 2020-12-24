@@ -74,6 +74,11 @@ player: This is a line with another speaker
     Well, I lost count already.
 ]
 
+"-> this is the way\nheyhey"
+"speaker: this is $id: the way\nheyhey" $id: whatsup
+"speaker: this is the way\nheyhey"
+this is the way\nheyhey
+
 == money_talk
 blah
 
