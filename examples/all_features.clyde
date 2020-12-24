@@ -33,6 +33,7 @@ player: This is a line with another speaker
 
 == another_block
 >>
+  - (some_anchor)
   * straight to the topic
     player: Go, johnny go.
 <<
@@ -41,7 +42,9 @@ player: This is a line with another speaker
 [
   This is the first time I talk to you
   This is the second time I talk to you
-  Well, I lost count already.
+  [
+    Well, I lost count already.
+  ]
 ]
 
 [
@@ -88,40 +91,3 @@ bleh
 == drunk_talk
 wat
 
-# [Vjjjj
-# #   *
-# #     This is the first time I talk to you
-# #     hey, whoe are you doing
-# #   *
-# #     This is the second time I talk to you
-# #     first block
-# #   *
-# #     Well, I lost count already.
-# ]
-
-# !!alt
-#   This is the first time I talk to you
-#   This is the second time I talk to you
-#   Well, I lost count already.
-# !!
-
-# !!sequence
-#   This is the first time I talk to you
-#   This is the second time I talk to you
-#   Well, I lost count already.
-# !!
-
-# !!cycle
-# !!
-#
-# !!once
-# !!
-#
-# !!shuffle
-# !!
-#
-# !!shuffle once
-# !!
-#
-# !!shuffle cycle
-# !!

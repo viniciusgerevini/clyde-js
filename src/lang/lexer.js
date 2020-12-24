@@ -87,6 +87,12 @@ lexer.addRule(/\]\s*\n+/m, function (lexeme) {
   return "ALTERNATIVES_END";
 });
 
+lexer.addRule(/\-\s*\([A-z|0-9]+\)/m, function (lexeme) {
+  this.yytext = lexeme.replace(/\-\s*\(([A-z|0-9]+)\)/, '$1');
+  setLoc(this, lexeme);
+  return "ANCHOR";
+});
+
 lexer.addRule(/\-\>\s*[A-z|0-9]+\n+/m, function (lexeme) {
   this.yytext = lexeme.replace(/\-\>\s*/, '').replace('\n', '');
   setLoc(this, lexeme);

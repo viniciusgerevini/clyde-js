@@ -20,9 +20,10 @@
 - [ ] use variables in strings
 - [x] block divert (`-> block_name`)
 - [x] parent divert (`<-`). Goes to parent block, topic list, or divert
-- [ ] anchors, like in `(some_anchor)`, where we can divert like this `> some_anchor`
+- [x] anchors, like in `(some_anchor)`, where we can divert like this `> some_anchor`
 - [x] maybe change id syntax, as it may conflict with comments (`$id:`)
 - [x] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (`!!sequence`)
+- [ ] use quotes for special charactesr on topic description
 
 ### Improvements
 

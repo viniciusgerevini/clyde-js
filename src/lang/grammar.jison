@@ -37,6 +37,7 @@ line
   | DIVERT_PARENT { $$ = Divert('<parent>'); }
   | topic_block
   | alternatives
+  | anchor
   ;
 
 topic_block
@@ -48,6 +49,8 @@ topics
   : topics topic
     { $$ = $1.concat([$2]); }
   | topic
+    { $$ = [$1] }
+  | anchor
     { $$ = [$1] }
   ;
 
@@ -61,6 +64,10 @@ topic
 alternatives
   : ALTERNATIVES_START INDENT lines DEDENT ALTERNATIVES_END
     { $$ = DialogAlternativeList($1, $3) }
+  ;
+
+anchor
+  : ANCHOR NEWLINE { $$ = Anchor($1); }
   ;
 
 %%
@@ -87,5 +94,9 @@ function DialogAlternativeList(mode, content = []) {
 
 function Divert(target) {
   return { type: 'divert', target };
+}
+
+function Anchor(name) {
+  return { type: 'anchor', name };
 }
 
