@@ -48,18 +48,16 @@ lexer.addRule(/^\>\>.*\n+/m, function (lexeme) {
     this.yytext = undefined;
   }
   setLoc(this, lexeme);
-  row += 1;
   return "TOPIC_LIST_START";
 });
 
 lexer.addRule(/\<\<\s*\n+/m, function (lexeme) {
   this.yytext = lexeme;
   setLoc(this, lexeme);
-  row += 1;
   return "TOPIC_LIST_END";
 });
 
-lexer.addRule(/\*\s*.+[^\r\n]+/m, function (lexeme) {
+lexer.addRule(/\*\s*.*[^\r\n]+/m, function (lexeme) {
   this.yytext = lexeme.replace(/\*\s*/, '');
   setLoc(this, lexeme);
   return "TOPIC";
@@ -69,6 +67,21 @@ lexer.addRule(/\+\s*.+[^\r\n]+/m, function (lexeme) {
   this.yytext = lexeme.replace(/\+\s*/, '');
   setLoc(this, lexeme);
   return "STICKY_TOPIC";
+});
+
+lexer.addRule(/^\[\s*(shuffle){0,1}\s?(once|sequence|cycle){0,1}\n+/m, function (lexeme) {
+  this.yytext = lexeme.replace(/^\[\s*/, '').replace(/\n/, '');
+  if (this.yytext === "") {
+    this.yytext = undefined;
+  }
+  setLoc(this, lexeme);
+  return "ALTERNATIVES_START";
+});
+
+lexer.addRule(/\]\s*\n+/m, function (lexeme) {
+  this.yytext = lexeme;
+  setLoc(this, lexeme);
+  return "ALTERNATIVES_END";
 });
 
 lexer.addRule(/\-\>\s*[A-z|0-9]+\n+/m, function (lexeme) {
@@ -107,10 +120,15 @@ lexer.addRule(/$/, function () {
 
 
 function setLoc(lexer, lexeme) {
+  lexer.yylineno = row;
   lexer.yylloc.first_column = col;
   lexer.yylloc.last_column = col += lexeme.length;
   lexer.yylloc.first_line = row;
-  lexer.yylloc.last_line = row;
+  lexer.yylloc.last_line = row += countLineBreaks(lexeme);
+}
+
+function countLineBreaks(lexeme) {
+  return (lexeme.match(/\n/g) || []).length
 }
 
 module.exports = lexer;

@@ -17,12 +17,13 @@
 - [ ] define variables, global and local.
 - [ ] set variables (`{ set var=true }`)
 - [ ] conditional lines (`{ is_first_run && speaker_hp > 10 }`)
+- [ ] use variables in strings
 - [x] block divert (`-> block_name`)
 - [x] parent divert (`<-`). Goes to parent block, topic list, or divert
 - [ ] anchors, like in `(some_anchor)`, where we can divert like this `> some_anchor`
 - [ ] line tags? (`this is a line $sometag`)
 - [x] maybe change id syntax, as it may conflict with comments (`$id:`)
-- [ ] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (`!!sequence`)
+- [x] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (`!!sequence`)
 - [ ] glue to cocatenate blocks (`<>`)
 
 ### Improvements
@@ -50,3 +51,7 @@
 - [ ] C# client class
 - [ ] Godot importer (depends on CLI)
 - [ ] Syntax file (VIM? VSCode?)
+
+### Extras Ideas
+- LSP
+- text adventure CLI

@@ -2,7 +2,7 @@
 Hello darkness my old : friend 123!
 I come to show you this line with id $id: SCENE_1_LINE002
 
-# another comment about a simple flow with redirects and stuff
+# another comment
 
 == this_is_a_block
 NPC: This is a dialog with speaker and id $id: SCENE_1_LINE001
@@ -26,13 +26,10 @@ player: This is a line with another speaker
     <-
   * this is a topic pointing to another block
     -> another_block
-  + this is a sticky topic, with redirect to the begining of the topics block
+  + this is a sticky topic, with redirect to the beginning of the topics block
     just a line
     <-
 <<
-
-# !!sequence
-# !!
 
 == another_block
 >>
@@ -40,3 +37,86 @@ player: This is a line with another speaker
     player: Go, johnny go.
 <<
 <-
+
+[
+  This is the first time I talk to you
+  This is the second time I talk to you
+  Well, I lost count already.
+]
+
+[
+  -> money_talk
+  -> crazy_talk
+  -> drunk_talk
+]
+
+[ once
+    This is the first time I talk to you
+    This is the second time I talk to you
+    Well, I lost count already.
+]
+
+[ cycle
+    This is the first time I talk to you
+    This is the second time I talk to you
+    Well, I lost count already.
+]
+
+[ shuffle
+    This is the first time I talk to you
+    This is the second time I talk to you
+    Well, I lost count already.
+]
+
+[ shuffle once
+    This is the first time I talk to you
+    This is the second time I talk to you
+    Well, I lost count already.
+]
+
+== money_talk
+blah
+
+== crazy_talk
+bleh
+
+== drunk_talk
+wat
+
+# [Vjjjj
+# #   *
+# #     This is the first time I talk to you
+# #     hey, whoe are you doing
+# #   *
+# #     This is the second time I talk to you
+# #     first block
+# #   *
+# #     Well, I lost count already.
+# ]
+
+# !!alt
+#   This is the first time I talk to you
+#   This is the second time I talk to you
+#   Well, I lost count already.
+# !!
+
+# !!sequence
+#   This is the first time I talk to you
+#   This is the second time I talk to you
+#   Well, I lost count already.
+# !!
+
+# !!cycle
+# !!
+#
+# !!once
+# !!
+#
+# !!shuffle
+# !!
+#
+# !!shuffle once
+# !!
+#
+# !!shuffle cycle
+# !!

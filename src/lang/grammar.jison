@@ -37,6 +37,7 @@ line
   | DIVERT { $$ = Divert($1); }
   | DIVERT_PARENT { $$ = Divert('<parent>'); }
   | topic_block
+  | alternatives
   ;
 
 topic_block
@@ -58,6 +59,11 @@ topic
     { $$ = DialogTopic($1, 'sticky', $4) }
   ;
 
+alternatives
+  : ALTERNATIVES_START INDENT lines DEDENT ALTERNATIVES_END
+    { $$ = DialogAlternativeList($1, $3) }
+  ;
+
 %%
 
 function DialogLine(value, speaker, id) {
@@ -74,6 +80,10 @@ function DialogTopicList(name, content = []) {
 
 function DialogTopic(name, mode, content = []) {
   return { type: 'topic', name, mode, content };
+}
+
+function DialogAlternativeList(mode, content = []) {
+  return { type: 'alternatives', mode, content };
 }
 
 function Divert(target) {
