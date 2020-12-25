@@ -38,6 +38,10 @@ line
   | topic_block
   | alternatives
   | anchor
+  | condition_statement line { $$ = ConditionalContent($1, $2) }
+  /* | operations */
+  /* | line operation */
+  | NEWLINE
   ;
 
 topic_block
@@ -70,6 +74,37 @@ anchor
   : ANCHOR NEWLINE { $$ = Anchor($1); }
   ;
 
+condition_statement
+  : '{' logic_expression '}' { $$ = $2 }
+  ;
+
+/* # TODO parentesis ( ) */
+/* # TODO value */
+/* # TODO == != */
+/* # TODO > >= <= < */
+/* # TODO ! not */
+logic_expression
+  : logic_expression infixed_operators variable { $$ = Expression($2, [$3, $1]) }
+  | variable
+  ;
+
+infixed_operators
+  : infixed_logical_operators
+  ;
+
+infixed_logical_operators
+  : AND { $$ = $1 }
+  | OR { $$ = $1 }
+  ;
+
+variable
+  : VARIABLE { $$ = Variable($1) }
+  ;
+
+/* value */
+/*   : VALUE { $$ = Variable($1) } */
+/*   ; */
+
 %%
 
 function DialogLine(value, speaker, id) {
@@ -100,3 +135,18 @@ function Anchor(name) {
   return { type: 'anchor', name };
 }
 
+function Expression(name, elements) {
+  return { type: 'expression', name, elements };
+}
+
+function ConditionalContent(conditions, content) {
+  return { type: 'conditional_content', conditions, content };
+}
+
+function Variable(name) {
+  return { type: 'variable', name };
+}
+
+function Value(value) {
+  return { type: 'value', value };
+}

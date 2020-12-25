@@ -30,6 +30,7 @@
 - [ ] error messages
 - [ ] make line and column position more accurate
 - [ ] implement snapshot tests with examples
+- [ ] instantiate parser / lexer before each test. Currently there is state inside the lexer
 
 
 ### Docs

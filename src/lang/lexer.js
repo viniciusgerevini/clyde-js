@@ -1,5 +1,8 @@
 const Lexer = require('lex');
 
+const BASE_STATE = 0;
+const LOGIC_STATE = 2;
+
 let indent = [0];
 let col = 1;
 let row = 1;
@@ -11,6 +14,46 @@ lexer.addRule(/^\s*\#+.*\n+/gm, (lexeme) => {
   row += 1;
 });
 
+lexer.addRule(/\{/, function (lexeme) {
+  this.yytext = lexeme;
+  this.state = LOGIC_STATE;
+  setLoc(this, lexeme);
+  return "{";
+});
+
+lexer.addRule(/\}/, function (lexeme) {
+  this.yytext = lexeme;
+  this.state = BASE_STATE;
+  setLoc(this, lexeme);
+  return "}";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\s+/gm, (lexeme) => {
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/set/, function (lexeme) {
+  this.yytext = lexeme;
+  setLoc(this, lexeme);
+  return "set";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/(\&\&|and)/i, function (lexeme) {
+  this.yytext = 'and';
+  setLoc(this, lexeme);
+  return "AND";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/(\|\||or)/i, function (lexeme) {
+  this.yytext = 'or';
+  setLoc(this, lexeme);
+  return "OR";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/[A-z|0-9]+/, function (lexeme) {
+  this.yytext = lexeme;
+  setLoc(this, lexeme);
+  return "VARIABLE";
+}, [ LOGIC_STATE ]);
 
 lexer.addRule(/\n+/, function (lexeme) {
     row += lexeme.length;
@@ -116,7 +159,6 @@ lexer.addRule(/[A-z|0-9]+\:/gm, function (lexeme) {
   setLoc(this, lexeme);
   return "SPEAKER";
 });
-
 
 lexer.addRule(/\".*\"/, function (lexeme) {
   this.yytext = lexeme.replace(/\"(.*)\"/,"$1");

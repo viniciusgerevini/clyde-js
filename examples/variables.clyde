@@ -1,0 +1,23 @@
+
+#- [ ] define variables, global and local.
+#- [ ] set variables (`{ set var=true }`)
+#- [ ] conditional lines (`{ is_first_run && speaker_hp > 10 }`)
+#- [ ] use variables in strings
+
+{ first_time } npc: what do you want to talk about?
+{ first_time && second_time } npc: what do you want to talk about?
+{ first_time and second_time or third_time } npc: what do you want to talk about?
+#{ set first_time }
+#{ set first_time, beginning }
+#>>
+#  { hp < 40 } * Life
+#    player: I want to talk about life!
+#    npc: Well! That's too complicated...
+#  * The universe
+#    player: I want to talk about the universe!
+#    npc: That's too complex! { set last_talk = "universe" }
+#  * {first_time && hp > 10}Everything else...
+#    {hp > 20 || count == 0} player: What about everything else?
+#    npc: I don't have time for this...
+#<<
+
