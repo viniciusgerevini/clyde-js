@@ -20,7 +20,7 @@
 { set first_time = 2 }
 { set a = b = c = d = 3 }
 { set a += "hello" }
-{ set a -= 4 }
+{ set a -= 4 ^ 2 }
 
 hey you { set a -= 4, b=1, c = "hello" }
 

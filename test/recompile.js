@@ -1,8 +1,8 @@
 const fs = require('fs');
 const parser = require('../src/lang/parser');
 
-const EXAMPLES_FOLDER = './examples/';
-const RESULTS_FOLDER = './examples/results/';
+const EXAMPLES_FOLDER = './test/samples/';
+const RESULTS_FOLDER = './test/samples/results/';
 
 const getSourceFiles = () => {
   return fs.readdirSync(EXAMPLES_FOLDER, { withFileTypes: true })

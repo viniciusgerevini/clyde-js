@@ -5,7 +5,7 @@ expressions
   ;
 
 document
-  : /* empty */
+  : { $$ = Document([]) }/* empty */
   | blocks { $$ = Document($1) }
   ;
 
