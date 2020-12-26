@@ -31,8 +31,8 @@ lines
 
 line
   : dialog_line NEWLINE { $$ = $1 }
-  | DIVERT { $$ = Divert($1); }
-  | DIVERT_PARENT { $$ = Divert('<parent>'); }
+  | DIVERT NEWLINE { $$ = Divert($1); }
+  | DIVERT_PARENT NEWLINE { $$ = Divert('<parent>'); }
   | topic_block
   | alternatives
   | anchor

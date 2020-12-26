@@ -299,14 +299,14 @@ function lexer() {
     return 'ANCHOR';
   });
 
-  lexer.addRule(/\-\>\s*[A-z|0-9]+\n+/m, function (lexeme) {
-    this.yytext = lexeme.replace(/\-\>\s*/, '').replace('\n', '');
+  lexer.addRule(/\-\>\s*[A-z|0-9]+/m, function (lexeme) {
+    this.yytext = lexeme.replace(/\-\>\s*/, '');
     setLoc(this, lexeme);
     return 'DIVERT';
   });
 
-  lexer.addRule(/\<\-\s*\n+/m, function (lexeme) {
-    this.yytext = lexeme.replace(/\<\-\s*/, '').replace('\n', '');
+  lexer.addRule(/\<\-/m, function (lexeme) {
+    this.yytext = lexeme.replace(/\<\-\s*/, '');
     setLoc(this, lexeme);
     return 'DIVERT_PARENT';
   });
