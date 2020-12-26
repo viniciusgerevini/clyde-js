@@ -278,12 +278,18 @@ function lexer() {
     return 'STICKY_TOPIC';
   });
 
-  lexer.addRule(/\[(\s*shuffle)?(\s*(once|cycle|sequence))?/, function (lexeme) {
-    this.yytext = lexeme.replace(/^\[\s*/, '').replace(/\n/, '');
+  lexer.addRule(/\[([^\r\n]+)?/, function (lexeme) {
+    this.yytext = lexeme.replace(/^\[\s*/, '');
+    setLoc(this, lexeme);
+
     if (this.yytext === '') {
       this.yytext = undefined;
+    } else {
+      const result = this.yytext.match(/(shuffle)?(\s*(once|cycle|sequence))?/);
+      if (result.length === 0 || result[0] == '') {
+        return 'INVALID_ALTERNATIVE_MODE';
+      }
     }
-    setLoc(this, lexeme);
     return 'ALTERNATIVES_START';
   });
 

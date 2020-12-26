@@ -36,6 +36,7 @@ describe('Check compilation results', () => {
 
     try {
       const result = parser.parse(source);
+      throw new Error("should have failed");
     } catch (e) {
       expect(e.message).toContain('Unexpected token on line 1');
     }
@@ -47,6 +48,7 @@ describe('Check compilation results', () => {
 
     try {
       const result = parser.parse(source);
+      throw new Error("should have failed");
     } catch (e) {
       expect(e.message).toContain('Unexpected indentation on line 2');
     }
@@ -58,8 +60,21 @@ describe('Check compilation results', () => {
 
     try {
       const result = parser.parse(source);
+      throw new Error("should have failed");
     } catch (e) {
       expect(e.message).toContain('Unexpected indentation on line 1');
+    }
+  });
+
+  test('notify invalid alternative mode', () => {
+    const parser = Parser();
+    const source = "[ random\n  hello\n]\n";
+
+    try {
+      const result = parser.parse(source);
+      throw new Error("should have failed");
+    } catch (e) {
+      expect(e.message).toContain('Invalid alternative mode on line 1');
     }
   });
 });
