@@ -72,8 +72,8 @@ topic
   ;
 
 alternatives
-  : ALTERNATIVES_START INDENT lines DEDENT ALTERNATIVES_END
-    { $$ = DialogAlternativeList($1, $3) }
+  : ALTERNATIVES_START NEWLINE INDENT lines DEDENT ALTERNATIVES_END NEWLINE
+    { $$ = DialogAlternativeList($1, $4) }
   ;
 
 anchor

@@ -54,27 +54,29 @@ player: This is a line with another speaker
 ]
 
 [ once
-    This is the first time I talk to you
-    This is the second time I talk to you
-    Well, I lost count already.
+  This is the first time I talk to you
+  This is the second time I talk to you
+  Well, I lost count already.
 ]
 
+
 [ cycle
-    This is the first time I talk to you
-    This is the second time I talk to you
-    Well, I lost count already.
+  This is the first time I talk to you
+  This is the second time I talk to you
+  Well, I lost count already.
 ]
 
 [ shuffle
-    This is the first time I talk to you
-    This is the second time I talk to you
-    Well, I lost count already.
+  This is the first time I talk to you
+  This is the second time I talk to you
+  Well, I lost count already.
 ]
 
+
 [ shuffle once
-    This is the first time I talk to you
-    This is the second time I talk to you
-    Well, I lost count already.
+  This is the first time I talk to you
+  This is the second time I talk to you
+  Well, I lost count already.
 ]
 
 "-> this is the way\nheyhey"

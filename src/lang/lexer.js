@@ -278,7 +278,7 @@ function lexer() {
     return 'STICKY_TOPIC';
   });
 
-  lexer.addRule(/\[\s*(shuffle){0,1}\s?(once|sequence|cycle){0,1}\n+/m, function (lexeme) {
+  lexer.addRule(/\[(\s*shuffle)?(\s*(once|cycle|sequence))?/, function (lexeme) {
     this.yytext = lexeme.replace(/^\[\s*/, '').replace(/\n/, '');
     if (this.yytext === '') {
       this.yytext = undefined;
@@ -287,7 +287,7 @@ function lexer() {
     return 'ALTERNATIVES_START';
   });
 
-  lexer.addRule(/\]\s*\n+/m, function (lexeme) {
+  lexer.addRule(/\]/m, function (lexeme) {
     this.yytext = lexeme;
     setLoc(this, lexeme);
     return 'ALTERNATIVES_END';
