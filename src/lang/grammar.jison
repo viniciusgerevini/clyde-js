@@ -50,8 +50,8 @@ dialog_line
   ;
 
 topic_block
-  : TOPIC_LIST_START INDENT topics DEDENT TOPIC_LIST_END
-    { $$ = DialogTopicList($1, $3) }
+  : TOPIC_LIST_START NEWLINE INDENT topics DEDENT TOPIC_LIST_END NEWLINE
+    { $$ = DialogTopicList($1, $4) }
   ;
 
 topics
