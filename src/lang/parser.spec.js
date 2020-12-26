@@ -1,5 +1,5 @@
 const fs = require('fs');
-const parser = require('./parser');
+const { Parser } = require('./parser');
 
 describe('Check compilation results', () => {
   const EXAMPLES_FOLDER = './test/samples/';
@@ -22,6 +22,7 @@ describe('Check compilation results', () => {
   };
 
   test.each(getSourceFiles())('check: %s', (sourceFileName) => {
+    const parser = Parser();
     const source = getSourceFile(sourceFileName);
     const expectedResult = getExpectedResult(sourceFileName);
     const result = parser.parse(source);

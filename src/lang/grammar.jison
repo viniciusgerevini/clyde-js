@@ -2,6 +2,7 @@
 
 expressions
   : document EOF { return $1; }
+  | NEWLINE document EOF { return $2; }
   ;
 
 document

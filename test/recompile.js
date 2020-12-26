@@ -1,5 +1,7 @@
 const fs = require('fs');
-const parser = require('../src/lang/parser');
+const { Parser } = require('../src/lang/parser');
+
+const parser = Parser();
 
 const EXAMPLES_FOLDER = './test/samples/';
 const RESULTS_FOLDER = './test/samples/results/';
