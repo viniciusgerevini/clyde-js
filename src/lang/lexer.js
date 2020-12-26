@@ -37,6 +37,12 @@ lexer.addRule(/set/, function (lexeme) {
   return "set";
 }, [ LOGIC_STATE ]);
 
+lexer.addRule(/(\,)/i, function (lexeme) {
+  this.yytext = lexeme;
+  setLoc(this, lexeme);
+  return ",";
+}, [ LOGIC_STATE ]);
+
 lexer.addRule(/(\&\&|and)/i, function (lexeme) {
   this.yytext = 'and';
   setLoc(this, lexeme);
@@ -49,7 +55,127 @@ lexer.addRule(/(\|\||or)/i, function (lexeme) {
   return "OR";
 }, [ LOGIC_STATE ]);
 
-lexer.addRule(/[A-z|0-9]+/, function (lexeme) {
+lexer.addRule(/(\!|not)/i, function (lexeme) {
+  this.yytext = 'not';
+  setLoc(this, lexeme);
+  return "NOT";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/(\=\=|is)/i, function (lexeme) {
+  this.yytext = 'equal';
+  setLoc(this, lexeme);
+  return "EQUAL";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/(\!\=|isnt)/i, function (lexeme) {
+  this.yytext = 'not_equal';
+  setLoc(this, lexeme);
+  return "NOT_EQUAL";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\>/, function (lexeme) {
+  this.yytext = 'greater_than';
+  setLoc(this, lexeme);
+  return ">";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\</, function (lexeme) {
+  this.yytext = 'less_than';
+  setLoc(this, lexeme);
+  return "<";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\>\=/, function (lexeme) {
+  this.yytext = 'greater_or_equal_than';
+  setLoc(this, lexeme);
+  return "GE";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\<\=/, function (lexeme) {
+  this.yytext = 'less_or_equal_than';
+  setLoc(this, lexeme);
+  return "LE";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\+/, function (lexeme) {
+  this.yytext = 'add';
+  setLoc(this, lexeme);
+  return "+";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\-/, function (lexeme) {
+  this.yytext = 'sub';
+  setLoc(this, lexeme);
+  return "-";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\//, function (lexeme) {
+  this.yytext = 'div';
+  setLoc(this, lexeme);
+  return "/";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\*/, function (lexeme) {
+  this.yytext = 'mult';
+  setLoc(this, lexeme);
+  return "*";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\%/, function (lexeme) {
+  this.yytext = 'mod';
+  setLoc(this, lexeme);
+  return "%";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\^/, function (lexeme) {
+  this.yytext = 'power';
+  setLoc(this, lexeme);
+  return "^";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\=/, function (lexeme) {
+  this.yytext = 'assign';
+  setLoc(this, lexeme);
+  return "=";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\+\=/, function (lexeme) {
+  this.yytext = 'add_assign';
+  setLoc(this, lexeme);
+  return 'PLUSEQUAL';
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\-\=/, function (lexeme) {
+  this.yytext = 'sub_assign';
+  setLoc(this, lexeme);
+  return 'MINUSEQUAL';
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/[0-9]+/i, function (lexeme) {
+  this.yytext = Number(lexeme);
+  setLoc(this, lexeme);
+  return "NUMBER_LITERAL";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/null/i, function (lexeme) {
+  this.yytext = lexeme;
+  setLoc(this, lexeme);
+  return "NULL_TOKEN";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/(true|false)/i, function (lexeme) {
+  this.yytext = lexeme.toLowerCase() === 'true';
+  setLoc(this, lexeme);
+  return "BOOLEAN_LITERAL";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/\".*\"/, function (lexeme) {
+  this.yytext = lexeme.replace(/\"/g, "");
+  setLoc(this, lexeme);
+  return "STRING_LITERAL";
+}, [ LOGIC_STATE ]);
+
+lexer.addRule(/[A-z]+[A-z|0-9]*/, function (lexeme) {
   this.yytext = lexeme;
   setLoc(this, lexeme);
   return "VARIABLE";
@@ -166,7 +292,7 @@ lexer.addRule(/\".*\"/, function (lexeme) {
   return "LINE";
 });
 
-lexer.addRule(/[^\r\n|\#|\$]+/, function (lexeme) {
+lexer.addRule(/[^\r\n|\#|\$|\{]+/, function (lexeme) {
   this.yytext = lexeme;
   setLoc(this, lexeme);
   return "LINE";

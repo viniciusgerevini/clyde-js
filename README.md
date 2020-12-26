@@ -14,10 +14,8 @@
 - [x] string with quotes for special characters
 - [x] line id (`this is a line #id: hey`)
 - [x] speaker (speaker: this is a line)
-- [ ] define variables, global and local.
-- [ ] set variables (`{ set var=true }`)
-- [ ] conditional lines (`{ is_first_run && speaker_hp > 10 }`)
-- [ ] use variables in strings
+- [x] set variables (`{ set var=true }`)
+- [x] conditional lines (`{ is_first_run && speaker_hp > 10 }`)
 - [x] block divert (`-> block_name`)
 - [x] parent divert (`<-`). Goes to parent block, topic list, or divert
 - [x] anchors, like in `(some_anchor)`, where we can divert like this `> some_anchor`

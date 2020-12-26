@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "compile": "node src/index.js",
+    "recompile-test-files": "node test/recompile.js",
     "test": "jest --coverage"
   },
   "dependencies": {
