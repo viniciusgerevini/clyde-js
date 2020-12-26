@@ -18,8 +18,8 @@ function errorHandling(err, hash) {
   const expected = hash.expected.map(token => getTokenHint(cleanToken(token))).join(', ');
   const token = getTokenHint(cleanToken(hash.token));
 
-  if (expected.length == 1 && ['INDENT', 'DEDENT'].includes(expected[0])) {
-    throw new Error(`Unexpected indentation on line ${hash.line}. Expected: ${expected[0]}`);
+  if (hash.expected.length == 1 && ["'INDENT'", "'DEDENT'"].includes(hash.expected[0])) {
+    throw new Error(`Unexpected indentation on line ${hash.line}. Expected: ${expected}`);
   }
 
   if (['INDENT', 'DEDENT'].includes(token)) {

@@ -29,4 +29,37 @@ describe('Check compilation results', () => {
 
     expect(JSON.parse(JSON.stringify(result))).toEqual(JSON.parse(expectedResult));
   });
+
+  test('parser error message', () => {
+    const parser = Parser();
+    const source = "<<";
+
+    try {
+      const result = parser.parse(source);
+    } catch (e) {
+      expect(e.message).toContain('Unexpected token on line 1');
+    }
+  });
+
+  test('indentation error message: dedent', () => {
+    const parser = Parser();
+    const source = ">>\nhello";
+
+    try {
+      const result = parser.parse(source);
+    } catch (e) {
+      expect(e.message).toContain('Unexpected indentation on line 2');
+    }
+  });
+
+  test('indentation error message: indent', () => {
+    const parser = Parser();
+    const source = ">\n  hello";
+
+    try {
+      const result = parser.parse(source);
+    } catch (e) {
+      expect(e.message).toContain('Unexpected indentation on line 1');
+    }
+  });
 });

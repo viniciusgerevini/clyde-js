@@ -47,7 +47,7 @@ function lexer() {
 
   //comments
   lexer.addRule(/^\s*\#+.*\n+/gm, (lexeme) => {
-    row += (lexeme.match(/\n/g) || []).length;
+    row += countLineBreaks(lexeme);
   });
 
   lexer.addRule(/\{/, function (lexeme) {
@@ -205,8 +205,8 @@ function lexer() {
     return 'BOOLEAN_LITERAL';
   }, [ LOGIC_STATE ]);
 
-  lexer.addRule(/\'.*\'/, function (lexeme) {
-    this.yytext = lexeme.replace(/\'/g, '');
+  lexer.addRule(/\".*\"/, function (lexeme) {
+    this.yytext = lexeme.replace(/\"/g, '');
     setLoc(this, lexeme);
     return 'STRING_LITERAL';
   }, [ LOGIC_STATE ]);
