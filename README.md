@@ -28,7 +28,6 @@
 - [x] make line and column position more accurate
 - [x] implement snapshot tests with examples
 - [x] instantiate parser / lexer before each test. Currently there is state inside the lexer
-- [ ] move line, anchor, etc ids to grammar, instead of grouping on lexer
 
 
 ### Docs
@@ -43,7 +42,7 @@
 - [ ] CLI
 - [ ] interpreter: show lines
 - [ ] interpreter: interactive
-- [ ] interpreter: show chart?
+- [ ] interpreter: show diagram?
 - [ ] online interpreter/editor
 - [ ] Godot client / example
 - [ ] C# client class
