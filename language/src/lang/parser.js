@@ -4,7 +4,7 @@ const { Parser } = require('jison');
 const { Lexer, getTokenHint } = require('./lexer');
 
 function parser() {
-  const grammar = fs.readFileSync('./src/lang/grammar.jison', 'utf8');
+  const grammar = fs.readFileSync(`${__dirname}/grammar.jison`, 'utf8');
   const parser = new Parser(grammar);
   parser.lexer = Lexer();
 

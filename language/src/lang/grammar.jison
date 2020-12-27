@@ -24,7 +24,7 @@ block
 
 lines
   : lines line
-    { $1.lines = $1.lines.concat([$2]); $$ = $1 }
+    { $1.content = $1.content.concat([$2]); $$ = $1 }
   | line
     { $$ = Content([$1]) }
   ;
@@ -243,8 +243,8 @@ function NullToken() {
   return { type: 'null' };
 }
 
-function Content(lines) {
-  return { type: 'content', lines };
+function Content(content) {
+  return { type: 'content', content };
 }
 
 function Document(content) {

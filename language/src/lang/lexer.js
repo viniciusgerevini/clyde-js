@@ -336,7 +336,7 @@ function lexer() {
   });
 
   lexer.addRule(/[^\r\n|\#|\$|\{]+/, function (lexeme) {
-    this.yytext = lexeme;
+    this.yytext = lexeme.trim();
     setLoc(this, lexeme);
     return 'LINE';
   });
