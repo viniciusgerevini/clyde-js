@@ -40,12 +40,23 @@ line
   | condition_statement NEWLINE { $$ = ConditionalContent($1) }
   | assignment_statement NEWLINE
   | dialog_line assignment_statement NEWLINE { $$ = ActionContent($2, $1) }
+  | dialog_block
   ;
 
 dialog_line
   : SPEAKER LINE { $$ = DialogLine($2, $1); }
   | SPEAKER LINE LINE_ID { $$ = DialogLine($2, $1, $3); }
   | LINE LINE_ID { $$ = DialogLine($1, undefined, $2); }
+  | LINE { $$ = DialogLine(yytext); }
+  ;
+
+dialog_block
+  : dialog_line NEWLINE INDENT just_lines NEWLINE DEDENT
+    { $$ = DialogLine($1.value + ' ' + $4.value, $1.speaker, $1.id); }
+  ;
+
+just_lines
+  : just_lines NEWLINE LINE { $$ = DialogLine($1.value + ' ' + $3); }
   | LINE { $$ = DialogLine(yytext); }
   ;
 

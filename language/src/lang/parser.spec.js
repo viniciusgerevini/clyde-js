@@ -56,13 +56,13 @@ describe('Check compilation results', () => {
 
   test('indentation error message: indent', () => {
     const parser = Parser();
-    const source = ">\n  hello";
+    const source = "hello\n  hey\n    ho";
 
     try {
       const result = parser.parse(source);
       throw new Error("should have failed");
     } catch (e) {
-      expect(e.message).toContain('Unexpected indentation on line 1');
+      expect(e.message).toContain('Unexpected indentation on line 2');
     }
   });
 
