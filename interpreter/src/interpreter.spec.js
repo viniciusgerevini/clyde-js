@@ -48,24 +48,24 @@ describe("Interpreter", () => {
   describe('options', () => {
     it('handle options', () => {
       const parser = Parser();
-      const content = parser.parse('\nHey hey\n>> speaker: hello\n  * a\n   aa\n   ab\n  * b\n   ba\n   bb\n  + c\n   ca\n   cb\n<<\n');
+      const content = parser.parse('\nHey hey\n>> speaker: hello\n  * a\n   aa\n   ab\n  * b $id:abc\n   ba\n   bb\n  + c\n   ca\n   cb\n<<\n');
       const dialog = Interpreter(content);
 
       expect(dialog.getContent()).toEqual({ type: 'dialog', text: 'Hey hey' });
-      expect(dialog.getContent()).toEqual({ type: 'options', name: 'speaker: hello', options: [{ label: 'a' },{ label: 'b' }, { label: 'c' } ] });
+      expect(dialog.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b', id: 'abc' }, { label: 'c' } ] });
       dialog.choose(1)
       expect(dialog.getContent()).toEqual({ type: 'dialog',  text: 'ba' });
       expect(dialog.getContent()).toEqual({ type: 'dialog',  text: 'bb' });
-      expect(dialog.getContent()).toEqual({ type: 'options', name: 'speaker: hello', options: [{ label: 'a' }, { label: 'c' } ] });
+      expect(dialog.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' }, { label: 'c' } ] });
       dialog.choose(1)
       expect(dialog.getContent()).toEqual({ type: 'dialog', text: 'ca' });
       expect(dialog.getContent()).toEqual({ type: 'dialog', text: 'cb' });
-      expect(dialog.getContent()).toEqual({ type: 'options', name: 'speaker: hello', options: [{ label: 'a' }, { label: 'c' } ] });
+      expect(dialog.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' }, { label: 'c' } ] });
 
       dialog.choose(0)
       expect(dialog.getContent()).toEqual({ type: 'dialog', text: 'aa' });
       expect(dialog.getContent()).toEqual({ type: 'dialog', text: 'ab' });
-      expect(dialog.getContent()).toEqual({ type: 'options', name: 'speaker: hello', options: [{ label: 'c' } ] });
+      expect(dialog.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'c' } ] });
     });
 
     it('fails when trying to select option when in wrong state', () => {
@@ -79,9 +79,9 @@ describe("Interpreter", () => {
 
     it('fails when selecting wrong index', () => {
       const parser = Parser();
-      const content = parser.parse(`>> speaker: hello\n * a\n  aa\n * b\n  ba\n<<\n`);
+      const content = parser.parse(`>> hello $id: 123\n * a\n  aa\n * b\n  ba\n<<\n`);
       const dialog = Interpreter(content);
-      expect(dialog.getContent()).toEqual({ type: 'options', name: 'speaker: hello', options: [{ label: 'a' }, { label: 'b' } ] });
+      expect(dialog.getContent()).toEqual({ id: '123', type: 'options', name: 'hello', options: [{ label: 'a' }, { label: 'b' } ] });
       expect(() => dialog.choose(66)).toThrow(/Index 66 not available./);
     });
 

@@ -55,7 +55,16 @@ function Interpreter(doc) {
       })
     }
     const options = getVisibleOptions(optionsNode);
-    return { type: 'options', name: optionsNode.name, options: options.map((t) => ({label: t.name}))};
+    return {
+      type: 'options',
+      speaker: optionsNode.speaker,
+      ...(optionsNode.id ?{ id: optionsNode.id }:{}),
+      name: optionsNode.name,
+      options: options.map((t) => ({
+        label: t.name,
+        ...(t.id ?{ id: t.id }:{})
+      }))
+    };
   };
 
   const handleLineNode = (lineNode) => {
