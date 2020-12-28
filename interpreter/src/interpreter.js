@@ -1,6 +1,7 @@
 function Interpreter(doc) {
   const mem = {
-    access: {}
+    access: {},
+    variables: {},
   };
   const stack = [{
     current: doc,
@@ -16,6 +17,8 @@ function Interpreter(doc) {
       return handleOptionsNode(node);
     } else if (node.type === 'line') {
       return handleLineNode(node);
+    } else if (node.type === 'action_content') {
+      return handleActionContent(node);
     }
   };
 
@@ -68,8 +71,43 @@ function Interpreter(doc) {
   };
 
   const handleLineNode = (lineNode) => {
-    return { type: 'dialog', id: lineNode.id, speaker: lineNode.speaker, text: lineNode.value };
+    return {
+      type: 'dialog',
+      ...(lineNode.id ? { id: lineNode.id } : {}),
+      ...(lineNode.speaker ? { speaker: lineNode.speaker } : {}),
+      text: replaceVariables(lineNode.value)
+    };
   }
+
+  const handleActionContent = (actionNode) => {
+    actionNode.action.assignments.forEach(handleAssignement)
+    return getNextNode(actionNode.content);
+  };
+
+  const handleAssignement = (assignment) => {
+    const variable = assignment.variable;
+    const source = assignment.value;
+
+    let value;
+
+    if (source.type === 'literal') {
+      value = source.value;
+    } else if (source.type === 'variable') {
+      value = mem.variables[source.name];
+    } else if (source.type === 'assignment') {
+      value = handleAssignement(source);
+    }
+
+    if (assignment.operation === 'assign') {
+      mem.variables[variable.name] = value;
+    } else if (assignment.operation === 'add_assign') {
+      mem.variables[variable.name] += value;
+    } else if (assignment.operation === 'sub_assign') {
+      mem.variables[variable.name] -= value;
+    }
+
+    return mem.variables[variable.name];
+  };
 
   const selectOption = (index) => {
     const node = stackHead();
@@ -111,6 +149,19 @@ function Interpreter(doc) {
     });
   };
 
+  const replaceVariables = (text) => {
+    (text.match(/\%([A-z0-9]*)\%/g) || [])
+      .map(match => {
+        const name = match.replace(/\%/g, '');
+        const value = mem.variables[name];
+        return { name: match, value };
+      })
+      .forEach( variable => {
+        text = text.replace(variable.name, variable.value);
+      });
+    return text;
+  };
+
   return {
     getContent() {
       const head = stackHead();
@@ -120,6 +171,12 @@ function Interpreter(doc) {
     },
     choose(index) {
       return selectOption(index)
+    },
+    setVariable(name, value) {
+      mem.variables[name] = value;
+    },
+    getVariable(name) {
+      return mem.variables[name];
     }
   }
 }

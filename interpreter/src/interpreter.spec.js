@@ -3,21 +3,12 @@ const { Interpreter } = require('./interpreter');
 
 /*
 * TODO
-* - [x] lines
-* - [x] line id (`this is a line $id: hey`)
-* - [x] speaker (speaker: this is a line)
-* - [x] option block (`>>`)
-* - [x] option block with description line (`>> some line here`)
-* - [x] sticky option (`+`)
-* - [ ] option title speaker and id
-* - [ ] set variables (`{ set var=true }`)
 * - [ ] conditional lines (`{ is_first_run && speaker_hp > 10 }`)
 * - [ ] blocks (== this_is_a_block)
 * - [ ] block divert (`-> block_name`)
 * - [ ] parent divert (`<-`). Goes to parent block, option list, or divert
 * - [ ] anchors, like in `(some_anchor)`, where we can divert like this `> some_anchor`
 * - [ ] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (`!!sequence`)
-* - [ ] option name id
 * - [ ] line tags
 * - [ ] events: dialog_ended, variable_changed
 * - [ ] language stuff
@@ -79,12 +70,68 @@ describe("Interpreter", () => {
 
     it('fails when selecting wrong index', () => {
       const parser = Parser();
-      const content = parser.parse(`>> hello $id: 123\n * a\n  aa\n * b\n  ba\n<<\n`);
+      const content = parser.parse('>> hello $id: 123\n * a\n  aa\n * b\n  ba\n<<\n');
       const dialog = Interpreter(content);
       expect(dialog.getContent()).toEqual({ id: '123', type: 'options', name: 'hello', options: [{ label: 'a' }, { label: 'b' } ] });
       expect(() => dialog.choose(66)).toThrow(/Index 66 not available./);
     });
 
+  });
+
+  describe('variables', () => {
+    it('set variables', () => {
+      const parser = Parser();
+      const content = parser.parse('lets set a variable {set something="the"}\nthis is %something% variable\n');
+      const dialog = Interpreter(content);
+
+      expect(dialog.getContent().text).toEqual('lets set a variable');
+      expect(dialog.getContent().text).toEqual('this is the variable');
+    });
+
+    it('set variables with right type', () => {
+      const parser = Parser();
+      const content = parser.parse('a {set a="s", b=true, c=123}\nresults %a% %b% %c%\n');
+      const dialog = Interpreter(content);
+
+      expect(dialog.getContent().text).toEqual('a');
+      expect(dialog.getContent().text).toEqual('results s true 123');
+      expect(typeof dialog.getVariable('a')).toBe("string");
+      expect(typeof dialog.getVariable('b')).toBe("boolean");
+      expect(typeof dialog.getVariable('c')).toBe("number");
+    });
+
+    it('set variables with right type', () => {
+      const parser = Parser();
+      const content = parser.parse('a {set a="value of a", b=a}\n%b%\n');
+      const dialog = Interpreter(content);
+
+      expect(dialog.getContent().text).toEqual('a');
+      expect(dialog.getContent().text).toEqual('value of a');
+    });
+
+    it('make complex assignements', () => {
+      const parser = Parser();
+      const content = parser.parse('a {set a=1, a += 5, b = c = a, b -=1}\na %a% b %b% c %c%\n');
+      const dialog = Interpreter(content);
+
+      expect(dialog.getContent().text).toEqual('a');
+      expect(dialog.getContent().text).toEqual('a 6 b 5 c 6');
+    });
+
+    it('set variables externally', () => {
+      const parser = Parser();
+      const content = parser.parse('vars %id% %name%\nvars %id% %name%\n');
+      const dialog = Interpreter(content);
+
+      dialog.setVariable('id', 'some_id');
+      dialog.setVariable('name', 'some name');
+
+      expect(dialog.getContent()).toEqual({ type: 'dialog', text: 'vars some_id some name' });
+
+      dialog.setVariable('id', 'some other id');
+
+      expect(dialog.getContent()).toEqual({ type: 'dialog', text: 'vars some other id some name' });
+    });
   });
 
   describe('End of dialog', () => {
