@@ -11,30 +11,25 @@ function Interpreter(doc) {
   }];
   const logic = LogicInterpreter(mem);
 
-  const getNextNode = (node) => {
-    if (node.type === 'document') {
-      return handleDocumentNode();
-    } else if (node.type === 'content') {
-      return handleContentNode(node);
-    } else if (node.type === 'options') {
-      return handleOptionsNode(node);
-    } else if (node.type === 'line') {
-      return handleLineNode(node);
-    } else if (node.type === 'action_content') {
-      return handleActionContent(node);
-    } else if (node.type === 'conditional_content') {
-      return handleConditionalContent(node);
-    }
+  const nodeHandlers = {
+    'document': () => handleDocumentNode(),
+    'content': node => handleContentNode(node),
+    'options': node => handleOptionsNode(node),
+    'line': node => handleLineNode(node),
+    'action_content': node => handleActionContent(node),
+    'conditional_content': node => handleConditionalContent(node),
+    'error': node => { throw new Error(`Unkown node type "${node.type}"`) }
+  }
 
-    throw new Error(`Unkown node type "${node.type}"`);
-  };
+  const handleNextNode = node => (nodeHandlers[node.type] || nodeHandlers['error'])(node);
+
 
   const handleDocumentNode = () => {
     const node = stackHead();
     const index = node.index + 1;
     if (index < node.current.content.length) {
       node.index = index
-      return getNextNode(node.current.content[index]);
+      return handleNextNode(node.current.content[index]);
     }
     stack.pop();
   }
@@ -51,10 +46,10 @@ function Interpreter(doc) {
     const index = node.index + 1;
     if (index < node.current.content.length) {
       node.index = index
-      return getNextNode(node.current.content[index]);
+      return handleNextNode(node.current.content[index]);
     }
     stack.pop();
-    return getNextNode(stackHead().current);
+    return handleNextNode(stackHead().current);
   };
 
   const handleOptionsNode = (optionsNode) => {
@@ -88,14 +83,14 @@ function Interpreter(doc) {
 
   const handleActionContent = (actionNode) => {
     actionNode.action.assignments.forEach(logic.handleAssignement)
-    return getNextNode(actionNode.content);
+    return handleNextNode(actionNode.content);
   };
 
   const handleConditionalContent = (conditionalNode) => {
     if (logic.checkCondition(conditionalNode.conditions)) {
-      return getNextNode(conditionalNode.content);
+      return handleNextNode(conditionalNode.content);
     }
-    return getNextNode(stackHead().current);
+    return handleNextNode(stackHead().current);
   };
 
   const selectOption = (index) => {
@@ -155,7 +150,7 @@ function Interpreter(doc) {
     getContent() {
       const head = stackHead();
       if (head) {
-        return getNextNode(head.current)
+        return handleNextNode(head.current)
       }
     },
     choose(index) {
