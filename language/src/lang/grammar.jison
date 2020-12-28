@@ -33,7 +33,7 @@ line
   : dialog_line NEWLINE { $$ = $1 }
   | DIVERT NEWLINE { $$ = Divert($1); }
   | DIVERT_PARENT NEWLINE { $$ = Divert('<parent>'); }
-  | topic_block
+  | option_block
   | alternatives
   | anchor
   | condition_statement line { $$ = ConditionalContent($1, $2) }
@@ -60,26 +60,30 @@ just_lines
   | LINE { $$ = DialogLine(yytext); }
   ;
 
-topic_block
-  : OPTION_LIST_START NEWLINE INDENT topics DEDENT OPTION_LIST_END NEWLINE
-    { $$ = OptionList($1, $4) }
+option_block
+  : OPTION_LIST_START NEWLINE INDENT options DEDENT OPTION_LIST_END NEWLINE
+    { $$ = OptionList(undefined, $4) }
+  | OPTION_LIST_START LINE NEWLINE INDENT options DEDENT OPTION_LIST_END NEWLINE
+    { $$ = OptionList($2, $5) }
+  | OPTION_LIST_START SPEAKER LINE LINE_ID NEWLINE INDENT options DEDENT OPTION_LIST_END NEWLINE
+    { $$ = OptionList($3, $7, $4, $2) }
   ;
 
-topics
-  : topics topic
+options
+  : options option
     { $$ = $1.concat([$2]); }
-  | topic
+  | option
     { $$ = [$1] }
   | anchor
     { $$ = [$1] }
   ;
 
-topic
+option
   : OPTION NEWLINE INDENT lines DEDENT
     { $$ = Option($1, 'once', $4) }
   | STICKY_OPTION NEWLINE INDENT lines DEDENT
     { $$ = Option($1, 'sticky', $4) }
-  | condition_statement topic { $$ = ConditionalContent($1, $2) }
+  | condition_statement option { $$ = ConditionalContent($1, $2) }
   ;
 
 alternatives
@@ -191,8 +195,8 @@ function DialogBlock(blockName, content = []) {
   return { type: 'block', name: blockName, content };
 }
 
-function OptionList(name, content = []) {
-  return { type: 'options', name, content };
+function OptionList(name, content = [], id, speaker) {
+  return { type: 'options', name, content, id, speaker };
 }
 
 function Option(name, mode, content = []) {

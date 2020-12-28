@@ -21,3 +21,13 @@ npc: what do you want to talk about?
     npc: You should try to empty it.
 <<
 
+>> speaker: What's in your mind? $id:abc
+  * Nothing
+    npc: That's a hard state to achieve.
+<<
+
+>> "speaker: >> What's in your mind? $id:abc"
+  * Nothing
+    npc: That's a hard state to achieve.
+<<
+

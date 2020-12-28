@@ -251,11 +251,8 @@ function lexer() {
     return 'BLOCK_START';
   });
 
-  lexer.addRule(/\>\>[^\n]*/m, function (lexeme) {
-    this.yytext = lexeme.replace(/^\>\>\s*/, '').replace(/\n/, '');
-    if (this.yytext === '') {
-      this.yytext = undefined;
-    }
+  lexer.addRule(/\>\>/mg, function (lexeme) {
+    this.yytext = lexeme;
     setLoc(this, lexeme);
     return 'OPTION_LIST_START';
   });
