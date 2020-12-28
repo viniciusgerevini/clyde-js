@@ -1,0 +1,14 @@
+{
+  "name": "clyde-interpreter",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "cli": "node ./scripts/cli.js",
+    "test": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3"
+  }
+}

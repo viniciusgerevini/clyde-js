@@ -21,6 +21,11 @@
 - [x] anchors, like in `(some_anchor)`, where we can divert like this `> some_anchor`
 - [x] maybe change id syntax, as it may conflict with comments (`$id:`)
 - [x] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (`!!sequence`)
+- [ ] topic title speaker and id
+- [ ] topic name id
+- [ ] normalize objects .ie content in topic is an object, but it's an array in other places
+- [ ] line tags
+- [ ] event trigger
 
 ### Improvements
 
