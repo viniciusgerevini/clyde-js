@@ -20,7 +20,12 @@ describe("Logic Interpreter", () => {
   });
 
   it('throws when unknown expression', () => {
-    const wrongAssignment = { operation: 'unknown', variable: {}, value: {} };
-    expect(() => logic.handleAssignement(wrongAssignment)).toThrow(/Unknown operation "unknown"/);
+    const wrongAssignment = { operation: 'unknownOperation', variable: {}, value: { type: 'literal' } };
+    expect(() => logic.handleAssignement(wrongAssignment)).toThrow(/Unknown operation "unknownOperation"/);
+  });
+
+  it('throws when unknown node', () => {
+    const wrongAssignment = { operation: 'assign', variable: {}, value: { type: 'something'} };
+    expect(() => logic.handleAssignement(wrongAssignment)).toThrow(/Unknown node "something"/);
   });
 });

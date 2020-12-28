@@ -148,11 +148,10 @@ Set hp 90. {set hp = 90}
 { hp != 90 } but not his one.
 { hp == 90 and hp is 90 } this one.
 { hp isnt 90 or hp is 90 } and this one.
-{ not hp == 90 } but not this one.
-{ not hp isnt 90 } maybe this one.
-{ not hp isnt 90 and hp is 90 } and this one for sure. {set goodbye = true}
+{ hp isnt 90 } maybe this one.
+{ hp == 90 and hp is 90 } and this one for sure. {set goodbye = true}
 { goodbye } Almost there!
-{ not goodbye } Almost...
+{ not goodbye and goodbye } Almost...
 I believe this is all
 `
       );
@@ -166,7 +165,6 @@ I believe this is all
       expect(dialog.getContent().text).toEqual('and also this line.');
       expect(dialog.getContent().text).toEqual('this one.');
       expect(dialog.getContent().text).toEqual('and this one.');
-      expect(dialog.getContent().text).toEqual('maybe this one.');
       expect(dialog.getContent().text).toEqual('and this one for sure.');
       expect(dialog.getContent().text).toEqual('Almost there!');
       expect(dialog.getContent().text).toEqual('I believe this is all');

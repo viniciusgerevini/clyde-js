@@ -1,85 +1,56 @@
-
 const LogicInterpreter = (mem) => {
+
+  const expressionHandlers = {
+    'equal': cond => getNodeValue(cond.elements[0]) === getNodeValue(cond.elements[1]),
+    'not_equal': cond => getNodeValue(cond.elements[0]) !== getNodeValue(cond.elements[1]),
+    'greater_than': cond => getNodeValue(cond.elements[0]) > getNodeValue(cond.elements[1]),
+    'greater_or_equal_than': cond => getNodeValue(cond.elements[0]) >= getNodeValue(cond.elements[1]),
+    'less_than': cond => getNodeValue(cond.elements[0]) < getNodeValue(cond.elements[1]),
+    'less_or_equal_than': cond => getNodeValue(cond.elements[0]) <= getNodeValue(cond.elements[1]),
+    'and': cond => checkCondition(cond.elements[0]) && checkCondition(cond.elements[1]),
+    'or': cond => checkCondition(cond.elements[0]) || checkCondition(cond.elements[1]),
+    'not': cond => !checkCondition(cond.elements[0]),
+    'error': cond => { throw new Error(`Unknown expression "${cond.name}"`) }
+  };
+
+  const conditionHandlers = {
+    'expression': condition => checkExpression(condition),
+    'variable': condition => checkVariable(condition),
+    'error': condition => { throw new Error(`Unknown condition type "${condition.type}"`) }
+  };
+
+  const operationHandlers = {
+    'assign': (name, value) => mem.variables[name] = value,
+    'add_assign': (name, value) => mem.variables[name] += value,
+    'sub_assign': (name, value) => mem.variables[name] -= value,
+    'error': (n, v, a) => { throw new Error(`Unknown operation "${a.operation}"`) }
+  };
+
+  const nodeValueHandlers = {
+    'literal': node => node.value,
+    'variable': node => mem.variables[node.name],
+    'assignment': node => handleAssignement(node),
+    'error': node => { throw new Error(`Unknown node "${node.type}"`) }
+  };
 
   const handleAssignement = (assignment) => {
     const variable = assignment.variable;
     const source = assignment.value;
+    const value = getNodeValue(source);
 
-    let value = getNodeValue(source);
-
-    if (assignment.operation === 'assign') {
-      mem.variables[variable.name] = value;
-    } else if (assignment.operation === 'add_assign') {
-      mem.variables[variable.name] += value;
-    } else if (assignment.operation === 'sub_assign') {
-      mem.variables[variable.name] -= value;
-    } else {
-      throw new Error(`Unknown operation "${assignment.operation}"`)
-    }
-
-    return mem.variables[variable.name];
+    return (operationHandlers[assignment.operation] || operationHandlers['error'])(variable.name, value, assignment);
   };
 
-  const getNodeValue = (source) => {
-    if (source.type === 'literal') {
-      return source.value;
-    }
-    if (source.type === 'variable') {
-      return mem.variables[source.name];
-    }
-    if (source.type === 'assignment') {
-      return handleAssignement(source);
-    }
-  };
+  const getNodeValue = (source) =>
+    (nodeValueHandlers[source.type] || nodeValueHandlers['error'])(source);
 
-  const checkCondition = (condition) => {
-    if (condition.type === 'expression') {
-      return checkExpression(condition);
-    }
+  const checkCondition = (condition) =>
+    (conditionHandlers[condition.type] || conditionHandlers['error'])(condition);
 
-    if (condition.type === 'variable') {
-      return checkVariable(condition);
-    }
-    throw new Error(`Unknown condition type "${condition.type}"`);
-  }
+  const checkExpression = (condition) =>
+    (expressionHandlers[condition.name] || expressionHandlers['error'])(condition);
 
-  const checkExpression = (condition) => {
-    if (condition.name === 'equal') {
-      return getNodeValue(condition.elements[0]) === getNodeValue(condition.elements[1]);
-    }
-    if (condition.name === 'not_equal') {
-      return getNodeValue(condition.elements[0]) !== getNodeValue(condition.elements[1]);
-    }
-    if (condition.name === 'greater_than') {
-      return getNodeValue(condition.elements[0]) > getNodeValue(condition.elements[1]);
-    }
-    if (condition.name === 'greater_or_equal_than') {
-      return getNodeValue(condition.elements[0]) >= getNodeValue(condition.elements[1]);
-    }
-    if (condition.name === 'less_than') {
-      return getNodeValue(condition.elements[0]) < getNodeValue(condition.elements[1]);
-    }
-    if (condition.name === 'less_or_equal_than') {
-      return getNodeValue(condition.elements[0]) <= getNodeValue(condition.elements[1]);
-    }
-
-    if (condition.name === 'and') {
-      return checkCondition(condition.elements[0]) && checkCondition(condition.elements[1]);
-    }
-
-    if (condition.name === 'or') {
-      return checkCondition(condition.elements[0]) || checkCondition(condition.elements[1]);
-    }
-
-    if (condition.name === 'not') {
-      return !checkCondition(condition.elements[0]);
-    }
-    throw new Error(`Unknown expression "${condition.name}"`);
-  }
-
-  const checkVariable = (variable) => {
-    return mem.variables[variable.name];
-  };
+  const checkVariable = (variable) => mem.variables[variable.name];
 
   return {
     checkCondition,
