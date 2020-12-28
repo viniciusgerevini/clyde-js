@@ -20,10 +20,10 @@ const hints = {
   'VARIABLE': 'variable',
   'NEWLINE': 'line break',
   'BLOCK_START': '==',
-  'TOPIC_LIST_START': '>>',
-  'TOPIC_LIST_END': '<<',
-  'TOPIC': '*',
-  'STICKY_TOPIC': '+',
+  'OPTION_LIST_START': '>>',
+  'OPTION_LIST_END': '<<',
+  'OPTION': '*',
+  'STICKY_OPTION': '+',
   'ALTERNATIVES_START': '[',
   'ALTERNATIVES_END': ']',
   'ANCHOR': '--',
@@ -257,25 +257,25 @@ function lexer() {
       this.yytext = undefined;
     }
     setLoc(this, lexeme);
-    return 'TOPIC_LIST_START';
+    return 'OPTION_LIST_START';
   });
 
   lexer.addRule(/\<\</m, function (lexeme) {
     this.yytext = lexeme;
     setLoc(this, lexeme);
-    return 'TOPIC_LIST_END';
+    return 'OPTION_LIST_END';
   });
 
   lexer.addRule(/\*\s*.*[^\r\n]+/m, function (lexeme) {
     this.yytext = lexeme.replace(/\*\s*/, '');
     setLoc(this, lexeme);
-    return 'TOPIC';
+    return 'OPTION';
   });
 
   lexer.addRule(/\+\s*.+[^\r\n]+/m, function (lexeme) {
     this.yytext = lexeme.replace(/\+\s*/, '');
     setLoc(this, lexeme);
-    return 'STICKY_TOPIC';
+    return 'STICKY_OPTION';
   });
 
   lexer.addRule(/\[([^\r\n]+)?/, function (lexeme) {

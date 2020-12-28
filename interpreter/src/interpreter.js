@@ -12,8 +12,8 @@ function Interpreter(doc) {
       return handleDocumentNode();
     } else if (node.type === 'content') {
       return handleContentNode(node);
-    } else if (node.type === 'topics') {
-      return handleTopicsNode(node);
+    } else if (node.type === 'options') {
+      return handleOptionsNode(node);
     } else if (node.type === 'line') {
       return handleLineNode(node);
     }
@@ -47,31 +47,31 @@ function Interpreter(doc) {
     return getNextNode(stackHead().current);
   };
 
-  const handleTopicsNode = (topicsNode) => {
-    if (stackHead().current !== topicsNode) {
+  const handleOptionsNode = (optionsNode) => {
+    if (stackHead().current !== optionsNode) {
       stack.push({
-        current: topicsNode,
+        current: optionsNode,
         index: -1
       })
     }
-    const topics = getVisibleTopics(topicsNode);
-    return { type: 'options', name: topicsNode.name, topics: topics.map((t) => ({label: t.name}))};
+    const options = getVisibleOptions(optionsNode);
+    return { type: 'options', name: optionsNode.name, options: options.map((t) => ({label: t.name}))};
   };
 
   const handleLineNode = (lineNode) => {
     return { type: 'dialog', id: lineNode.id, speaker: lineNode.speaker, text: lineNode.value };
   }
 
-  const selectTopic = (index) => {
+  const selectOption = (index) => {
     const node = stackHead();
-    if (node.current.type === 'topics') {
-      const content = getVisibleTopics(node.current);
+    if (node.current.type === 'options') {
+      const content = getVisibleOptions(node.current);
 
       if (index >= content.length) {
         throw new Error(`Index ${index} not available.`)
       }
 
-      const id = createTopicIdentifier(node.current, node.current.content[index]);
+      const id = createOptionIdentifier(node.current, node.current.content[index]);
       setAsAccessed(id);
       stack.push({
         current: content[index].content,
@@ -84,7 +84,7 @@ function Interpreter(doc) {
 
   const stackHead = () => stack[stack.length - 1];
 
-  const createTopicIdentifier = (parent, node) => {
+  const createOptionIdentifier = (parent, node) => {
     return `${parent.name}${node.name}${parent.content.length}${node.content.content.length}`;
   };
 
@@ -96,9 +96,9 @@ function Interpreter(doc) {
     return !!mem.access[id];
   }
 
-  const getVisibleTopics = (topics) => {
-    return topics.content.filter((t) => {
-      return !(t.mode === 'once' && wasAlreadyAccessed(createTopicIdentifier(topics, t)));
+  const getVisibleOptions = (options) => {
+    return options.content.filter((t) => {
+      return !(t.mode === 'once' && wasAlreadyAccessed(createOptionIdentifier(options, t)));
     });
   };
 
@@ -110,7 +110,7 @@ function Interpreter(doc) {
       }
     },
     choose(index) {
-      return selectTopic(index)
+      return selectOption(index)
     }
   }
 }

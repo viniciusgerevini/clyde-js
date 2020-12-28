@@ -61,8 +61,8 @@ just_lines
   ;
 
 topic_block
-  : TOPIC_LIST_START NEWLINE INDENT topics DEDENT TOPIC_LIST_END NEWLINE
-    { $$ = DialogTopicList($1, $4) }
+  : OPTION_LIST_START NEWLINE INDENT topics DEDENT OPTION_LIST_END NEWLINE
+    { $$ = OptionList($1, $4) }
   ;
 
 topics
@@ -75,10 +75,10 @@ topics
   ;
 
 topic
-  : TOPIC NEWLINE INDENT lines DEDENT
-    { $$ = DialogTopic($1, 'once', $4) }
-  | STICKY_TOPIC NEWLINE INDENT lines DEDENT
-    { $$ = DialogTopic($1, 'sticky', $4) }
+  : OPTION NEWLINE INDENT lines DEDENT
+    { $$ = Option($1, 'once', $4) }
+  | STICKY_OPTION NEWLINE INDENT lines DEDENT
+    { $$ = Option($1, 'sticky', $4) }
   | condition_statement topic { $$ = ConditionalContent($1, $2) }
   ;
 
@@ -191,12 +191,12 @@ function DialogBlock(blockName, content = []) {
   return { type: 'block', name: blockName, content };
 }
 
-function DialogTopicList(name, content = []) {
-  return { type: 'topics', name, content };
+function OptionList(name, content = []) {
+  return { type: 'options', name, content };
 }
 
-function DialogTopic(name, mode, content = []) {
-  return { type: 'topic', name, mode, content };
+function Option(name, mode, content = []) {
+  return { type: 'option', name, mode, content };
 }
 
 function DialogAlternativeList(mode, content = []) {

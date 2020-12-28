@@ -7,23 +7,23 @@
 - [x] lines
 - [x] comments (`#`)
 - [x] blocks (== this_is_a_block)
-- [x] topic block (`>>`)
-- [x] topic block with description line (`>> some line here`)
-- [x] topics (`*`)
-- [x] sticky topic (`+`)
+- [x] option block (`>>`)
+- [x] option block with description line (`>> some line here`)
+- [x] options (`*`)
+- [x] sticky option (`+`)
 - [x] string with quotes for special characters
 - [x] line id (`this is a line #id: hey`)
 - [x] speaker (speaker: this is a line)
 - [x] set variables (`{ set var=true }`)
 - [x] conditional lines (`{ is_first_run && speaker_hp > 10 }`)
 - [x] block divert (`-> block_name`)
-- [x] parent divert (`<-`). Goes to parent block, topic list, or divert
+- [x] parent divert (`<-`). Goes to parent block, option list, or divert
 - [x] anchors, like in `(some_anchor)`, where we can divert like this `> some_anchor`
 - [x] maybe change id syntax, as it may conflict with comments (`$id:`)
 - [x] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (`!!sequence`)
-- [ ] topic title speaker and id
-- [ ] topic name id
-- [ ] normalize objects .ie content in topic is an object, but it's an array in other places
+- [ ] option title speaker and id
+- [ ] option name id
+- [ ] normalize objects .ie content in option is an object, but it's an array in other places
 - [ ] line tags
 - [ ] event trigger
 
