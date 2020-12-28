@@ -1,3 +1,5 @@
+const LogicInterpreter = require('./logic_interpreter');
+
 function Interpreter(doc) {
   const mem = {
     access: {},
@@ -7,6 +9,7 @@ function Interpreter(doc) {
     current: doc,
     index: -1
   }];
+  const logic = LogicInterpreter(mem);
 
   const getNextNode = (node) => {
     if (node.type === 'document') {
@@ -19,7 +22,11 @@ function Interpreter(doc) {
       return handleLineNode(node);
     } else if (node.type === 'action_content') {
       return handleActionContent(node);
+    } else if (node.type === 'conditional_content') {
+      return handleConditionalContent(node);
     }
+
+    throw new Error(`Unkown node type "${node.type}"`);
   };
 
   const handleDocumentNode = () => {
@@ -44,7 +51,7 @@ function Interpreter(doc) {
     const index = node.index + 1;
     if (index < node.current.content.length) {
       node.index = index
-      return getNextNode( node.current.content[index]);
+      return getNextNode(node.current.content[index]);
     }
     stack.pop();
     return getNextNode(stackHead().current);
@@ -80,33 +87,15 @@ function Interpreter(doc) {
   }
 
   const handleActionContent = (actionNode) => {
-    actionNode.action.assignments.forEach(handleAssignement)
+    actionNode.action.assignments.forEach(logic.handleAssignement)
     return getNextNode(actionNode.content);
   };
 
-  const handleAssignement = (assignment) => {
-    const variable = assignment.variable;
-    const source = assignment.value;
-
-    let value;
-
-    if (source.type === 'literal') {
-      value = source.value;
-    } else if (source.type === 'variable') {
-      value = mem.variables[source.name];
-    } else if (source.type === 'assignment') {
-      value = handleAssignement(source);
+  const handleConditionalContent = (conditionalNode) => {
+    if (logic.checkCondition(conditionalNode.conditions)) {
+      return getNextNode(conditionalNode.content);
     }
-
-    if (assignment.operation === 'assign') {
-      mem.variables[variable.name] = value;
-    } else if (assignment.operation === 'add_assign') {
-      mem.variables[variable.name] += value;
-    } else if (assignment.operation === 'sub_assign') {
-      mem.variables[variable.name] -= value;
-    }
-
-    return mem.variables[variable.name];
+    return getNextNode(stackHead().current);
   };
 
   const selectOption = (index) => {

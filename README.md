@@ -26,6 +26,7 @@
 - [ ] normalize objects .ie content in option is an object, but it's an array in other places
 - [ ] line tags
 - [ ] event trigger
+- [ ] add support to expressions to "not"
 
 ### Improvements
 

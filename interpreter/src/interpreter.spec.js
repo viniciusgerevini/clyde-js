@@ -3,7 +3,6 @@ const { Interpreter } = require('./interpreter');
 
 /*
 * TODO
-* - [ ] conditional lines (`{ is_first_run && speaker_hp > 10 }`)
 * - [ ] blocks (== this_is_a_block)
 * - [ ] block divert (`-> block_name`)
 * - [ ] parent divert (`<-`). Goes to parent block, option list, or divert
@@ -134,6 +133,46 @@ describe("Interpreter", () => {
     });
   });
 
+  describe('conditions', () => {
+    it('show only lines that meet the criteria', () => {
+      const parser = Parser();
+      const content = parser.parse(`
+Start with hp 100 {set hp = 100}
+{ hp > 90 } you should see this line.
+Set hp 90. {set hp = 90}
+{ hp > 90 } you should not see this line.
+{ hp >= 90 } but you should see this line.
+{ hp < 90 } you should not see this line here.
+{ hp <= 90 } but you should see this other line.
+{ hp == 90 } and also this line.
+{ hp != 90 } but not his one.
+{ hp == 90 and hp is 90 } this one.
+{ hp isnt 90 or hp is 90 } and this one.
+{ not hp == 90 } but not this one.
+{ not hp isnt 90 } maybe this one.
+{ not hp isnt 90 and hp is 90 } and this one for sure. {set goodbye = true}
+{ goodbye } Almost there!
+{ not goodbye } Almost...
+I believe this is all
+`
+      );
+      const dialog = Interpreter(content);
+
+      expect(dialog.getContent().text).toEqual('Start with hp 100');
+      expect(dialog.getContent().text).toEqual('you should see this line.');
+      expect(dialog.getContent().text).toEqual('Set hp 90.');
+      expect(dialog.getContent().text).toEqual('but you should see this line.');
+      expect(dialog.getContent().text).toEqual('but you should see this other line.');
+      expect(dialog.getContent().text).toEqual('and also this line.');
+      expect(dialog.getContent().text).toEqual('this one.');
+      expect(dialog.getContent().text).toEqual('and this one.');
+      expect(dialog.getContent().text).toEqual('maybe this one.');
+      expect(dialog.getContent().text).toEqual('and this one for sure.');
+      expect(dialog.getContent().text).toEqual('Almost there!');
+      expect(dialog.getContent().text).toEqual('I believe this is all');
+    });
+  });
+
   describe('End of dialog', () => {
     it('get undefined when not more lines left', () => {
       const parser = Parser();
@@ -142,6 +181,17 @@ describe("Interpreter", () => {
       expect(dialog.getContent()).toEqual({ type: 'dialog', text: 'Hi!' });
       expect(dialog.getContent()).toBe(undefined);
       expect(dialog.getContent()).toBe(undefined);
+    });
+  });
+
+  describe('Unknowns', () => {
+    it('fails when unkown node type detected', () => {
+      const parser = Parser();
+      const content = parser.parse('Hi!\n');
+      content.type = 'SomeUnkownNode';
+      const dialog = Interpreter(content);
+
+      expect(() => dialog.getContent()).toThrow(/Unkown node type "SomeUnkownNode"/);
     });
   });
 });
