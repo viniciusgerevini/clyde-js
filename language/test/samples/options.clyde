@@ -22,7 +22,19 @@ npc: what do you want to talk about?
 <<
 
 >> speaker: What's in your mind? $id:abc
-  * Nothing
+  * Nothing $id: abc123
+    npc: That's a hard state to achieve.
+  + Anything $id: abc123
+    npc: That's a hard state to achieve.
+<<
+
+>> speaker: What's in your mind?
+  * Nothing $id: abc123
+    npc: That's a hard state to achieve.
+<<
+
+>> What's in your mind? $id:abc
+  + Anything $id: abc123
     npc: That's a hard state to achieve.
 <<
 

@@ -263,14 +263,14 @@ function lexer() {
     return 'OPTION_LIST_END';
   });
 
-  lexer.addRule(/\*\s*.*[^\r\n]+/m, function (lexeme) {
-    this.yytext = lexeme.replace(/\*\s*/, '');
+  lexer.addRule(/\*/gm, function (lexeme) {
+    this.yytext = 'once';
     setLoc(this, lexeme);
     return 'OPTION';
   });
 
-  lexer.addRule(/\+\s*.+[^\r\n]+/m, function (lexeme) {
-    this.yytext = lexeme.replace(/\+\s*/, '');
+  lexer.addRule(/\+/gm, function (lexeme) {
+    this.yytext = 'sticky';
     setLoc(this, lexeme);
     return 'STICKY_OPTION';
   });

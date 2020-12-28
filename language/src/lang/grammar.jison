@@ -65,6 +65,10 @@ option_block
     { $$ = OptionList(undefined, $4) }
   | OPTION_LIST_START LINE NEWLINE INDENT options DEDENT OPTION_LIST_END NEWLINE
     { $$ = OptionList($2, $5) }
+  | OPTION_LIST_START LINE LINE_ID NEWLINE INDENT options DEDENT OPTION_LIST_END NEWLINE
+    { $$ = OptionList($2, $6, $3) }
+  | OPTION_LIST_START SPEAKER LINE NEWLINE INDENT options DEDENT OPTION_LIST_END NEWLINE
+    { $$ = OptionList($3, $6, undefined, $2) }
   | OPTION_LIST_START SPEAKER LINE LINE_ID NEWLINE INDENT options DEDENT OPTION_LIST_END NEWLINE
     { $$ = OptionList($3, $7, $4, $2) }
   ;
@@ -79,11 +83,16 @@ options
   ;
 
 option
-  : OPTION NEWLINE INDENT lines DEDENT
-    { $$ = Option($1, 'once', $4) }
-  | STICKY_OPTION NEWLINE INDENT lines DEDENT
-    { $$ = Option($1, 'sticky', $4) }
+  : option_mode LINE NEWLINE INDENT lines DEDENT
+    { $$ = Option($2, $1, $5) }
+  | option_mode LINE LINE_ID NEWLINE INDENT lines DEDENT
+    { $$ = Option($2, $1, $6, $3) }
   | condition_statement option { $$ = ConditionalContent($1, $2) }
+  ;
+
+option_mode
+  : OPTION { $$ = $1 }
+  | STICKY_OPTION { $$ = $1 }
   ;
 
 alternatives
@@ -199,8 +208,8 @@ function OptionList(name, content = [], id, speaker) {
   return { type: 'options', name, content, id, speaker };
 }
 
-function Option(name, mode, content = []) {
-  return { type: 'option', name, mode, content };
+function Option(name, mode, content = [], id) {
+  return { type: 'option', name, mode, content, id };
 }
 
 function DialogAlternativeList(mode, content = []) {
