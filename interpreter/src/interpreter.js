@@ -108,6 +108,14 @@ function Interpreter(doc) {
 
   const generateIndex = () => (10 * stackHead().current._index) + stackHead().contentIndex;
 
+  const addToStack = (node) => {
+    if (stackHead().current !== node) {
+      stack.push({
+        current: node,
+        contentIndex: -1
+      })
+    }
+  };
 
   const handleDocumentNode = () => {
     const node = stackHead();
@@ -138,25 +146,19 @@ function Interpreter(doc) {
   };
 
   const handleBlockNode = (block) => {
-    if (stackHead().current !== block) {
-      stack.push({
-        current: block,
-        contentIndex: -1
-      })
-    }
+    addToStack(block);
 
     const node = stackHead();
     const contentIndex = node.contentIndex + 1;
 
-    if (contentIndex < 1) {
+    if (contentIndex < node.current.content.content.length) {
       node.contentIndex = contentIndex
-      return handleNextNode(node.current.content);
+      return handleNextNode(node.current.content.content[contentIndex]);
     }
   };
 
   const handleDivert = (divert) => {
     if (divert.target === '<parent>') {
-      stack.pop();
       stack.pop();
       return handleNextNode(stackHead().current);
     } else {
@@ -303,10 +305,7 @@ function Interpreter(doc) {
 
   return {
     getContent() {
-      const head = stackHead();
-      if (head) {
-        return handleNextNode(head.current)
-      }
+      return handleNextNode(stackHead().current)
     },
     choose(index) {
       return selectOption(index)
