@@ -5,7 +5,7 @@ I come to show you this line with id $id: SCENE_1_LINE002
 # another comment
 #
 == this_is_a_block
-NPC: This is a dialog with speaker and id $id: SCENE_1_LINE001
+NPC: This is a dialogue with speaker and id $id: SCENE_1_LINE001
 player: This is a line with another speaker
 >>
   * this is the first topic

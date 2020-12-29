@@ -19,7 +19,7 @@ blocks
   ;
 
 block
-  : BLOCK_START NEWLINE lines { $$ = DialogBlock($1, $3) }
+  : BLOCK_START NEWLINE lines { $$ = Block($1, $3) }
   ;
 
 lines
@@ -30,7 +30,7 @@ lines
   ;
 
 line
-  : dialog_line NEWLINE { $$ = $1 }
+  : dialogue_line NEWLINE { $$ = $1 }
   | DIVERT NEWLINE { $$ = Divert($1); }
   | DIVERT_PARENT NEWLINE { $$ = Divert('<parent>'); }
   | option_block
@@ -39,25 +39,25 @@ line
   | condition_statement line { $$ = ConditionalContent($1, $2) }
   | condition_statement NEWLINE { $$ = ConditionalContent($1) }
   | assignment_statement NEWLINE
-  | dialog_line assignment_statement NEWLINE { $$ = ActionContent($2, $1) }
-  | dialog_block
+  | dialogue_line assignment_statement NEWLINE { $$ = ActionContent($2, $1) }
+  | dialogue_block
   ;
 
-dialog_line
-  : SPEAKER LINE { $$ = DialogLine($2, $1); }
-  | SPEAKER LINE LINE_ID { $$ = DialogLine($2, $1, $3); }
-  | LINE LINE_ID { $$ = DialogLine($1, undefined, $2); }
-  | LINE { $$ = DialogLine(yytext); }
+dialogue_line
+  : SPEAKER LINE { $$ = Line($2, $1); }
+  | SPEAKER LINE LINE_ID { $$ = Line($2, $1, $3); }
+  | LINE LINE_ID { $$ = Line($1, undefined, $2); }
+  | LINE { $$ = Line(yytext); }
   ;
 
-dialog_block
-  : dialog_line NEWLINE INDENT just_lines NEWLINE DEDENT
-    { $$ = DialogLine($1.value + ' ' + $4.value, $1.speaker, $1.id); }
+dialogue_block
+  : dialogue_line NEWLINE INDENT just_lines NEWLINE DEDENT
+    { $$ = Line($1.value + ' ' + $4.value, $1.speaker, $1.id); }
   ;
 
 just_lines
-  : just_lines NEWLINE LINE { $$ = DialogLine($1.value + ' ' + $3); }
-  | LINE { $$ = DialogLine(yytext); }
+  : just_lines NEWLINE LINE { $$ = Line($1.value + ' ' + $3); }
+  | LINE { $$ = Line(yytext); }
   ;
 
 option_block
@@ -97,7 +97,7 @@ option_mode
 
 alternatives
   : ALTERNATIVES_START NEWLINE INDENT lines DEDENT ALTERNATIVES_END NEWLINE
-    { $$ = DialogAlternativeList($1, $4) }
+    { $$ = AlternativeList($1, $4) }
   ;
 
 anchor
@@ -196,11 +196,11 @@ assignment_operator
 
 %%
 
-function DialogLine(value, speaker, id) {
+function Line(value, speaker, id) {
   return { type: 'line', value, speaker, id };
 }
 
-function DialogBlock(blockName, content = []) {
+function Block(blockName, content = []) {
   return { type: 'block', name: blockName, content };
 }
 
@@ -212,7 +212,7 @@ function Option(name, mode, content = [], id) {
   return { type: 'option', name, mode, content, id };
 }
 
-function DialogAlternativeList(mode, content = []) {
+function AlternativeList(mode, content = []) {
   return { type: 'alternatives', mode, content };
 }
 

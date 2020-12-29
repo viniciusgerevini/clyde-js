@@ -74,7 +74,7 @@ function Interpreter(doc) {
 
   const handleLineNode = (lineNode) => {
     return {
-      type: 'dialog',
+      type: 'dialogue',
       ...(lineNode.id ? { id: lineNode.id } : {}),
       ...(lineNode.speaker ? { speaker: lineNode.speaker } : {}),
       text: replaceVariables(lineNode.value)
