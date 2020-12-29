@@ -25,7 +25,8 @@
 - [x] option name id
 - [ ] line tags
 - [ ] event trigger
-- [ ] add support to expressions to "not"
+- [ ] add support to expressions to "not" (maybe)
+- [ ] special divert to end dialog -> END
 
 ### Improvements
 

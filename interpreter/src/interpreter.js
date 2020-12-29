@@ -1,7 +1,8 @@
 const LogicInterpreter = require('./logic_interpreter');
 
 function Interpreter(doc) {
-  doc._index = 1;
+  const anchors = {
+  };
 
   const mem = {
     access: {},
@@ -11,14 +12,19 @@ function Interpreter(doc) {
   let stack;
   const logic = LogicInterpreter(mem);
 
-  const initializeStack = () => {
+
+  doc._index = 1;
+  doc.blocks.forEach((block, index) => {
+    block._index = index + 2;
+    anchors[block.name] = block;
+  });
+
+  const initializeStack = (root = doc) => {
     stack = [{
-      current: doc,
+      current: root,
       contentIndex: -1
     }]
   };
-
-  initializeStack();
 
   const nodeHandlers = {
     'document': () => handleDocumentNode(),
@@ -28,7 +34,9 @@ function Interpreter(doc) {
     'action_content': node => handleActionContent(node),
     'conditional_content': (node, fallback) => handleConditionalContent(node, fallback),
     'alternatives': node => handleAlternatives(node),
-    'error': node => { throw new Error(`Unkown node type "${node.type}"`) }
+    'block': node => handleBlockNode(node),
+    'divert': node => handleDivert(node),
+    'error': node => { throw new Error(`Unkown node type "${node.type}"`) },
   };
 
   const alternativeHandlers = {
@@ -108,8 +116,6 @@ function Interpreter(doc) {
       node.contentIndex = contentIndex
       return handleNextNode(node.current.content[contentIndex]);
     }
-
-    stack.pop();
   }
 
   const handleContentNode = (contentNode) => {
@@ -129,6 +135,33 @@ function Interpreter(doc) {
     }
     stack.pop();
     return handleNextNode(stackHead().current);
+  };
+
+  const handleBlockNode = (block) => {
+    if (stackHead().current !== block) {
+      stack.push({
+        current: block,
+        contentIndex: -1
+      })
+    }
+
+    const node = stackHead();
+    const contentIndex = node.contentIndex + 1;
+
+    if (contentIndex < 1) {
+      node.contentIndex = contentIndex
+      return handleNextNode(node.current.content);
+    }
+  };
+
+  const handleDivert = (divert) => {
+    if (divert.target === '<parent>') {
+      stack.pop();
+      stack.pop();
+      return handleNextNode(stackHead().current);
+    } else {
+      return handleNextNode(anchors[divert.target]);
+    }
   };
 
   const handleOptionsNode = (optionsNode) => {
@@ -265,6 +298,9 @@ function Interpreter(doc) {
     return text;
   };
 
+
+  initializeStack();
+
   return {
     getContent() {
       const head = stackHead();
@@ -281,8 +317,12 @@ function Interpreter(doc) {
     getVariable(name) {
       return getVariable(name);
     },
-    begin() {
-      initializeStack();
+    begin(blockName) {
+      if (blockName) {
+        initializeStack(anchors[blockName]);
+      } else {
+        initializeStack();
+      }
     }
   }
 }

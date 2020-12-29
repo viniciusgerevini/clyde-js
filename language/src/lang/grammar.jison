@@ -7,15 +7,14 @@ expressions
 
 document
   : { $$ = Document([]) }/* empty */
-  | blocks { $$ = Document($1) }
+  | blocks { $$ = $1 }
   ;
 
 blocks
   : blocks block
-    { $$ = $1.concat([$2]) }
-  | block
-    { $$ = [$1] }
-  | lines { $$ = [$1] }
+    { $1.blocks = $1.blocks.concat([$2]); $$ = $1; }
+  | block { $$ = Document([], [$1]); }
+  | lines { $$ = Document([$1]); }
   ;
 
 block
@@ -260,6 +259,7 @@ function Content(content) {
   return { type: 'content', content };
 }
 
-function Document(content) {
-  return { type: 'document', content };
+function Document(content = [], blocks = []) {
+  return { type: 'document', content, blocks };
 }
+

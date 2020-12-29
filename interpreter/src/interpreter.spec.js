@@ -12,6 +12,7 @@ const { Interpreter } = require('./interpreter');
 * - [ ] language stuff
 *   [ ] OPTION count
 *   [ ] fix options behavior. If no divert in the end, it continues flow without going back to topic
+*   -- to be able to notify end or knowing if there is next I'll have to perform pop on last item, and not after that
 */
 
 describe("Interpreter", () => {
