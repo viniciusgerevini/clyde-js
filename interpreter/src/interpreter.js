@@ -1,16 +1,24 @@
 const LogicInterpreter = require('./logic_interpreter');
 
 function Interpreter(doc) {
+  doc._index = 1;
+
   const mem = {
     access: {},
     variables: {},
+    internal: {}
   };
-  const stack = [{
-    current: doc,
-    contentIndex: -1
-  }];
-  doc._index = 1;
+  let stack;
   const logic = LogicInterpreter(mem);
+
+  const initializeStack = () => {
+    stack = [{
+      current: doc,
+      contentIndex: -1
+    }]
+  };
+
+  initializeStack();
 
   const nodeHandlers = {
     'document': () => handleDocumentNode(),
@@ -21,7 +29,72 @@ function Interpreter(doc) {
     'conditional_content': node => handleConditionalContent(node),
     'alternatives': node => handleAlternatives(node),
     'error': node => { throw new Error(`Unkown node type "${node.type}"`) }
-  }
+  };
+
+  const alternativeHandlers = {
+    'cycle': (alternatives) => {
+      let current = getInternalVariable(alternatives._index, -1);
+      if (current < alternatives.content.content.length - 1) {
+        current += 1;
+      } else {
+        current = 0
+      }
+      setInternalVariable(alternatives._index, current);
+      return current;
+    },
+    'once': (alternatives) => {
+      const current = getInternalVariable(alternatives._index, -1);
+      const index = current + 1;
+      if (index <= alternatives.content.content.length - 1) {
+        setInternalVariable(alternatives._index, index);
+        return index;
+      }
+      return -1;
+    },
+    'sequence': (alternatives) => {
+      let current = getInternalVariable(alternatives._index, -1);
+      if (current < alternatives.content.content.length - 1) {
+        current += 1;
+        setInternalVariable(alternatives._index, current);
+      }
+      return current;
+    },
+    'shuffle': (alternatives, mode = 'sequence' ) => {
+      const SHUFFLE_VISITED_KEY = `${alternatives._index}_shuffle_visited`;
+      const LAST_VISITED_KEY = `${alternatives._index}_last_index`;
+      let visitedItems = getInternalVariable(SHUFFLE_VISITED_KEY, []);
+      const remainingOptions = alternatives.content.content.filter(a => !visitedItems.includes(a._index));
+
+      if (remainingOptions.length === 0) {
+        if (mode === 'once') {
+          return -1;
+        }
+        if (mode === 'cycle') {
+          setInternalVariable(SHUFFLE_VISITED_KEY, []);
+          return alternativeHandlers['shuffle'](alternatives, mode);
+        }
+        return getInternalVariable(LAST_VISITED_KEY, -1);
+      }
+
+      const random = Math.floor(Math.random() * remainingOptions.length);
+      const index = alternatives.content.content.indexOf(remainingOptions[random]);
+      visitedItems.push(remainingOptions[random]._index);
+
+      setInternalVariable(LAST_VISITED_KEY, index);
+      setInternalVariable(SHUFFLE_VISITED_KEY, visitedItems);
+
+      return index;
+    },
+    'shuffle sequence': (alternatives) => {
+      return alternativeHandlers['shuffle'](alternatives, 'sequence');
+    },
+    'shuffle once': (alternatives) => {
+      return alternativeHandlers['shuffle'](alternatives, 'once');
+    },
+    'shuffle cycle': (alternatives) => {
+      return alternativeHandlers['shuffle'](alternatives, 'cycle');
+    }
+  };
 
   const handleNextNode = node => (nodeHandlers[node.type] || nodeHandlers['error'])(node);
 
@@ -80,6 +153,23 @@ function Interpreter(doc) {
     };
   };
 
+  const handleAlternatives = (alternatives) => {
+    if (!alternatives._index) {
+      alternatives._index = generateIndex();
+      alternatives.content.content.forEach((c, index) => {
+        c._index = generateIndex() * 100 + index;
+      });
+    }
+
+    const next = alternativeHandlers[alternatives.mode](alternatives);
+
+    if (next === -1) {
+      return handleNextNode(stackHead().current);
+    }
+
+    return handleNextNode(alternatives.content.content[next]);
+  };
+
   const handleLineNode = (lineNode) => {
     if (!lineNode._index) {
       lineNode._index = generateIndex();
@@ -133,6 +223,26 @@ function Interpreter(doc) {
     return !!mem.access[id];
   }
 
+  const getVariable = (id) => {
+    return mem.variables[id];
+  };
+
+  const setVariable = (id, value) => {
+    mem.variables[id] = value;
+  };
+
+  const setInternalVariable = (id, value) => {
+    mem.internal[id] = value;
+  };
+
+  const getInternalVariable = (id, defaultValue) => {
+    const value = mem.internal[id];
+    if (value === undefined) {
+      return defaultValue;
+    }
+    return value;
+  };
+
   const getVisibleOptions = (options) => {
     return options.content.filter((t, index) => {
       if (!t._index) {
@@ -146,7 +256,7 @@ function Interpreter(doc) {
     (text.match(/\%([A-z0-9]*)\%/g) || [])
       .map(match => {
         const name = match.replace(/\%/g, '');
-        const value = mem.variables[name];
+        const value = getVariable(name);
         return { name: match, value };
       })
       .forEach( variable => {
@@ -166,10 +276,13 @@ function Interpreter(doc) {
       return selectOption(index)
     },
     setVariable(name, value) {
-      mem.variables[name] = value;
+      setVariable(name, value);
     },
     getVariable(name) {
-      return mem.variables[name];
+      return getVariable(name);
+    },
+    begin() {
+      initializeStack();
     }
   }
 }

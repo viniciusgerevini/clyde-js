@@ -7,10 +7,11 @@ const { Interpreter } = require('./interpreter');
 * - [ ] block divert (`-> block_name`)
 * - [ ] parent divert (`<-`). Goes to parent block, option list, or divert
 * - [ ] anchors, like in `(some_anchor)`, where we can divert like this `> some_anchor`
-* - [ ] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (`!!sequence`)
 * - [ ] line tags
 * - [ ] events: dialogue_ended, variable_changed
 * - [ ] language stuff
+*   [ ] OPTION count
+*   [ ] fix options behavior. If no divert in the end, it continues flow without going back to topic
 */
 
 describe("Interpreter", () => {
@@ -56,6 +57,7 @@ describe("Interpreter", () => {
       expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'aa' });
       expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'ab' });
       expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'c' } ] });
+      dialogue.getContent();
     });
 
     it('fails when trying to select option when in wrong state', () => {
@@ -203,6 +205,120 @@ I believe this is all
     });
   });
 
+  describe('alternatives', () => {
+    it('sequence: show alternatives in sequence and return the last one when all used', () => {
+      const parser = Parser();
+      const content = parser.parse(`[\n Hello!\n Hi!\n Hey!\n]\nYep!\n`);
+      const dialogue = Interpreter(content);
+
+      expect(dialogue.getContent().text).toEqual('Hello!');
+      expect(dialogue.getContent().text).toEqual('Yep!');
+
+      dialogue.begin();
+
+      expect(dialogue.getContent().text).toEqual('Hi!');
+      expect(dialogue.getContent().text).toEqual('Yep!');
+
+      dialogue.begin();
+
+      expect(dialogue.getContent().text).toEqual('Hey!');
+      expect(dialogue.getContent().text).toEqual('Yep!');
+
+      dialogue.begin();
+
+      expect(dialogue.getContent().text).toEqual('Hey!');
+      expect(dialogue.getContent().text).toEqual('Yep!');
+    });
+
+    it('cycle: cycle alternatives', () => {
+      const parser = Parser();
+      const content = parser.parse(`[ cycle\n Hello!\n Hi!\n Hey!\n]\n`);
+      const dialogue = Interpreter(content);
+
+      expect(dialogue.getContent().text).toEqual('Hello!');
+      dialogue.begin();
+      expect(dialogue.getContent().text).toEqual('Hi!');
+      dialogue.begin();
+      expect(dialogue.getContent().text).toEqual('Hey!');
+      dialogue.begin();
+      expect(dialogue.getContent().text).toEqual('Hello!');
+      dialogue.begin();
+      expect(dialogue.getContent().text).toEqual('Hi!');
+    });
+
+    it('once: execute each alternative once, and skip when none left', () => {
+      const parser = Parser();
+      const content = parser.parse(`[ once\n Hello!\n Hi!\n Hey!\n]\nend\n`);
+      const dialogue = Interpreter(content);
+
+      expect(dialogue.getContent().text).toEqual('Hello!');
+      dialogue.begin();
+      expect(dialogue.getContent().text).toEqual('Hi!');
+      dialogue.begin();
+      expect(dialogue.getContent().text).toEqual('Hey!');
+      dialogue.begin();
+      expect(dialogue.getContent().text).toEqual('end');
+      dialogue.begin();
+      expect(dialogue.getContent().text).toEqual('end');
+    });
+
+    test.each(['shuffle', 'shuffle sequence'])('%s: run shuffled alternatives in sequence, sticking with the last one', (mode) => {
+      const parser = Parser();
+      const content = parser.parse(`[ ${mode}\n Hello!\n Hi!\n Hey!\n]\nend\n`);
+      const dialogue = Interpreter(content);
+
+      let usedOptions = [];
+      for (let i in [0, 1, 2]) {
+        dialogue.begin();
+        const option = dialogue.getContent().text
+        expect(usedOptions).not.toContain(option);
+        usedOptions.push(option);
+      }
+      dialogue.begin();
+      expect(dialogue.getContent().text).toEqual(usedOptions[2]);
+      expect(usedOptions.join(',')).not.toEqual('Hello!,Hi!,Hey');
+    });
+
+    it('shuffle once: run each alternative once, shuffled, and skip when none left', () => {
+      const parser = Parser();
+      const content = parser.parse(`[ shuffle once\n Hello!\n Hi!\n Hey!\n]\nend\n`);
+      const dialogue = Interpreter(content);
+
+      let usedOptions = [];
+      for (let i in [0, 1, 2]) {
+        dialogue.begin();
+        const option = dialogue.getContent().text
+        expect(usedOptions).not.toContain(option);
+        usedOptions.push(option);
+      }
+      dialogue.begin();
+      expect(dialogue.getContent().text).toEqual('end');
+    });
+
+    it('shuffle cycle: show each alternative out of order and then repeat again when finished.', () => {
+      const parser = Parser();
+      const content = parser.parse(`[ shuffle cycle\n Hello!\n Hi!\n Hey!\n]\nend\n`);
+      const dialogue = Interpreter(content);
+
+      let usedOptions = [];
+      let secondRunUsedOptions = [];
+      for (let i in [0, 1, 2]) {
+        dialogue.begin();
+        const option = dialogue.getContent().text
+        expect(usedOptions).not.toContain(option);
+        usedOptions.push(option);
+      }
+
+      for (let i in [0, 1, 2]) {
+        dialogue.begin();
+        const option = dialogue.getContent().text
+        expect(secondRunUsedOptions).not.toContain(option);
+        secondRunUsedOptions.push(option);
+      }
+      expect(usedOptions.sort()).toEqual(secondRunUsedOptions.sort());
+    });
+  });
+
   describe('End of dialogue', () => {
     it('get undefined when not more lines left', () => {
       const parser = Parser();
@@ -213,6 +329,7 @@ I believe this is all
       expect(dialogue.getContent()).toBe(undefined);
     });
   });
+
 
   describe('Unknowns', () => {
     it('fails when unkown node type detected', () => {
