@@ -26,7 +26,7 @@ function Interpreter(doc) {
     'options': node => handleOptionsNode(node),
     'line': node => handleLineNode(node),
     'action_content': node => handleActionContent(node),
-    'conditional_content': node => handleConditionalContent(node),
+    'conditional_content': (node, fallback) => handleConditionalContent(node, fallback),
     'alternatives': node => handleAlternatives(node),
     'error': node => { throw new Error(`Unkown node type "${node.type}"`) }
   };
@@ -96,7 +96,7 @@ function Interpreter(doc) {
     }
   };
 
-  const handleNextNode = node => (nodeHandlers[node.type] || nodeHandlers['error'])(node);
+  const handleNextNode = (node, fallback) => (nodeHandlers[node.type] || nodeHandlers['error'])(node, fallback);
 
   const generateIndex = () => (10 * stackHead().current._index) + stackHead().contentIndex;
 
@@ -167,7 +167,7 @@ function Interpreter(doc) {
       return handleNextNode(stackHead().current);
     }
 
-    return handleNextNode(alternatives.content.content[next]);
+    return handleNextNode(alternatives.content.content[next], alternatives);
   };
 
   const handleLineNode = (lineNode) => {
@@ -187,11 +187,11 @@ function Interpreter(doc) {
     return handleNextNode(actionNode.content);
   };
 
-  const handleConditionalContent = (conditionalNode) => {
+  const handleConditionalContent = (conditionalNode, fallbackNode = stackHead().current) => {
     if (logic.checkCondition(conditionalNode.conditions)) {
       return handleNextNode(conditionalNode.content);
     }
-    return handleNextNode(stackHead().current);
+    return handleNextNode(fallbackNode);
   };
 
   const selectOption = (contentIndex) => {

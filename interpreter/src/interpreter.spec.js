@@ -317,6 +317,44 @@ I believe this is all
       }
       expect(usedOptions.sort()).toEqual(secondRunUsedOptions.sort());
     });
+
+    it('work with conditional alternatives', () => {
+      const parser = Parser();
+      const content = parser.parse(`[\n Hello!\n { someVar } Hi!\n Hey!\n]\nYep!\n`);
+      const dialogue = Interpreter(content);
+
+      expect(dialogue.getContent().text).toEqual('Hello!');
+      expect(dialogue.getContent().text).toEqual('Yep!');
+
+      dialogue.begin();
+
+      expect(dialogue.getContent().text).toEqual('Hey!');
+      expect(dialogue.getContent().text).toEqual('Yep!');
+
+      dialogue.begin();
+
+      expect(dialogue.getContent().text).toEqual('Hey!');
+      expect(dialogue.getContent().text).toEqual('Yep!');
+    });
+
+    it('work with shuffle and conditional alternatives', () => {
+      const parser = Parser();
+      const content = parser.parse(`[ shuffle cycle\n { not alreadyRun } Hello! { set alreadyRun = true}\n Hi!\n Hey!\n]\nend\n`);
+      const dialogue = Interpreter(content);
+
+      let usedOptions = [];
+      let secondRunUsedOptions = [];
+      for (let i in [0, 1, 2]) {
+        dialogue.begin();
+        usedOptions.push(dialogue.getContent().text);
+      }
+      for (let i in [0, 1, 2]) {
+        dialogue.begin();
+        secondRunUsedOptions.push(dialogue.getContent().text);
+      }
+      expect(usedOptions).toContain('Hello!');
+      expect(secondRunUsedOptions).not.toContain('Hello!');
+    });
   });
 
   describe('End of dialogue', () => {
