@@ -1,14 +1,6 @@
 const { Parser } = require('clyde-transpiler');
 const { Interpreter } = require('./interpreter');
 
-/*
-* TODO
-* - [ ] blocks (== this_is_a_block)
-* - [ ] block divert (`-> block_name`)
-* - [ ] parent divert (`<-`). Goes to parent block, option list, or divert
-* - [ ] anchors, like in `(some_anchor)`, where we can divert like this `> some_anchor`
-*/
-
 describe("Interpreter: blocks and diverts", () => {
   describe('blocks', () => {
     it('do not execute blocks by default', () => {
@@ -89,6 +81,73 @@ this is another block
       expect(dialogue.getContent().text).toEqual('this is another block');
       expect(dialogue.getContent().text).toEqual('this line should be called after block');
       expect(dialogue.getContent()).toEqual(undefined);
+    });
+
+    it('divert from block to options list', () => {
+      const parser = Parser();
+      const content = parser.parse(`
+Hello!
+>> question
+  * yes
+    -> yes_answer
+    continue
+  * no
+    -> no_answer
+<<
+end
+
+== yes_answer
+yes a!
+<-
+
+== no_answer
+no a!
+<-
+`);
+      const dialogue = Interpreter(content);
+
+      dialogue.begin();
+
+      expect(dialogue.getContent().text).toEqual('Hello!');
+      expect(dialogue.getContent().name).toEqual("question");
+      dialogue.choose(0);
+      expect(dialogue.getContent().text).toEqual('yes a!');
+      expect(dialogue.getContent().text).toEqual('continue');
+      expect(dialogue.getContent().text).toEqual('end');
+    });
+
+    it('divert back to options', () => {
+      const parser = Parser();
+      const content = parser.parse(`
+Hello!
+>> question
+  * yes
+    -> yes_answer
+    continue
+    <-
+  * no
+    -> no_answer
+<<
+end
+
+== yes_answer
+yes a!
+<-
+
+== no_answer
+no a!
+<-
+`);
+      const dialogue = Interpreter(content);
+
+      dialogue.begin();
+
+      expect(dialogue.getContent().text).toEqual('Hello!');
+      expect(dialogue.getContent().name).toEqual("question");
+      dialogue.choose(0);
+      expect(dialogue.getContent().text).toEqual('yes a!');
+      expect(dialogue.getContent().text).toEqual('continue');
+      expect(dialogue.getContent().name).toEqual("question");
     });
   });
 });

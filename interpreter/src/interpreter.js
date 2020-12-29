@@ -30,6 +30,7 @@ function Interpreter(doc) {
     'document': () => handleDocumentNode(),
     'content': node => handleContentNode(node),
     'options': node => handleOptionsNode(node),
+    'option': node => handleOptionNode(node),
     'line': node => handleLineNode(node),
     'action_content': node => handleActionContent(node),
     'conditional_content': (node, fallback) => handleConditionalContent(node, fallback),
@@ -159,7 +160,12 @@ function Interpreter(doc) {
 
   const handleDivert = (divert) => {
     if (divert.target === '<parent>') {
+
+      while (!['document', 'block', 'option', 'options'].includes(stackHead().current.type)) {
+        stack.pop();
+      }
       stack.pop();
+
       return handleNextNode(stackHead().current);
     } else {
       return handleNextNode(anchors[divert.target]);
@@ -167,13 +173,10 @@ function Interpreter(doc) {
   };
 
   const handleOptionsNode = (optionsNode) => {
-    if (stackHead().current !== optionsNode) {
+    if (!optionsNode._index) {
       optionsNode._index = generateIndex();
-      stack.push({
-        current: optionsNode,
-        contentIndex: -1
-      })
     }
+    addToStack(optionsNode);
     const options = getVisibleOptions(optionsNode);
 
     return {
@@ -186,6 +189,15 @@ function Interpreter(doc) {
         ...(t.id ?{ id: t.id }:{})
       }))
     };
+  };
+
+  const handleOptionNode = (optionNode) => {
+    // this is called when the contents inside the option
+    // were read. option list default behavior is to quit
+    // so we need to remove both option and option list from the stack.
+    stack.pop();
+    stack.pop();
+    return handleNextNode(stackHead().current);
   };
 
   const handleAlternatives = (alternatives) => {
@@ -239,10 +251,9 @@ function Interpreter(doc) {
       }
 
       setAsAccessed(content[contentIndex]._index);
-      stack.push({
-        current: content[contentIndex].content,
-        contentIndex: -1
-      })
+
+      addToStack(content[contentIndex]);
+      addToStack(content[contentIndex].content);
     } else {
       throw new Error('Nothing to select.');
     }

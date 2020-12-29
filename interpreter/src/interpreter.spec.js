@@ -3,15 +3,10 @@ const { Interpreter } = require('./interpreter');
 
 /*
 * TODO
-* - [ ] blocks (== this_is_a_block)
-* - [ ] block divert (`-> block_name`)
-* - [ ] parent divert (`<-`). Goes to parent block, option list, or divert
-* - [ ] anchors, like in `(some_anchor)`, where we can divert like this `> some_anchor`
 * - [ ] line tags
 * - [ ] events: dialogue_ended, variable_changed
 * - [ ] language stuff
 *   [ ] OPTION count
-*   [ ] fix options behavior. If no divert in the end, it continues flow without going back to topic
 *   -- to be able to notify end or knowing if there is next I'll have to perform pop on last item, and not after that
 */
 
