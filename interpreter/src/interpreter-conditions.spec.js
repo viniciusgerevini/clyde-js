@@ -1,0 +1,43 @@
+const { Parser } = require('clyde-transpiler');
+const { Interpreter } = require('./interpreter');
+
+describe("Interpreter: conditions", () => {
+  it('show only lines that meet the criteria', () => {
+    const parser = Parser();
+    const content = parser.parse(`
+Start with hp 100 {set hp = 100}
+{ hp > 90 } you should see this line.
+Set hp 90. {set hp = 90}
+{ hp > 90 } you should not see this line.
+{ hp >= 90 } but you should see this line.
+{ hp < 90 } you should not see this line here.
+{ hp <= 90 } but you should see this other line.
+{ hp == 90 } and also this line.
+{ hp != 90 } but not his one.
+{ hp == 90 and hp is 90 } this one.
+{ hp isnt 90 or hp is 90 } and this one.
+{ hp isnt 90 } maybe this one.
+{ hp == 90 and hp is 90 } and this one for sure. {set goodbye = true}
+{ goodbye } Almost there!
+{ not goodbye and goodbye } Almost...
+{ hp / 2 == 45 } It accepts mafs
+I believe this is all
+`
+    );
+    const dialogue = Interpreter(content);
+
+    expect(dialogue.getContent().text).toEqual('Start with hp 100');
+    expect(dialogue.getContent().text).toEqual('you should see this line.');
+    expect(dialogue.getContent().text).toEqual('Set hp 90.');
+    expect(dialogue.getContent().text).toEqual('but you should see this line.');
+    expect(dialogue.getContent().text).toEqual('but you should see this other line.');
+    expect(dialogue.getContent().text).toEqual('and also this line.');
+    expect(dialogue.getContent().text).toEqual('this one.');
+    expect(dialogue.getContent().text).toEqual('and this one.');
+    expect(dialogue.getContent().text).toEqual('and this one for sure.');
+    expect(dialogue.getContent().text).toEqual('Almost there!');
+    expect(dialogue.getContent().text).toEqual('It accepts mafs');
+    expect(dialogue.getContent().text).toEqual('I believe this is all');
+  });
+});
+
