@@ -7,8 +7,9 @@ function Interpreter(doc) {
   };
   const stack = [{
     current: doc,
-    index: -1
+    contentIndex: -1
   }];
+  doc._index = 1;
   const logic = LogicInterpreter(mem);
 
   const nodeHandlers = {
@@ -18,35 +19,40 @@ function Interpreter(doc) {
     'line': node => handleLineNode(node),
     'action_content': node => handleActionContent(node),
     'conditional_content': node => handleConditionalContent(node),
+    'alternatives': node => handleAlternatives(node),
     'error': node => { throw new Error(`Unkown node type "${node.type}"`) }
   }
 
   const handleNextNode = node => (nodeHandlers[node.type] || nodeHandlers['error'])(node);
 
+  const generateIndex = () => (10 * stackHead().current._index) + stackHead().contentIndex;
+
 
   const handleDocumentNode = () => {
     const node = stackHead();
-    const index = node.index + 1;
-    if (index < node.current.content.length) {
-      node.index = index
-      return handleNextNode(node.current.content[index]);
+    const contentIndex = node.contentIndex + 1;
+    if (contentIndex < node.current.content.length) {
+      node.contentIndex = contentIndex
+      return handleNextNode(node.current.content[contentIndex]);
     }
+
     stack.pop();
   }
 
   const handleContentNode = (contentNode) => {
     if (stackHead().current !== contentNode) {
+      contentNode._index = generateIndex();
       stack.push({
         current: contentNode,
-        index: -1
+        contentIndex: -1
       })
     }
 
     const node = stackHead();
-    const index = node.index + 1;
-    if (index < node.current.content.length) {
-      node.index = index
-      return handleNextNode(node.current.content[index]);
+    const contentIndex = node.contentIndex + 1;
+    if (contentIndex < node.current.content.length) {
+      node.contentIndex = contentIndex
+      return handleNextNode(node.current.content[contentIndex]);
     }
     stack.pop();
     return handleNextNode(stackHead().current);
@@ -54,12 +60,14 @@ function Interpreter(doc) {
 
   const handleOptionsNode = (optionsNode) => {
     if (stackHead().current !== optionsNode) {
+      optionsNode._index = generateIndex();
       stack.push({
         current: optionsNode,
-        index: -1
+        contentIndex: -1
       })
     }
     const options = getVisibleOptions(optionsNode);
+
     return {
       type: 'options',
       speaker: optionsNode.speaker,
@@ -73,6 +81,9 @@ function Interpreter(doc) {
   };
 
   const handleLineNode = (lineNode) => {
+    if (!lineNode._index) {
+      lineNode._index = generateIndex();
+    }
     return {
       type: 'dialogue',
       ...(lineNode.id ? { id: lineNode.id } : {}),
@@ -93,20 +104,19 @@ function Interpreter(doc) {
     return handleNextNode(stackHead().current);
   };
 
-  const selectOption = (index) => {
+  const selectOption = (contentIndex) => {
     const node = stackHead();
     if (node.current.type === 'options') {
       const content = getVisibleOptions(node.current);
 
-      if (index >= content.length) {
-        throw new Error(`Index ${index} not available.`)
+      if (contentIndex >= content.length) {
+        throw new Error(`Index ${contentIndex} not available.`)
       }
 
-      const id = createOptionIdentifier(node.current, node.current.content[index]);
-      setAsAccessed(id);
+      setAsAccessed(content[contentIndex]._index);
       stack.push({
-        current: content[index].content,
-        index: -1
+        current: content[contentIndex].content,
+        contentIndex: -1
       })
     } else {
       throw new Error('Nothing to select.');
@@ -114,10 +124,6 @@ function Interpreter(doc) {
   }
 
   const stackHead = () => stack[stack.length - 1];
-
-  const createOptionIdentifier = (parent, node) => {
-    return `${parent.name}${node.name}${parent.content.length}${node.content.content.length}`;
-  };
 
   const setAsAccessed = (id) => {
     mem.access[id] = true;
@@ -128,8 +134,11 @@ function Interpreter(doc) {
   }
 
   const getVisibleOptions = (options) => {
-    return options.content.filter((t) => {
-      return !(t.mode === 'once' && wasAlreadyAccessed(createOptionIdentifier(options, t)));
+    return options.content.filter((t, index) => {
+      if (!t._index) {
+        t._index = generateIndex() * 100 + index;
+      }
+      return !(t.mode === 'once' && wasAlreadyAccessed(t._index));
     });
   };
 

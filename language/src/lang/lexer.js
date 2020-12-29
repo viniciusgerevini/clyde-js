@@ -280,7 +280,7 @@ function lexer() {
     setLoc(this, lexeme);
 
     if (this.yytext === '') {
-      this.yytext = undefined;
+      this.yytext = 'sequence';
     } else {
       const result = this.yytext.match(/(shuffle)?(\s*(once|cycle|sequence))?/);
       if (result.length === 0 || result[0] == '') {
