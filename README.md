@@ -23,7 +23,6 @@
 - [x] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (`!!sequence`)
 - [x] option title speaker and id
 - [x] option name id
-- [ ] normalize objects .ie content in option is an object, but it's an array in other places
 - [ ] line tags
 - [ ] event trigger
 - [ ] add support to expressions to "not"

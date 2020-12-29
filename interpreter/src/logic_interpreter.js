@@ -10,6 +10,12 @@ const LogicInterpreter = (mem) => {
     'and': cond => checkCondition(cond.elements[0]) && checkCondition(cond.elements[1]),
     'or': cond => checkCondition(cond.elements[0]) || checkCondition(cond.elements[1]),
     'not': cond => !checkCondition(cond.elements[0]),
+    'mult': cond => getNodeValue(cond.elements[0]) * getNodeValue(cond.elements[1]),
+    'div': cond => getNodeValue(cond.elements[0]) / getNodeValue(cond.elements[1]),
+    'sub': cond => getNodeValue(cond.elements[0]) - getNodeValue(cond.elements[1]),
+    'add': cond => getNodeValue(cond.elements[0]) + getNodeValue(cond.elements[1]),
+    'power': cond => getNodeValue(cond.elements[0]) ** getNodeValue(cond.elements[1]),
+    'mod': cond => getNodeValue(cond.elements[0]) % getNodeValue(cond.elements[1]),
     'error': cond => { throw new Error(`Unknown expression "${cond.name}"`) }
   };
 
@@ -30,6 +36,7 @@ const LogicInterpreter = (mem) => {
     'literal': node => node.value,
     'variable': node => mem.variables[node.name],
     'assignment': node => handleAssignement(node),
+    'expression': node => checkExpression(node),
     'error': node => { throw new Error(`Unknown node "${node.type}"`) }
   };
 

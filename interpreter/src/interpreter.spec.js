@@ -99,7 +99,7 @@ describe("Interpreter", () => {
       expect(typeof dialog.getVariable('c')).toBe("number");
     });
 
-    it('set variables with right type', () => {
+    it('assign variables to other variables', () => {
       const parser = Parser();
       const content = parser.parse('a {set a="value of a", b=a}\n%b%\n');
       const dialog = Interpreter(content);
@@ -115,6 +115,36 @@ describe("Interpreter", () => {
 
       expect(dialog.getContent().text).toEqual('a');
       expect(dialog.getContent().text).toEqual('a 6 b 5 c 6');
+    });
+
+    it('perform operations', () => {
+      const parser = Parser();
+      const content = parser.parse(`
+start {set a = 100}
+multiply {set b = a * 2 }
+divide {set c = a / 2 }
+subtract {set d = a - 10 }
+add {set e = b + c }
+power {set e = a ^ 2 }
+mod {set e = 100 % 2 }
+`
+      );
+      const dialog = Interpreter(content);
+
+      expect(dialog.getContent().text).toEqual('start');
+      expect(dialog.getVariable('a')).toBe(100);
+      expect(dialog.getContent().text).toEqual('multiply');
+      expect(dialog.getVariable('b')).toBe(200);
+      expect(dialog.getContent().text).toEqual('divide');
+      expect(dialog.getVariable('c')).toBe(50);
+      expect(dialog.getContent().text).toEqual('subtract');
+      expect(dialog.getVariable('d')).toBe(90);
+      expect(dialog.getContent().text).toEqual('add');
+      expect(dialog.getVariable('e')).toBe(250);
+      expect(dialog.getContent().text).toEqual('power');
+      expect(dialog.getVariable('e')).toBe(10000);
+      expect(dialog.getContent().text).toEqual('mod');
+      expect(dialog.getVariable('e')).toBe(0);
     });
 
     it('set variables externally', () => {
@@ -152,6 +182,7 @@ Set hp 90. {set hp = 90}
 { hp == 90 and hp is 90 } and this one for sure. {set goodbye = true}
 { goodbye } Almost there!
 { not goodbye and goodbye } Almost...
+{ hp / 2 == 45 } It accepts mafs
 I believe this is all
 `
       );
@@ -167,6 +198,7 @@ I believe this is all
       expect(dialog.getContent().text).toEqual('and this one.');
       expect(dialog.getContent().text).toEqual('and this one for sure.');
       expect(dialog.getContent().text).toEqual('Almost there!');
+      expect(dialog.getContent().text).toEqual('It accepts mafs');
       expect(dialog.getContent().text).toEqual('I believe this is all');
     });
   });
