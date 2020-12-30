@@ -39,5 +39,36 @@ I believe this is all
     expect(dialogue.getContent().text).toEqual('It accepts mafs');
     expect(dialogue.getContent().text).toEqual('I believe this is all');
   });
+
+  it('use condition on options', () => {
+    const parser = Parser();
+    const content = parser.parse(`
+{set choice_count = 0 }
+>>
+  + always
+    forevaaa
+    <-
+  { choice_count < 1 } * one time
+    a { set choice_count += 1 }
+    <-
+  { choice_count < 2 } + twice
+    b { set choice_count += 1 }
+    <-
+<<
+`
+    );
+    const dialogue = Interpreter(content);
+
+    expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'always' },{ label: 'one time' }, { label: 'twice' } ] });
+    dialogue.choose(2);
+    expect(dialogue.getContent().text).toEqual('b');
+
+    expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'always' }, { label: 'twice' } ] });
+
+    dialogue.choose(1);
+    expect(dialogue.getContent().text).toEqual('b');
+
+    expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'always' }] });
+  });
 });
 

@@ -1,4 +1,5 @@
 const LogicInterpreter = (mem) => {
+  const SPECIAL_VARIABLE_NAMES = [ 'OPTIONS_COUNT' ];
 
   const expressionHandlers = {
     'equal': cond => getNodeValue(cond.elements[0]) === getNodeValue(cond.elements[1]),
@@ -26,15 +27,15 @@ const LogicInterpreter = (mem) => {
   };
 
   const operationHandlers = {
-    'assign': (name, value) => mem.variables[name] = value,
-    'add_assign': (name, value) => mem.variables[name] += value,
-    'sub_assign': (name, value) => mem.variables[name] -= value,
+    'assign': (name, value) => mem.setVariable(name, value),
+    'add_assign': (name, value) => mem.setVariable(name, mem.getVariable(name) + value),
+    'sub_assign': (name, value) => mem.setVariable(name, mem.getVariable(name) - value),
     'error': (n, v, a) => { throw new Error(`Unknown operation "${a.operation}"`) }
   };
 
   const nodeValueHandlers = {
     'literal': node => node.value,
-    'variable': node => mem.variables[node.name],
+    'variable': node => mem.getVariable(node.name),
     'assignment': node => handleAssignement(node),
     'expression': node => checkExpression(node),
     'error': node => { throw new Error(`Unknown node "${node.type}"`) }
@@ -57,11 +58,12 @@ const LogicInterpreter = (mem) => {
   const checkExpression = (condition) =>
     (expressionHandlers[condition.name] || expressionHandlers['error'])(condition);
 
-  const checkVariable = (variable) => mem.variables[variable.name];
+  const checkVariable = (variable) => mem.getVariable(variable.name);
 
   return {
     checkCondition,
-    handleAssignement
+    handleAssignement,
+    SPECIAL_VARIABLE_NAMES
   };
 };
 

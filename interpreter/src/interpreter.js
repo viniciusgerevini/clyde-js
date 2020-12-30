@@ -1,14 +1,10 @@
 const LogicInterpreter = require('./logic_interpreter');
+const Memory = require('./memory');
 
 function Interpreter(doc) {
   const anchors = {
   };
-
-  const mem = {
-    access: {},
-    variables: {},
-    internal: {}
-  };
+  const mem = Memory();
   let stack;
   const logic = LogicInterpreter(mem);
 
@@ -37,41 +33,42 @@ function Interpreter(doc) {
     'alternatives': node => handleAlternatives(node),
     'block': node => handleBlockNode(node),
     'divert': node => handleDivert(node),
+    'assignments': node => handleAssignementNode(node),
     'error': node => { throw new Error(`Unkown node type "${node.type}"`) },
   };
 
   const alternativeHandlers = {
     'cycle': (alternatives) => {
-      let current = getInternalVariable(alternatives._index, -1);
+      let current = mem.getInternalVariable(alternatives._index, -1);
       if (current < alternatives.content.content.length - 1) {
         current += 1;
       } else {
         current = 0
       }
-      setInternalVariable(alternatives._index, current);
+      mem.setInternalVariable(alternatives._index, current);
       return current;
     },
     'once': (alternatives) => {
-      const current = getInternalVariable(alternatives._index, -1);
+      const current = mem.getInternalVariable(alternatives._index, -1);
       const index = current + 1;
       if (index <= alternatives.content.content.length - 1) {
-        setInternalVariable(alternatives._index, index);
+        mem.setInternalVariable(alternatives._index, index);
         return index;
       }
       return -1;
     },
     'sequence': (alternatives) => {
-      let current = getInternalVariable(alternatives._index, -1);
+      let current = mem.getInternalVariable(alternatives._index, -1);
       if (current < alternatives.content.content.length - 1) {
         current += 1;
-        setInternalVariable(alternatives._index, current);
+        mem.setInternalVariable(alternatives._index, current);
       }
       return current;
     },
     'shuffle': (alternatives, mode = 'sequence' ) => {
       const SHUFFLE_VISITED_KEY = `${alternatives._index}_shuffle_visited`;
       const LAST_VISITED_KEY = `${alternatives._index}_last_index`;
-      let visitedItems = getInternalVariable(SHUFFLE_VISITED_KEY, []);
+      let visitedItems = mem.getInternalVariable(SHUFFLE_VISITED_KEY, []);
       const remainingOptions = alternatives.content.content.filter(a => !visitedItems.includes(a._index));
 
       if (remainingOptions.length === 0) {
@@ -79,18 +76,18 @@ function Interpreter(doc) {
           return -1;
         }
         if (mode === 'cycle') {
-          setInternalVariable(SHUFFLE_VISITED_KEY, []);
+          mem.setInternalVariable(SHUFFLE_VISITED_KEY, []);
           return alternativeHandlers['shuffle'](alternatives, mode);
         }
-        return getInternalVariable(LAST_VISITED_KEY, -1);
+        return mem.getInternalVariable(LAST_VISITED_KEY, -1);
       }
 
       const random = Math.floor(Math.random() * remainingOptions.length);
       const index = alternatives.content.content.indexOf(remainingOptions[random]);
       visitedItems.push(remainingOptions[random]._index);
 
-      setInternalVariable(LAST_VISITED_KEY, index);
-      setInternalVariable(SHUFFLE_VISITED_KEY, visitedItems);
+      mem.setInternalVariable(LAST_VISITED_KEY, index);
+      mem.setInternalVariable(SHUFFLE_VISITED_KEY, visitedItems);
 
       return index;
     },
@@ -172,20 +169,32 @@ function Interpreter(doc) {
     }
   };
 
+  const handleAssignementNode = (assignment) => {
+    assignment.assignments.forEach(logic.handleAssignement)
+    return handleNextNode(stackHead().current);
+  };
+
   const handleOptionsNode = (optionsNode) => {
     if (!optionsNode._index) {
       optionsNode._index = generateIndex();
+      mem.setInternalVariable('OPTIONS_COUNT', optionsNode.content.length);
     }
     addToStack(optionsNode);
     const options = getVisibleOptions(optionsNode);
+    mem.setInternalVariable('OPTIONS_COUNT', options.length);
+
+    if (options.length === 0) {
+      stack.pop();
+      return handleNextNode(stackHead().current);
+    }
 
     return {
       type: 'options',
       speaker: optionsNode.speaker,
       ...(optionsNode.id ?{ id: optionsNode.id }:{}),
-      name: optionsNode.name,
+      name: replaceVariables(optionsNode.name),
       options: options.map((t) => ({
-        label: t.name,
+        label: replaceVariables(t.name),
         ...(t.id ?{ id: t.id }:{})
       }))
     };
@@ -250,7 +259,8 @@ function Interpreter(doc) {
         throw new Error(`Index ${contentIndex} not available.`)
       }
 
-      setAsAccessed(content[contentIndex]._index);
+      mem.setAsAccessed(content[contentIndex]._index);
+      mem.setInternalVariable('OPTIONS_COUNT', getVisibleOptions(node.current).length);
 
       addToStack(content[contentIndex]);
       addToStack(content[contentIndex].content);
@@ -261,56 +271,41 @@ function Interpreter(doc) {
 
   const stackHead = () => stack[stack.length - 1];
 
-  const setAsAccessed = (id) => {
-    mem.access[id] = true;
-  };
-
-  const wasAlreadyAccessed = (id) => {
-    return !!mem.access[id];
-  }
-
-  const getVariable = (id) => {
-    return mem.variables[id];
-  };
-
-  const setVariable = (id, value) => {
-    mem.variables[id] = value;
-  };
-
-  const setInternalVariable = (id, value) => {
-    mem.internal[id] = value;
-  };
-
-  const getInternalVariable = (id, defaultValue) => {
-    const value = mem.internal[id];
-    if (value === undefined) {
-      return defaultValue;
-    }
-    return value;
-  };
-
   const getVisibleOptions = (options) => {
-    return options.content.filter((t, index) => {
-      if (!t._index) {
-        t._index = generateIndex() * 100 + index;
-      }
-      return !(t.mode === 'once' && wasAlreadyAccessed(t._index));
-    });
+    return options.content
+      .map((option, index) => {
+        if (!option._index) {
+          option._index = generateIndex() * 100 + index;
+        }
+        if (option.type === 'conditional_content') {
+          option.content._index = option._index;
+          if (logic.checkCondition(option.conditions)) {
+            return option.content;
+          }
+          return;
+        }
+        return option;
+      })
+      .filter((t) => {
+        return t && !(t.mode === 'once' && mem.wasAlreadyAccessed(t._index));
+      });
   };
 
   const replaceVariables = (text) => {
-    (text.match(/\%([A-z0-9]*)\%/g) || [])
-      .map(match => {
-        const name = match.replace(/\%/g, '');
-        const value = getVariable(name);
-        return { name: match, value };
-      })
-      .forEach( variable => {
-        text = text.replace(variable.name, variable.value);
-      });
+    if (text) {
+      (text.match(/\%([A-z0-9]*)\%/g) || [])
+        .map(match => {
+          const name = match.replace(/\%/g, '');
+          let value;
+          value = mem.getVariable(name);
+          return { name: match, value };
+        })
+        .forEach( variable => {
+          text = text.replace(variable.name, variable.value);
+        });
+    }
     return text;
   };
-
 
   initializeStack();
 
@@ -322,10 +317,10 @@ function Interpreter(doc) {
       return selectOption(index)
     },
     setVariable(name, value) {
-      setVariable(name, value);
+      mem.setVariable(name, value);
     },
     getVariable(name) {
-      return getVariable(name);
+      return mem.getVariable(name);
     },
     begin(blockName) {
       if (blockName) {
