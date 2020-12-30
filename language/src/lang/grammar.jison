@@ -34,7 +34,6 @@ line
   | DIVERT_PARENT NEWLINE { $$ = Divert('<parent>'); }
   | option_block
   | alternatives
-  | anchor
   | condition_statement line { $$ = ConditionalContent($1, $2) }
   | condition_statement NEWLINE { $$ = ConditionalContent($1) }
   | assignment_statement NEWLINE
@@ -77,8 +76,6 @@ options
     { $$ = $1.concat([$2]); }
   | option
     { $$ = [$1] }
-  | anchor
-    { $$ = [$1] }
   ;
 
 option
@@ -97,10 +94,6 @@ option_mode
 alternatives
   : ALTERNATIVES_START NEWLINE INDENT lines DEDENT ALTERNATIVES_END NEWLINE
     { $$ = AlternativeList($1, $4) }
-  ;
-
-anchor
-  : ANCHOR NEWLINE { $$ = Anchor($1); }
   ;
 
 condition_statement
@@ -217,10 +210,6 @@ function AlternativeList(mode, content = []) {
 
 function Divert(target) {
   return { type: 'divert', target };
-}
-
-function Anchor(name) {
-  return { type: 'anchor', name };
 }
 
 function Expression(name, elements) {

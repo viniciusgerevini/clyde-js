@@ -3,8 +3,15 @@ const { Parser } = require('../lang/parser');
 
 const parser = Parser();
 
+const createTargetFileName = (filename) => {
+  if (filename.match(/\.clyde$/)) {
+    return filename.replace(/\.clyde$/, '.json')
+  }
+  return `${filename}.json`
+};
+
 const sourceFileName = process.argv[2];
-const targetFileName = process.argv[3] || `${sourceFileName}.json`;
+const targetFileName = process.argv[3] || createTargetFileName(sourceFileName);
 
 const file = fs.readFileSync(sourceFileName, 'utf8');
 

@@ -33,7 +33,6 @@ player: This is a line with another speaker
 
 == another_block
 >>
-  - (some_anchor)
   * straight to the topic
     player: Go, johnny go.
 <<
