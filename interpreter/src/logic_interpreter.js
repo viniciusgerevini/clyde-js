@@ -1,4 +1,4 @@
-const LogicInterpreter = (mem) => {
+export const LogicInterpreter = (mem) => {
   const SPECIAL_VARIABLE_NAMES = [ 'OPTIONS_COUNT' ];
 
   const expressionHandlers = {
@@ -67,4 +67,3 @@ const LogicInterpreter = (mem) => {
   };
 };
 
-module.exports = LogicInterpreter;

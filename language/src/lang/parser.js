@@ -1,11 +1,12 @@
-const fs = require('fs');
-const { Parser } = require('jison');
+import fs from 'fs';
+import jison from 'jison';
+import { Lexer, getTokenHint } from './lexer.js';
 
-const { Lexer, getTokenHint } = require('./lexer');
+const { Parser: JisonParser } = jison;
 
-function parser() {
-  const grammar = fs.readFileSync(`${__dirname}/grammar.jison`, 'utf8');
-  const parser = new Parser(grammar);
+export function Parser() {
+  const grammar = fs.readFileSync(new URL('./grammar.jison', import.meta.url), 'utf8');
+  const parser = new JisonParser(grammar);
   parser.lexer = Lexer();
 
   parser.yy.parseError = errorHandling;
@@ -14,7 +15,7 @@ function parser() {
 }
 
 
-function errorHandling(err, hash) {
+function errorHandling(_err, hash) {
   const expected = hash.expected.map(token => getTokenHint(cleanToken(token))).join(', ');
   const token = getTokenHint(cleanToken(hash.token));
 
@@ -40,4 +41,3 @@ function cleanToken(token) {
   return token.replace(/\'/g, '');
 }
 
-module.exports = { Parser: parser };

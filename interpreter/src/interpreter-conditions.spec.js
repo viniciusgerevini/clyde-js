@@ -1,5 +1,5 @@
-const { Parser } = require('clyde-transpiler');
-const { Interpreter } = require('./interpreter');
+import { Parser } from 'clyde-transpiler';
+import { Interpreter } from './interpreter';
 
 describe("Interpreter: conditions", () => {
   it('show only lines that meet the criteria', () => {

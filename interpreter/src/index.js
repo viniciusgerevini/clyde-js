@@ -1,2 +1,1 @@
-const { Interpreter } = require('./interpreter');
-module.exports = { Interpreter };
+export { Interpreter } from './interpreter.js';

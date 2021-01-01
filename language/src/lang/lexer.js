@@ -1,4 +1,4 @@
-const Lexer = require('lex');
+import Lex from 'lex';
 
 const BASE_STATE = 0;
 const LOGIC_STATE = 2;
@@ -34,16 +34,16 @@ const hints = {
   'LINE': 'text',
 }
 
-function getTokenHint(token) {
+export function getTokenHint(token) {
   return hints[token] || token;
 }
 
-function lexer() {
+export function Lexer() {
   let indent = [0];
   let col = 1;
   let row = 1;
 
-  const lexer = new Lexer();
+  const lexer = new Lex();
 
   //comments
   lexer.addRule(/^\s*\#+.*\n+/gm, (lexeme) => {
@@ -296,12 +296,6 @@ function lexer() {
     return 'ALTERNATIVES_END';
   });
 
-  lexer.addRule(/\-\s*\([A-z|0-9]+\)/m, function (lexeme) {
-    this.yytext = lexeme.replace(/\-\s*\(([A-z|0-9]+)\)/, '$1');
-    setLoc(this, lexeme);
-    return 'ANCHOR';
-  });
-
   lexer.addRule(/\-\>\s*[A-z|0-9]+/m, function (lexeme) {
     this.yytext = lexeme.replace(/\-\>\s*/, '');
     setLoc(this, lexeme);
@@ -359,5 +353,3 @@ function lexer() {
   return lexer;
 }
 
-
-module.exports = { Lexer: lexer, getTokenHint };

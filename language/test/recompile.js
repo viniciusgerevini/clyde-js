@@ -1,5 +1,5 @@
-const fs = require('fs');
-const { Parser } = require('../src/lang/parser');
+import fs from 'fs';
+import { Parser } from '../src/lang/parser.js';
 
 const parser = Parser();
 

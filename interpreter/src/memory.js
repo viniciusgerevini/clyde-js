@@ -1,6 +1,6 @@
 const SPECIAL_VARIABLE_NAMES = [ 'OPTIONS_COUNT' ];
 
-function Memory(init) {
+export function Memory(init) {
   const mem = init || {
     access: {},
     variables: {},
@@ -46,4 +46,3 @@ function Memory(init) {
   };
 };
 
-module.exports = Memory;

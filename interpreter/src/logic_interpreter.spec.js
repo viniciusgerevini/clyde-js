@@ -1,4 +1,5 @@
-const LogicInterpreter = require('./logic_interpreter');
+import { LogicInterpreter } from './logic_interpreter';
+
 describe("Logic Interpreter", () => {
   let logic;
 

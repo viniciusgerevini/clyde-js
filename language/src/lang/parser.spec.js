@@ -1,5 +1,5 @@
-const fs = require('fs');
-const { Parser } = require('./parser');
+import fs from 'fs';
+import { Parser } from './parser';
 
 describe('Check compilation results', () => {
   const EXAMPLES_FOLDER = './test/samples/';

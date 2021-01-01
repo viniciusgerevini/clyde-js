@@ -1,0 +1,14 @@
+{
+  "name": "clyde-interpreter-cli",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "type": "module",
+  "bin": {
+    "clyde-interpreter": "./index.js"
+  }
+}

@@ -1,7 +1,7 @@
-const LogicInterpreter = require('./logic_interpreter');
-const Memory = require('./memory');
+import { LogicInterpreter } from'./logic_interpreter.js';
+import { Memory } from './memory.js';
 
-function Interpreter(doc) {
+export function Interpreter(doc) {
   const anchors = {
   };
   const mem = Memory();
@@ -332,4 +332,3 @@ function Interpreter(doc) {
   }
 }
 
-module.exports = { Interpreter }

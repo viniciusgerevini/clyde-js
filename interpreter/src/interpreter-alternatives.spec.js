@@ -1,5 +1,5 @@
-const { Parser } = require('clyde-transpiler');
-const { Interpreter } = require('./interpreter');
+import { Parser } from 'clyde-transpiler';
+import { Interpreter } from './interpreter';
 
 describe("Interpreter: alternatives", () => {
   it('sequence: show alternatives in sequence and return the last one when all used', () => {

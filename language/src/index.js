@@ -1,4 +1,2 @@
-const { Parser } = require('./lang/parser');
-
-module.exports = { Parser };
+export { Parser } from './lang/parser.js';
 

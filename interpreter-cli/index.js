@@ -1,7 +1,7 @@
-const fs = require('fs');
-const readline = require('readline');
-const { Parser } = require('clyde-transpiler');
-const { Interpreter } = require('../src/index');
+import fs from 'fs';
+import readline from 'readline';
+import { Parser } from 'clyde-transpiler';
+import { Interpreter } from 'clyde-interpreter';
 
 function execute() {
   const filename = process.argv[2];
@@ -90,6 +90,5 @@ function clearScreen() {
   readline.cursorTo(process.stdout, 0, 0);
   readline.clearScreenDown(process.stdout);
 }
-
 
 execute();
