@@ -13,12 +13,12 @@ describe("Interpreter", () => {
   describe('lines', () => {
     it('get lines', () => {
       const parser = Parser();
-      const content = parser.parse('Hello!\nHi there.\nHey.\n');
+      const content = parser.parse('Hello!\nHi there.\nHey.|tag|\n');
       const dialogue = Interpreter(content);
 
       expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hello!' });
       expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hi there.' });
-      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hey.' });
+      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hey.', tags: ['tag']});
     });
 
     it('get lines with details', () => {

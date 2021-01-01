@@ -18,17 +18,17 @@ describe("Interpreter: options", () => {
 
   it('handle sticky and normal options', () => {
     const parser = Parser();
-    const content = parser.parse('>> speaker: hello\n  * a\n   aa\n   ab\n  * b $id:abc\n   ba\n   bb\n  + c\n   ca\n   cb\n<<\n');
+    const content = parser.parse('>> speaker: hello |name_tag|\n  * a\n   aa\n   ab\n  * b $id:abc |option_tag|\n   ba\n   bb\n  + c\n   ca\n   cb\n<<\n');
     const dialogue = Interpreter(content);
 
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b', id: 'abc' }, { label: 'c' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ label: 'a' },{ label: 'b', id: 'abc', tags: [ 'option_tag' ] }, { label: 'c' } ] });
     dialogue.choose(1)
     expect(dialogue.getContent()).toEqual({ type: 'dialogue',  text: 'ba' });
     expect(dialogue.getContent()).toEqual({ type: 'dialogue',  text: 'bb' });
     expect(dialogue.getContent()).toEqual(undefined);
 
     dialogue.begin();
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' }, { label: 'c' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ label: 'a' }, { label: 'c' } ] });
     dialogue.choose(1)
 
     expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'ca' });
@@ -36,7 +36,7 @@ describe("Interpreter: options", () => {
     expect(dialogue.getContent()).toEqual(undefined);
 
     dialogue.begin();
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' }, { label: 'c' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ label: 'a' }, { label: 'c' } ] });
 
     dialogue.choose(0)
     expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'aa' });

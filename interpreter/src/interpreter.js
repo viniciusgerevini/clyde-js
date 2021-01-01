@@ -191,11 +191,14 @@ export function Interpreter(doc) {
     return {
       type: 'options',
       speaker: optionsNode.speaker,
-      ...(optionsNode.id ?{ id: optionsNode.id }:{}),
+      id: optionsNode.id,
+      tags: optionsNode.tags,
       name: replaceVariables(optionsNode.name),
       options: options.map((t) => ({
         label: replaceVariables(t.name),
-        ...(t.id ?{ id: t.id }:{})
+        speaker: t.speaker,
+        tags: t.tags,
+        id: t.id
       }))
     };
   };
@@ -232,8 +235,9 @@ export function Interpreter(doc) {
     }
     return {
       type: 'dialogue',
-      ...(lineNode.id ? { id: lineNode.id } : {}),
-      ...(lineNode.speaker ? { speaker: lineNode.speaker } : {}),
+      tags: lineNode.tags,
+      id: lineNode.id,
+      speaker: lineNode.speaker,
       text: replaceVariables(lineNode.value)
     };
   }
