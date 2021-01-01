@@ -46,6 +46,11 @@ dialogue_line
   | SPEAKER LINE LINE_ID { $$ = Line($2, $1, $3); }
   | LINE LINE_ID { $$ = Line($1, undefined, $2); }
   | LINE { $$ = Line(yytext); }
+
+  | SPEAKER LINE LINE_TAG { $$ = Line($2, $1, undefined, $3); }
+  | SPEAKER LINE LINE_ID LINE_TAG { $$ = Line($2, $1, $3, $4); }
+  | LINE LINE_ID LINE_TAG { $$ = Line($1, undefined, $2, $3); }
+  | LINE LINE_TAG { $$ = Line($1, undefined, undefined, $2); }
   ;
 
 dialogue_block
@@ -53,6 +58,10 @@ dialogue_block
     { $$ = Line($1.value + ' ' + $4.value, $1.speaker, $1.id); }
   | dialogue_line NEWLINE INDENT just_lines LINE_ID NEWLINE DEDENT
     { $$ = Line($1.value + ' ' + $4.value, $1.speaker, $5); }
+  | dialogue_line NEWLINE INDENT just_lines LINE_ID LINE_TAG NEWLINE DEDENT
+    { $$ = Line($1.value + ' ' + $4.value, $1.speaker, $5, $6); }
+  | dialogue_line NEWLINE INDENT just_lines LINE_TAG NEWLINE DEDENT
+    { $$ = Line($1.value + ' ' + $4.value, $1.speaker, undefined, $5); }
   ;
 
 just_lines
@@ -63,14 +72,8 @@ just_lines
 option_block
   : OPTION_LIST_START NEWLINE INDENT options DEDENT OPTION_LIST_END NEWLINE
     { $$ = OptionList(undefined, $4) }
-  | OPTION_LIST_START LINE NEWLINE INDENT options DEDENT OPTION_LIST_END NEWLINE
-    { $$ = OptionList($2, $5) }
-  | OPTION_LIST_START LINE LINE_ID NEWLINE INDENT options DEDENT OPTION_LIST_END NEWLINE
-    { $$ = OptionList($2, $6, $3) }
-  | OPTION_LIST_START SPEAKER LINE NEWLINE INDENT options DEDENT OPTION_LIST_END NEWLINE
-    { $$ = OptionList($3, $6, undefined, $2) }
-  | OPTION_LIST_START SPEAKER LINE LINE_ID NEWLINE INDENT options DEDENT OPTION_LIST_END NEWLINE
-    { $$ = OptionList($3, $7, $4, $2) }
+  | OPTION_LIST_START dialogue_line NEWLINE INDENT options DEDENT OPTION_LIST_END NEWLINE
+    { $$ = OptionList($2.value, $5, $2.id, $2.speaker, $2.tags) }
   ;
 
 options
@@ -81,10 +84,8 @@ options
   ;
 
 option
-  : option_mode LINE NEWLINE INDENT lines DEDENT
-    { $$ = Option($2, $1, $5) }
-  | option_mode LINE LINE_ID NEWLINE INDENT lines DEDENT
-    { $$ = Option($2, $1, $6, $3) }
+  : option_mode dialogue_line NEWLINE INDENT lines DEDENT
+    { $$ = Option($2.value, $1, $5, $2.id, $2.speaker, $2.tags) }
   | condition_statement option { $$ = ConditionalContent($1, $2) }
   ;
 
@@ -190,20 +191,20 @@ assignment_operator
 
 %%
 
-function Line(value, speaker, id) {
-  return { type: 'line', value, speaker, id };
+function Line(value, speaker, id, tags) {
+  return { type: 'line', value, speaker, id, tags };
 }
 
 function Block(blockName, content = []) {
   return { type: 'block', name: blockName, content };
 }
 
-function OptionList(name, content = [], id, speaker) {
-  return { type: 'options', name, content, id, speaker };
+function OptionList(name, content = [], id, speaker, tags) {
+  return { type: 'options', name, content, id, speaker, tags };
 }
 
-function Option(name, mode, content = [], id) {
-  return { type: 'option', name, mode, content, id };
+function Option(name, mode, content = [], id, speaker, tags) {
+  return { type: 'option', name, mode, content, id, speaker, tags };
 }
 
 function AlternativeList(mode, content = []) {

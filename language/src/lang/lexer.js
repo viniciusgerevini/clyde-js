@@ -30,6 +30,7 @@ const hints = {
   'DIVERT': '->',
   'DIVERT_PARENT': '<-',
   'LINE_ID': '$id: <line id>',
+  'LINE_TAG': '|<tags>|',
   'SPEAKER': '<speaker name>:',
   'LINE': 'text',
 }
@@ -308,10 +309,16 @@ export function Lexer() {
     return 'DIVERT_PARENT';
   });
 
-  lexer.addRule(/\$id\:\s*[^\r\n|\s]*/, function (lexeme) {
+  lexer.addRule(/\$id\:\s*[^\r\n|\s|\$]*/, function (lexeme) {
     this.yytext = lexeme.replace(/\$id\:\s*/, '');
     setLoc(this, lexeme);
     return 'LINE_ID';
+  });
+
+  lexer.addRule(/\|[^\r\n]+\|/, function (lexeme) {
+    this.yytext = lexeme.replace(/\|/g, '').split(/\s*\,\s*/);
+    setLoc(this, lexeme);
+    return 'LINE_TAG';
   });
 
   lexer.addRule(/[A-z|0-9]+\:/gm, function (lexeme) {
@@ -326,7 +333,7 @@ export function Lexer() {
     return 'LINE';
   });
 
-  lexer.addRule(/[^\r\n|\#|\$|\{]+/, function (lexeme) {
+  lexer.addRule(/[^\r\n|\#|\$|\{|\|]+/, function (lexeme) {
     this.yytext = lexeme.trim();
     setLoc(this, lexeme);
     return 'LINE';

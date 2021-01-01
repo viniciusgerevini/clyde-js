@@ -23,7 +23,7 @@
 - [x] alternatives with mode: sequence, only one, execute once each, execute cycle, execute random (`!!sequence`)
 - [x] option title speaker and id
 - [x] option name id
-- [ ] line tags
+- [x] line tags
 - [ ] event trigger
 - [ ] add support to expressions to "not" (maybe)
 - [ ] special divert to end dialog -> END

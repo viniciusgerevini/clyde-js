@@ -9,7 +9,7 @@ NPC: This is a dialogue with speaker and id $id: SCENE_1_LINE001
 player: This is a line with another speaker
 >>
   * this is the first topic
-    NPC: just a normal line inside the topic
+    NPC: just a normal line inside the topic |sad, happy, some_tag|
     player: another line inside the first topic
   * the second topic
     player: a line in the second topic, with speaker defined.
@@ -66,8 +66,8 @@ player: This is a line with another speaker
 ]
 
 [ shuffle
-  This is the first time I talk to you
-  This is the second time I talk to you
+  This is the first time I talk to you |test, tag|
+  "This is the second time I talk to you |test|"
   Well, I lost count already.
 ]
 
