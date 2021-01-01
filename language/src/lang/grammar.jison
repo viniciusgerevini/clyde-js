@@ -51,6 +51,8 @@ dialogue_line
 dialogue_block
   : dialogue_line NEWLINE INDENT just_lines NEWLINE DEDENT
     { $$ = Line($1.value + ' ' + $4.value, $1.speaker, $1.id); }
+  | dialogue_line NEWLINE INDENT just_lines LINE_ID NEWLINE DEDENT
+    { $$ = Line($1.value + ' ' + $4.value, $1.speaker, $5); }
   ;
 
 just_lines

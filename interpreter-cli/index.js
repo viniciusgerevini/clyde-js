@@ -6,6 +6,7 @@ import { Interpreter } from 'clyde-interpreter';
 function execute() {
   const filename = process.argv[2];
   // TODO
+  // - provide block name
   // - notify file name not provided
   // - options to not clear screen
   // - option to not end dialog and allow retries
