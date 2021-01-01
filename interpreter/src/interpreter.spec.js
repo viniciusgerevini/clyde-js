@@ -6,7 +6,6 @@ const { Interpreter } = require('./interpreter');
 * - [ ] line tags
 * - [ ] events: dialogue_ended, variable_changed
 * - [ ] language stuff
-*   [ ] OPTION count
 *   -- to be able to notify end or knowing if there is next I'll have to perform pop on last item, and not after that
 */
 

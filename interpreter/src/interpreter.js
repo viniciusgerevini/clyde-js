@@ -200,7 +200,7 @@ function Interpreter(doc) {
     };
   };
 
-  const handleOptionNode = (optionNode) => {
+  const handleOptionNode = (_optionNode) => {
     // this is called when the contents inside the option
     // were read. option list default behavior is to quit
     // so we need to remove both option and option list from the stack.
@@ -261,7 +261,7 @@ function Interpreter(doc) {
 
       mem.setAsAccessed(content[contentIndex]._index);
       mem.setInternalVariable('OPTIONS_COUNT', getVisibleOptions(node.current).length);
-
+      content[contentIndex].content._index = content[contentIndex]._index;
       addToStack(content[contentIndex]);
       addToStack(content[contentIndex].content);
     } else {
