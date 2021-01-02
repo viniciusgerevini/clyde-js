@@ -1,13 +1,6 @@
 import { Parser } from 'clyde-transpiler';
 import { Interpreter } from './interpreter';
 
-/*
-* TODO
-* - [ ] events: dialogue_ended, variable_changed
-* - [ ] language stuff
-*   -- to be able to notify end or knowing if there is next I'll have to perform pop on last item, and not after that
-*/
-
 describe("Interpreter", () => {
   describe('lines', () => {
     it('get lines', () => {
@@ -123,6 +116,58 @@ result is %someVar%
     });
   });
 
+  describe('translation', () => {
+    it('define dictionary and bring keys from it when available', () => {
+      const dictionary = {
+        abc: 'this is a replacement',
+        ghi: 'replaced',
+        jkl: 'replaced 2',
+        mno: 'replaced 3',
+      };
+
+      const parser = Parser();
+      const content = parser.parse(`
+This will not be replaced
+This should be replaced $id: abc
+This will not be replaced either $id: def
+>> replace $id: ghi
+  * replace $id: jkl
+    <-
+<<
+[
+  replace $id: mno
+]
+`);
+      const dialogue = Interpreter(content, undefined, dictionary);
+      expect(dialogue.getContent().text).toEqual('This will not be replaced');
+      expect(dialogue.getContent().text).toEqual('this is a replacement');
+      expect(dialogue.getContent().text).toEqual('This will not be replaced either');
+      expect(dialogue.getContent()).toEqual({ id: 'ghi', type: 'options', name: 'replaced', options: [{ id: 'jkl', label: 'replaced 2' }]});
+      dialogue.choose(0);
+      expect(dialogue.getContent().text).toEqual('replaced 3');
+    });
+
+    it('load dictionaries on runtime', () => {
+      const dictionaryFR  = { abc: 'Bonjour' };
+      const dictionaryES  = { abc: 'Hola' };
+      const dictionaryPT  = { abc: 'Olá' };
+
+      const parser = Parser();
+      const content = parser.parse(`Hello $id: abc\n`);
+      const dialogue = Interpreter(content, undefined);
+      expect(dialogue.getContent().text).toEqual('Hello');
+      dialogue.begin();
+      dialogue.loadDictionary(dictionaryFR);
+      expect(dialogue.getContent().text).toEqual('Bonjour');
+      dialogue.begin();
+      dialogue.loadDictionary(dictionaryES);
+      expect(dialogue.getContent().text).toEqual('Hola');
+
+      dialogue.begin();
+      dialogue.loadDictionary(dictionaryPT);
+      expect(dialogue.getContent().text).toEqual('Olá');
+    });
+  });
 
   describe('Unknowns', () => {
     it('fails when unkown node type detected', () => {

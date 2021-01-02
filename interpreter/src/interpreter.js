@@ -4,7 +4,8 @@ import { Events, events } from './events.js';
 
 export { events } from './events.js';
 
-export function Interpreter(doc, data) {
+export function Interpreter(doc, data, dictionary = {}) {
+  let textDictionary = dictionary;
   const anchors = {
   };
   const listeners = Events();
@@ -197,9 +198,9 @@ export function Interpreter(doc, data) {
       speaker: optionsNode.speaker,
       id: optionsNode.id,
       tags: optionsNode.tags,
-      name: replaceVariables(optionsNode.name),
+      name: replaceVariables(translateText(optionsNode.name, optionsNode.id)),
       options: options.map((t) => ({
-        label: replaceVariables(t.name),
+        label: replaceVariables(translateText(t.name, t.id)),
         speaker: t.speaker,
         tags: t.tags,
         id: t.id
@@ -242,7 +243,7 @@ export function Interpreter(doc, data) {
       tags: lineNode.tags,
       id: lineNode.id,
       speaker: lineNode.speaker,
-      text: replaceVariables(lineNode.value)
+      text: replaceVariables(translateText(lineNode.value, lineNode.id))
     };
   }
 
@@ -299,6 +300,13 @@ export function Interpreter(doc, data) {
       });
   };
 
+  const translateText = (text, id) => {
+    if (id && textDictionary[id]) {
+      return textDictionary[id];
+    }
+    return text;
+  };
+
   const replaceVariables = (text) => {
     if (text) {
       (text.match(/\%([A-z0-9]*)\%/g) || [])
@@ -330,6 +338,9 @@ export function Interpreter(doc, data) {
     },
     loadData(data) {
       mem.load(data);
+    },
+    loadDictionary(dictionary) {
+      textDictionary = dictionary;
     },
     getContent() {
       return handleNextNode(stackHead().current)
