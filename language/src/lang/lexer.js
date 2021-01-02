@@ -65,7 +65,6 @@ export function Lexer() {
 
     if (indentation > indent[0]) {
         indent.unshift(indentation);
-        console.log('INDENT');
         return 'INDENT';
     }
 
@@ -73,7 +72,6 @@ export function Lexer() {
 
     while (indentation < indent[0]) {
         tokens.push('DEDENT'); indent.shift(); }
-    console.log(tokens)
     if (tokens.length) return tokens;
   });
 
