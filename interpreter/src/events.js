@@ -1,10 +1,12 @@
 export const events = {
   VARIABLE_CHANGED: 'variable_changed',
+  EVENT_TRIGGERED: 'event_triggered'
 };
 
 export function Events() {
   const listeners = {
     [events.VARIABLE_CHANGED]: [],
+    [events.EVENT_TRIGGERED]: [],
   };
 
   return {

@@ -52,6 +52,19 @@ describe("Interpreter", () => {
 
       setTimeout(() => done(), 100);
     });
+
+    it('trigger dialogue event', (done) => {
+      const parser = Parser();
+      const content = parser.parse('Hi!{ trigger some_event }\n');
+      const dialogue = Interpreter(content);
+
+      dialogue.on(dialogue.events.EVENT_TRIGGERED, (data) => {
+        expect(data).toEqual({ name:'some_event' });
+        done();
+      });
+
+      dialogue.getContent()
+    });
   });
 
   describe('persistence', () => {

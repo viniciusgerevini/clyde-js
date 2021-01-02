@@ -248,7 +248,11 @@ export function Interpreter(doc, data, dictionary = {}) {
   }
 
   const handleActionContent = (actionNode) => {
-    actionNode.action.assignments.forEach(logic.handleAssignement)
+    if (actionNode.action.type === 'event') {
+      listeners.triggerEvent(listeners.events.EVENT_TRIGGERED, { name: actionNode.action.name });
+    } else {
+      actionNode.action.assignments.forEach(logic.handleAssignement)
+    }
     return handleNextNode(actionNode.content);
   };
 
