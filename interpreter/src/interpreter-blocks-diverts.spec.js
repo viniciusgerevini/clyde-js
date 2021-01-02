@@ -149,6 +149,23 @@ no a!
       expect(dialogue.getContent().text).toEqual('continue');
       expect(dialogue.getContent().name).toEqual("question");
     });
+
+    it('end dialogue', () => {
+      const parser = Parser();
+      const content = parser.parse(`
+Hello!
+-> END
+this will never be seeing
+`);
+      const dialogue = Interpreter(content);
+
+      dialogue.begin();
+
+      expect(dialogue.getContent().text).toEqual('Hello!');
+      expect(dialogue.getContent()).toEqual(undefined);
+      expect(dialogue.getContent()).toEqual(undefined);
+    });
+
   });
 });
 

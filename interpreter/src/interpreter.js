@@ -169,6 +169,9 @@ export function Interpreter(doc, data, dictionary = {}) {
       stack.pop();
 
       return handleNextNode(stackHead().current);
+    } else if (divert.target === '<end>') {
+      initializeStack();
+      stackHead().contentIndex = stackHead().current.content.length;
     } else {
       return handleNextNode(anchors[divert.target]);
     }
