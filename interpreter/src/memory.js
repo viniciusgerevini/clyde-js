@@ -1,6 +1,6 @@
 const SPECIAL_VARIABLE_NAMES = [ 'OPTIONS_COUNT' ];
 
-export function Memory(init) {
+export function Memory(listeners, init) {
   const mem = init || {
     access: {},
     variables: {},
@@ -29,6 +29,7 @@ export function Memory(init) {
     },
 
     setVariable(id, value) {
+      listeners.triggerEvent(listeners.events.VARIABLE_CHANGED, { name: id, value });
       return mem.variables[id] = value;
     },
 

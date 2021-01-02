@@ -1,10 +1,14 @@
 import { LogicInterpreter } from'./logic_interpreter.js';
 import { Memory } from './memory.js';
+import { Events, events } from './events.js';
+
+export { events } from './events.js';
 
 export function Interpreter(doc) {
   const anchors = {
   };
-  const mem = Memory();
+  const listeners = Events();
+  const mem = Memory(listeners);
   let stack;
   const logic = LogicInterpreter(mem);
 
@@ -314,6 +318,13 @@ export function Interpreter(doc) {
   initializeStack();
 
   return {
+    events,
+    on(eventName, callback) {
+      return listeners.addListener(eventName, callback);
+    },
+    off(eventName, callback) {
+      listeners.removeListener(eventName, callback);
+    },
     getContent() {
       return handleNextNode(stackHead().current)
     },
