@@ -89,13 +89,19 @@ export function Lexer() {
     return '}';
   }, [ LOGIC_STATE ]);
 
-  lexer.addRule(/\s+/gm, (lexeme) => {
+  lexer.addRule(/\s+/gm, (_lexeme) => {
   }, [ LOGIC_STATE ]);
 
   lexer.addRule(/set/, function (lexeme) {
     this.yytext = lexeme;
     setLoc(this, lexeme);
     return 'set';
+  }, [ LOGIC_STATE ]);
+
+  lexer.addRule(/trigger/, function (lexeme) {
+    this.yytext = lexeme;
+    setLoc(this, lexeme);
+    return 'trigger';
   }, [ LOGIC_STATE ]);
 
   lexer.addRule(/(\,)/i, function (lexeme) {

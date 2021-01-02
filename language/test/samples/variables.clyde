@@ -22,6 +22,9 @@
 { set a += "hello" }
 { set a -= 4 ^ 2 }
 
+trigger {trigger some_event}
+{trigger another_event}
+
 hey you { set a -= 4, b=1, c = "hello" }
 
 { first_time > 0 } "hey {you}" {set a = 4}

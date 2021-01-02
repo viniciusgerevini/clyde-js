@@ -24,7 +24,7 @@
 - [x] option title speaker and id
 - [x] option name id
 - [x] line tags
-- [ ] event trigger
+- [x] event trigger
 - [ ] add support to expressions to "not" (maybe)
 - [ ] special divert to end dialog -> END
 

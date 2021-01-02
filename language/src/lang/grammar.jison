@@ -36,8 +36,8 @@ line
   | alternatives
   | condition_statement line { $$ = ConditionalContent($1, $2) }
   | condition_statement NEWLINE { $$ = ConditionalContent($1) }
-  | assignment_statement NEWLINE
-  | dialogue_line assignment_statement NEWLINE { $$ = ActionContent($2, $1) }
+  | action_statement NEWLINE
+  | dialogue_line action_statement NEWLINE { $$ = ActionContent($2, $1) }
   | dialogue_block
   ;
 
@@ -101,6 +101,15 @@ alternatives
 
 condition_statement
   : '{' logical_or_expression '}' { $$ = $2 }
+  ;
+
+action_statement
+  : trigger_statement
+  | assignment_statement
+  ;
+
+trigger_statement
+  : '{' 'trigger' VARIABLE '}' { $$ = Event($3) }
   ;
 
 assignment_statement
@@ -237,6 +246,10 @@ function ActionContent(action, content) {
 
 function Variable(name) {
   return { type: 'variable', name };
+}
+
+function Event(name) {
+  return { type: 'event', name };
 }
 
 function Literal(name, value) {
