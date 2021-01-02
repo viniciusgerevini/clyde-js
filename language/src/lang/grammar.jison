@@ -221,6 +221,9 @@ function AlternativeList(mode, content = []) {
 }
 
 function Divert(target) {
+  if (target === 'END') {
+    target = '<END>';
+  }
   return { type: 'divert', target };
 }
 

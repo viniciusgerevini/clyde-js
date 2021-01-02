@@ -12,6 +12,7 @@ npc: what do you want to talk about?
   * Goodbye!
     -> goodbye
 <<
+-> END
 
 == about_life
 player: I want to talk about life!
