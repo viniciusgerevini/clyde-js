@@ -4,11 +4,11 @@ import { Events, events } from './events.js';
 
 export { events } from './events.js';
 
-export function Interpreter(doc) {
+export function Interpreter(doc, data) {
   const anchors = {
   };
   const listeners = Events();
-  const mem = Memory(listeners);
+  const mem = Memory(listeners, data);
   let stack;
   const logic = LogicInterpreter(mem);
 
@@ -324,6 +324,12 @@ export function Interpreter(doc) {
     },
     off(eventName, callback) {
       listeners.removeListener(eventName, callback);
+    },
+    getData() {
+      return mem.getAll();
+    },
+    loadData(data) {
+      mem.load(data);
     },
     getContent() {
       return handleNextNode(stackHead().current)

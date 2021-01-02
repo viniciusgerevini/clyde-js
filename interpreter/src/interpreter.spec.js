@@ -61,6 +61,57 @@ describe("Interpreter", () => {
     });
   });
 
+  describe('persistence', () => {
+    it('get all data and start new instance with right state', () =>{
+      const parser = Parser();
+      const content = parser.parse(`
+>>
+  * a
+    Hi!{ set someVar = 1 }
+  * b
+    hello %someVar%
+<<
+`);
+      const dialogue = Interpreter(content);
+
+      expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'a' }, { label: 'b' }] });
+      dialogue.choose(0);
+      expect(dialogue.getContent().text).toEqual('Hi!');
+
+      const newDialogue = Interpreter(content, dialogue.getData());
+
+      expect(newDialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'b' }] });
+      newDialogue.choose(0);
+      expect(newDialogue.getContent().text).toEqual('hello 1');
+    });
+
+    it('get all data and load in another instance', () =>{
+      const parser = Parser();
+      const content = parser.parse(`
+>>
+  * a
+    set as 1!{ set someVar = 1 }
+  * b
+    set as 2!{ set someVar = 2 }
+<<
+result is %someVar%
+`);
+      const dialogue = Interpreter(content);
+      const anotherDialogue = Interpreter(content);
+
+      expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'a' }, { label: 'b' }] });
+      expect(anotherDialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'a' }, { label: 'b' }] });
+      dialogue.choose(0);
+      anotherDialogue.choose(1);
+      expect(dialogue.getContent().text).toEqual('set as 1!');
+      expect(anotherDialogue.getContent().text).toEqual('set as 2!');
+
+      anotherDialogue.loadData(dialogue.getData());
+
+      expect(anotherDialogue.getContent().text).toEqual('result is 1');
+    });
+  });
+
   describe('End of dialogue', () => {
     it('get undefined when not more lines left', () => {
       const parser = Parser();

@@ -1,7 +1,7 @@
 const SPECIAL_VARIABLE_NAMES = [ 'OPTIONS_COUNT' ];
 
 export function Memory(listeners, init) {
-  const mem = init || {
+  let mem = init || {
     access: {},
     variables: {},
     internal: {}
@@ -43,6 +43,14 @@ export function Memory(listeners, init) {
         return defaultValue;
       }
       return value;
+    },
+
+    getAll() {
+      return mem;
+    },
+
+    load(data) {
+      mem = data;
     },
   };
 };
