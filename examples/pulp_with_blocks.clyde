@@ -101,4 +101,5 @@ Vincent: I seen 'em do it. And I don't mean a little bit
          on the side of the plate, they freakin' drown 'em in it.
 Jules: Uuccch!
 { set europeTopicsTalked += 1}
+{ trigger something }
 <-

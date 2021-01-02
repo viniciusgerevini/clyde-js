@@ -39,6 +39,7 @@ export function Interpreter(doc, data, dictionary = {}) {
     'block': node => handleBlockNode(node),
     'divert': node => handleDivert(node),
     'assignments': node => handleAssignementNode(node),
+    'event': node => handleEventNode(node),
     'error': node => { throw new Error(`Unkown node type "${node.type}"`) },
   };
 
@@ -179,6 +180,11 @@ export function Interpreter(doc, data, dictionary = {}) {
 
   const handleAssignementNode = (assignment) => {
     assignment.assignments.forEach(logic.handleAssignement)
+    return handleNextNode(stackHead().current);
+  };
+
+  const handleEventNode = (event) => {
+    listeners.triggerEvent(listeners.events.EVENT_TRIGGERED, { name: event.name });
     return handleNextNode(stackHead().current);
   };
 
