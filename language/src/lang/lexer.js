@@ -51,6 +51,32 @@ export function Lexer() {
     row += countLineBreaks(lexeme);
   });
 
+  lexer.addRule(/\n+/, function (lexeme) {
+      row += lexeme.length;
+      col = 1
+      lexer.yylineno = row;
+      return 'NEWLINE';
+  });
+
+  lexer.addRule(/^[\t ]*/gm, function (lexeme) {
+    let indentation = lexeme.length;
+
+    col += indentation
+
+    if (indentation > indent[0]) {
+        indent.unshift(indentation);
+        console.log('INDENT');
+        return 'INDENT';
+    }
+
+    var tokens = [];
+
+    while (indentation < indent[0]) {
+        tokens.push('DEDENT'); indent.shift(); }
+    console.log(tokens)
+    if (tokens.length) return tokens;
+  });
+
   lexer.addRule(/\{/, function (lexeme) {
     this.yytext = lexeme;
     this.state = LOGIC_STATE;
@@ -218,30 +244,6 @@ export function Lexer() {
     return 'VARIABLE';
   }, [ LOGIC_STATE ]);
 
-  lexer.addRule(/\n+/, function (lexeme) {
-      row += lexeme.length;
-      col = 1
-      lexer.yylineno = row;
-      return 'NEWLINE';
-  });
-
-  lexer.addRule(/^[\t ]*/gm, function (lexeme) {
-    let indentation = lexeme.length;
-
-    col += indentation
-
-    if (indentation > indent[0]) {
-        indent.unshift(indentation);
-        return 'INDENT';
-    }
-
-    var tokens = [];
-
-    while (indentation < indent[0]) {
-        tokens.push('DEDENT'); indent.shift(); }
-
-    if (tokens.length) return tokens;
-  });
 
   lexer.addRule(/\s+/gm, (lexeme) => {
   });
