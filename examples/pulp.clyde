@@ -1,8 +1,7 @@
 # Pulp Fiction: Jules and Vincent first car scene.
 # adapted for showing off features.
 
-{ not introductionMade } Jules: Okay now, tell me about that. { set introductionMade =  true }
-{ set europeTopicsTalked = 0 }
+{ not introductionMade } Jules: Okay now, tell me about that. { set introductionMade =  true, europeTopicsTalked = 0 }
 >> Vincent: What do you want to know?
   * Is hash legal there?
     Jules: is hash legal there?

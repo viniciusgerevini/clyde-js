@@ -1,10 +1,9 @@
 # Pulp Fiction: Jules and Vincent first car scene.
 # adapted for showing off features.
 
-{ not introductionMade } Jules: Okay now, tell me about that. { set introductionMade =  true }
-{ set europeTopicsTalked = 0 }
->> Vincent: What do you want to know?
-  * Is hash legal there?
+{ not introductionMade } Jules: Okay now, tell me about that. { set introductionMade =  true, europeTopicsTalked = 0 }
+>> Vincent: What do you want to know? $id: 123
+  * Is hash legal there? $id: 456
     -> about_hash
     <-
   { europeTopicsTalked < 4 } + Something about Europe.
@@ -20,7 +19,7 @@
 Jules: Enough talk. Let's get to work!
 
 == about_hash
-Jules: is hash legal there?
+Jules: is hash legal there? $id: 678 |something,wat|
 Vincent: yes, but is ain't a hundred percent legal.
          I mean you can't walk into a restaurant, roll a joint,
          and start puffin' away. You're only supposed to smoke in

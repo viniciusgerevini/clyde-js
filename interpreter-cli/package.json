@@ -10,5 +10,8 @@
   "type": "module",
   "bin": {
     "clyde-interpreter": "./index.js"
+  },
+  "dependencies": {
+    "yargs": "^16.2.0"
   }
 }
