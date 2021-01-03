@@ -1,0 +1,77 @@
+# Clyde Editor
+
+### TODO
+- [ ] interface
+    - [ ] docks, undock (desktop only)
+    - [ ] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
+    - [ ] full screen
+    - [ ] zen mode
+    - [ ] help screen
+    - [ ] sync interpreter and editor file
+    - [ ] ctrl + p: file navigation
+    - [ ] ctrl + p: command navigation
+- [ ] interpreter
+    - [ ] action bar: play, reset, clean
+    - [ ] show debug bottom pane
+    - [ ] options menu: 'verbose, persistent, etc'
+    - [ ] scroll
+    - [ ] mouse support
+    - [ ] keyboard support
+    - [ ] text only mode
+    - [ ] dialog bubbles mode
+    - [ ] watch mode
+    - [ ] interpreter only view
+    - [ ] tabs? multi files open
+    - [ ] show current position on editor
+- [ ] editor
+    - [ ] read only
+    - [ ] show invisibles
+    - [ ] vim mode/ emacs mode
+    - [ ] create clyde syntax mode
+    - [ ] auto complete?
+    - [ ] go to definition?
+    - [ ] line wrap?
+    - [ ] theme, dark or light mode
+    - [ ]  soft tabs
+    - [ ]  hightligh current line
+    - [ ] zen mode?
+    - [ ] can we change the generated document incrementally???
+- [ ] file tree [desktop only. Maybe we can list open tabs without saving]http://storybookjs.github.io/react-treebeard/
+    - [ ] open in a new window
+    - [ ] show current folder
+    - [ ] open folder
+    - [ ] open file
+    - [ ] switch files
+    - [ ] rename files
+    - [ ] toggle tree
+    - [ ] run file
+    - [ ] compile file
+    - [ ] search
+- [ ] translator
+    - [ ] auto generate ids
+    - [ ] generate ids buttom
+    - [ ] translation editor
+    - [ ] generate clyde file using dictionary
+    - [ ] define translation folder
+    - [ ] save translation per file
+    - [ ] save global dictionary file
+    - [ ] add new dictionaries
+- [ ] configuration
+    - [ ] editor configuration file
+    - [ ] project configuration file
+    - [ ] key binds
+- [ ] CLI
+    - [ ] compile file
+    - [ ] run interpreter command line
+    - [ ] start gui interpreter only
+    - [ ] start gui editor
+- [ ] reverse parser
+    - [ ] transform JSON into clyde
+- [ ] extras
+    - [ ] autosave
+    - [ ] new version notification
+- [ ]  desktop app
+    - [ ] electron wrapper
+
+
+
