@@ -1,5 +1,6 @@
-import { Parser } from 'clyde-parser';
-import { Interpreter } from './interpreter';
+'use strict';
+const { Parser } = require('clyde-parser');
+const { Interpreter } = require('./interpreter');
 
 describe("Interpreter: options", () => {
 

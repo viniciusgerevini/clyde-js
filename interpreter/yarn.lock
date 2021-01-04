@@ -143,7 +143,7 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.12.10", "@babel/parser@^7.12.11", "@babel/parser@^7.12.7":
+"@babel/parser@^7.1.0", "@babel/parser@^7.12.10", "@babel/parser@^7.12.11", "@babel/parser@^7.12.5", "@babel/parser@^7.12.7":
   version "7.12.11"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.12.11.tgz#9ce3595bcd74bc5c466905e86c535b8b25011e79"
   integrity sha512-N3UxG+uuF4CMYoNj8AhnbAcJF0PiuJ9KHuy1lQmkYsxTer/MAH9UBNHsBoAX/4s6NvlDD047No8mYVGGzLL4hg==
@@ -671,6 +671,13 @@ array-unique@^0.3.2:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/array-unique/-/array-unique-0.3.2.tgz#a894b75d4bc4f6cd679ef3244a9fd8f46ae2d428"
   integrity sha1-qJS3XUvE9s1nnvMkSp/Y9Gri1Cg=
+
+ascjs@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/ascjs/-/ascjs-4.0.3.tgz#f94958a6d33c357c59e8be231445f6a3187e5888"
+  integrity sha512-/7SR1DegZHIx0CCL130D/jpgyjBffRzdt0YDtMO8uLcNnXDeEplffmRxP4bw4+ieNzNsWHaG40KEe1SVC3EKcA==
+  dependencies:
+    "@babel/parser" "^7.12.5"
 
 asn1@~0.2.3:
   version "0.2.4"
