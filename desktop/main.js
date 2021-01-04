@@ -1,11 +1,7 @@
 const { app, BrowserWindow } = require('electron')
 const yargs = require('yargs/yargs');
 
-// FIXME hacky solution until electron implements esm support
-const interpreter = (async () => {
-    const {execute, buildArgsParser} = await import('clyde-interpreter-cli');
-    return { execute, buildArgsParser };
-})();
+const {execute, buildArgsParser} = require('clyde-interpreter-cli');
 
 let isInCliMode = false;
 
@@ -42,7 +38,6 @@ app.on('ready', async () => {
   if (process.argv[0].includes('electron')) {
     argv = process.argv.slice(2);
   }
-  const { buildArgsParser } = await interpreter;
 
    yargs(argv)
     .usage('Usage: $0 [options] [file path]')
@@ -59,7 +54,6 @@ function executeGUI() {
 }
 
 async function executeInterpreter() {
-  const { execute } = await interpreter;
   isInCliMode = true;
   try {
     await execute(process.argv.slice(3), () => app.quit());
