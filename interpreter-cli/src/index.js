@@ -1,7 +1,7 @@
 import fs from 'fs';
 import readline from 'readline';
 import yargs from 'yargs';
-import { Parser } from 'clyde-transpiler';
+import { Parser } from 'clyde-parser';
 import { Interpreter } from 'clyde-interpreter';
 
 export async function execute(args, exitCallback = process.exit, commandName) {
