@@ -5,11 +5,11 @@
   "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node ./index.js"
+    "start": "node ./cli.js"
   },
   "type": "module",
   "bin": {
-    "clyde-interpreter": "./index.js"
+    "clyde-interpreter": "./cli.js"
   },
   "dependencies": {
     "yargs": "^16.2.0"

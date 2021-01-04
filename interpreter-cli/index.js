@@ -4,16 +4,15 @@ import yargs from 'yargs';
 import { Parser } from 'clyde-transpiler';
 import { Interpreter } from 'clyde-interpreter';
 
-
-async function execute() {
-  const argv = parseArguments();
+export async function execute(args, exitCallback = process.exit, commandName) {
+  const argv = parseArguments(commandName, args);
   const filename = argv.file;
   const events = [];
   const dictionary = argv.translation ? await getTranslationDictionary(argv.translation) : undefined;
   const data = argv['save-data'] ? loadSaveFile(argv['save-data']) : undefined;
 
   const dialogue = Interpreter(getContent(filename), data, dictionary);
-  const handlers = inputHandlers(dialogue, argv, events);
+  const handlers = inputHandlers(dialogue, argv, events, exitCallback);
 
   dialogue.begin(argv.block);
 
@@ -40,12 +39,12 @@ async function execute() {
     }
   });
 
-  process.on('beforeExit', function() {
+  rl.on('SIGINT', () => {
     handlers['exit']();
   });
 }
 
-const inputHandlers = (dialogue, args, events) => {
+const inputHandlers = (dialogue, args, events, exitCallback) => {
   const argv = args;
   let currentOptions;
 
@@ -58,7 +57,7 @@ const inputHandlers = (dialogue, args, events) => {
   return {
     exit: () => {
       saveIfRequired();
-      process.exit();
+      exitCallback();
     },
     help: () => {
       printInputInstructions();
@@ -86,7 +85,8 @@ const inputHandlers = (dialogue, args, events) => {
           printDebugInfo(events);
         }
         saveIfRequired();
-        process.exit();
+        exitCallback();
+        return;
       }
 
       if (content.type === 'options') {
@@ -103,9 +103,13 @@ const inputHandlers = (dialogue, args, events) => {
   };
 };
 
-const parseArguments = () => {
-  const argv = yargs(process.argv.slice(2))
-    .usage('Usage: clyde-interpreter [options] <file path>')
+const parseArguments = (commandName, args) => {
+  return buildArgsParser(yargs(args), commandName)
+};
+
+export const buildArgsParser = (yargs, commandName = '$0') => {
+  const argv = yargs
+    .usage(`Usage: ${commandName} [options] <file path>`)
     .check((argv, _options) => {
       if (argv._.length === 0 && !argv.file) {
         throw new Error("File not provided.");
@@ -302,5 +306,3 @@ function trackInternalChanges(dataType, events) {
     }
   };
 }
-
-execute();
