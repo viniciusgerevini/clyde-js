@@ -14,7 +14,11 @@ function createWindow () {
     }
   })
 
-  win.loadFile('index.html')
+  if (app.isPackaged) {
+    win.loadFile('build/index.html')
+  } else {
+    win.loadURL('http://localhost:3000');
+  }
 }
 
 app.on('window-all-closed', () => {
