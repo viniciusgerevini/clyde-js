@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const { Parser } = require('clyde-parser');
 
 function buildCompilerArgsParser(yargs) {
@@ -17,12 +18,44 @@ function buildCompilerArgsParser(yargs) {
       }
 
       if (argv._.length === 1 && !argv.input) {
-        throw new Error("ERROR: Source file not provided.");
+        throw new Error('ERROR: Source file not provided.');
       }
+
 
       if (!argv.input) {
         argv.input = argv._[1];
       }
+
+      if (!fs.existsSync(argv.input)) {
+        throw new Error(`ERROR: file ${argv.input} does not exist.`);
+      }
+
+      const stats = fs.statSync(argv.input);
+
+      if (stats.isDirectory()) {
+        argv.folderInput = argv.input;
+
+        if (!argv.output) {
+          if (argv._.length > 2) {
+            argv.folderOutput = argv._[2];
+          } else {
+            argv.folderOutput = argv.input;
+          }
+        } else {
+          argv.folderOutput = argv.output;
+        }
+
+        if (!fs.existsSync(argv.folderOutput)) {
+          throw new Error(`ERROR: output folder ${argv.folderOutput} does not exist.`);
+        }
+
+        const outputStats = fs.statSync(argv.folderOutput);
+        if (!outputStats.isDirectory()) {
+          throw new Error('ERROR: output must be a folder when input is a folder.');
+        }
+        return true;
+      }
+
       if (!argv.output) {
         if (argv._.length > 2) {
           argv.output = argv._[2];
@@ -73,20 +106,22 @@ function executeCompiler(argv, exitCallback) {
       argv.batch.forEach((input, i) => {
         compileFile(input, argv.batchOutput[i], argv.d, parser);
       });
+    } else if(argv.folderInput) {
+      fs.readdirSync(argv.folderInput).forEach(file => {
+        if ((file.match(/\.clyde$/) || []).length > 0) {
+          const input = path.resolve(argv.folderInput, file);
+          const output = path.resolve(argv.folderOutput, outputFilename(file));
+          compileFile(input, output, argv.d, parser);
+        }
+      });
     } else {
       compileFile(argv.input, argv.output, argv.d, parser);
     }
-    // const content = parser.parse(fs.readFileSync(argv.input, 'utf8'));
-    // if (!argv.d) {
-    //   fs.writeFileSync(argv.output, JSON.stringify(content));
-    // }
     exitCallback();
   } catch (e) {
     console.log(`ERROR: ${e.message}`);
     exitCallback(1);
   }
-  // TODO
-  // batch
 };
 
 const outputFilename = (input) => {
