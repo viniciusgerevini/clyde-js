@@ -106,16 +106,21 @@ const inputHandlers = (dialogue, args, events, exitCallback) => {
 };
 
 const parseArguments = (commandName, args) => {
-  return buildArgsParser(yargs(args), commandName)
+  return buildArgsParser(yargs(args), commandName).argv
 };
 
 const buildArgsParser = (yargs, commandName = '$0') => {
-  const argv = yargs
+  return yargs
     .usage(`Usage: ${commandName} [options] <file path>`)
     .check((argv, _options) => {
       if (argv._.length === 0 && !argv.file) {
         throw new Error("File not provided.");
       }
+
+      if (!argv.file) {
+        argv.file = argv._[0];
+      }
+
       return true;
     })
     .option('block', {
@@ -161,14 +166,7 @@ const buildArgsParser = (yargs, commandName = '$0') => {
     })
 
     .help()
-    .version()
-    .argv;
-
-  if (!argv.file) {
-    argv.file = argv._[0];
-  }
-
-  return argv;
+    .version();
 };
 exports.buildArgsParser = buildArgsParser;
 

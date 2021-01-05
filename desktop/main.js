@@ -1,9 +1,8 @@
 const { app, BrowserWindow } = require('electron')
 const yargs = require('yargs/yargs');
 
-const {execute, buildArgsParser} = require('clyde-interpreter-cli');
-
-let isInCliMode = false;
+const { buildCompilerArgsParser, executeCompiler } = require('./src/compiler');
+const { buildInterpreterArgsParser, executeInterpreter } = require('./src/interpreter');
 
 function createWindow () {
   const win = new BrowserWindow({
@@ -28,10 +27,6 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-  if (isInCliMode) {
-    return;
-  }
-
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow()
   }
@@ -46,23 +41,22 @@ app.on('ready', async () => {
    yargs(argv)
     .usage('Usage: $0 [options] [file path]')
     .command('$0', 'Executes clyde editor', () => {}, executeGUI)
-    .command('run', 'Command line interpreter', (yargs) => buildArgsParser(yargs, '$0 run'), executeInterpreter)
+    .command(
+      'run',
+      'Command line interpreter',
+      (yargs) => buildInterpreterArgsParser(yargs, '$0 run'),
+      (_argv) => executeInterpreter(process.argv.slice(3), app.quit)
+    )
+    .command(
+      'compile',
+      'Transform *.clyde file to *.json',
+      (yargs) => buildCompilerArgsParser(yargs),
+      (argv) => executeCompiler(argv, app.quit)
+    )
     .help()
     .argv;
 });
 
 function executeGUI() {
-  isInCliMode = false;
-  console.log('this command will be run by default')
   createWindow();
-}
-
-async function executeInterpreter() {
-  isInCliMode = true;
-  try {
-    await execute(process.argv.slice(3), () => app.quit());
-  } catch (e) {
-    console.log(e.message);
-    app.quit();
-  }
 }
