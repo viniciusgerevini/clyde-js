@@ -4,7 +4,7 @@
 - [ ] interface
     - [ ] main structure
     - [ ] docks, undock (desktop only)
-    - [ ] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
+    - [x] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
     - [ ] full screen
     - [ ] zen mode
     - [ ] help screen
