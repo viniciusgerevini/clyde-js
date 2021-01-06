@@ -1,33 +1,37 @@
 import React from "react";
-// import AceEditor from "react-ace";
-//
-// import "ace-builds/src-noconflict/mode-java";
-// import "ace-builds/src-noconflict/theme-github";
+import AceEditor from "react-ace";
+import useResizeObserver from "use-resize-observer";
+import styled from 'styled-components';
+
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/theme-github";
 // import "ace-builds/src-noconflict/keybinding-vim";
 
 /* keyboardHandler='vim' */
 
-// function onChange(newValue) {
-//   console.log("change", newValue);
-// }
+const EditorWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+`;
 
-// export default function Editor() {
-//   return (
-//     <AceEditor
-//       mode="java"
-//       theme="github"
-//       onChange={onChange}
-//       name="UNIQUE_ID_OF_DIV"
-//       editorProps={{ $blockScrolling: true }}
-//     />
-//   );
-// }
 export default function Editor() {
-  return (
-    <div>
-      Editor
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+  const { ref, width = 500, height = 500 } = useResizeObserver();
 
-    </div>
+  const onChange = (_newValue) => {
+  //   console.log("change", newValue);
+  };
+
+  return (
+    <EditorWrapper ref={ref}>
+      <AceEditor
+        mode="javascript"
+        theme="github"
+        onChange={onChange}
+        name="mainEditor"
+        width={width - 10}
+        height={height}
+        editorProps={{ $blockScrolling: true }}
+      />
+    </EditorWrapper>
   );
 }
