@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, Menu } = require('electron')
 const yargs = require('yargs/yargs');
 
 const { buildCompilerArgsParser, executeCompiler } = require('./src/compiler');
@@ -11,7 +11,9 @@ function createWindow () {
     webPreferences: {
       nodeIntegration: true
     }
-  })
+  });
+
+  win.setMenuBarVisibility(false);
 
   if (app.isPackaged) {
     win.loadFile('build/index.html')
