@@ -2,6 +2,7 @@
 
 ### TODO
 - [ ] interface
+    - [ ] main structure
     - [ ] docks, undock (desktop only)
     - [ ] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
     - [ ] full screen
@@ -61,10 +62,10 @@
     - [ ] project configuration file
     - [ ] key binds
 - [ ] CLI
-    - [ ] compile file
-    - [ ] run interpreter command line
-    - [ ] start gui interpreter only
-    - [ ] start gui editor
+    - [x] compile file
+    - [x] run interpreter command line
+    - [ ] start gui interpreter only `clyde -i file.clyde`
+    - [ ] start gui editor: (load file in the editor)
 - [ ] reverse parser
     - [ ] transform JSON into clyde
 - [ ] extras

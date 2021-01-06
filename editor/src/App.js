@@ -1,9 +1,9 @@
 import './App.css';
-import Editor from './Editor.js';
+import MainPanels from './screens/MainPanels';
 
 function App() {
   return (
-    <Editor />
+    <MainPanels />
   );
 }
 
