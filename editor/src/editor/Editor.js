@@ -12,24 +12,25 @@ import "ace-builds/src-noconflict/theme-github";
 const EditorWrapper = styled.div`
   width: 100%;
   height: 100%;
+  overflow: hidden;
 `;
 
-export default function Editor() {
+export default function Editor(props) {
   const { ref, width = 500, height = 500 } = useResizeObserver();
 
-  const onChange = (_newValue) => {
+  // const onChange = (_newValue) => {
   //   console.log("change", newValue);
-  };
+  // };
 
   return (
-    <EditorWrapper ref={ref}>
+    <EditorWrapper ref={ref} {...props} aria-label="Text editor">
       <AceEditor
         mode="javascript"
         theme="github"
-        onChange={onChange}
+        //onChange={onChange}
         name="mainEditor"
-        width={width - 10}
-        height={height}
+        width={`${width}px`}
+        height={`${height}px`}
         editorProps={{ $blockScrolling: true }}
       />
     </EditorWrapper>

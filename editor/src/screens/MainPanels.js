@@ -1,85 +1,46 @@
 import React from 'react';
-import Split from 'react-split';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
+
+import SplitPane from './SplitPane';
 
 import Editor from '../editor/Editor';
 import Interpreter from '../interpreter/Interpreter';
-import ProjectTree from '../project-tree/Tree';
 
 const Wrapper = styled.div`
   height: 100%;
-  .split {
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-      display: flex;
-      align-items: strecth;
-      height: 100%;
-  }
-  .split-horizontal {
-    flex-direction: row;
-  }
-  .split-vertical {
-    flex-direction: column;
-  }
-
-  .gutter {
-      background-color: #eee;
-      background-repeat: no-repeat;
-      background-position: 50%;
-  }
-
-  .gutter.gutter-horizontal {
-     // background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
-      cursor: col-resize;
-  }
-
-  .gutter.gutter-vertical {
-     // background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
-      cursor: row-resize;
-  }
 `;
 
-export default function MainPanels() {
-  // TODO tree toggle
-  // TODO editor toggle
-  // TODO interpreter toggle
-  // TODO interpreter horizontal / vertical toggle
+export default function MainPanels(props) {
+  const {
+    isEditorEnabled = true,
+    isInterpreterEnabled = true,
+    toggleEditor,
+    toggleInterpreter,
+    interpreterSplitDirection = 'vertical',
+    changeInterpreterSplitDirection
+  } = props;
+  // on mouse drag, calculate
+
   return (
-    <Wrapper>
-    <Split
-      className="split split-horizontal"
-      direction="horizontal"
-      sizes={[20, 80]}
-      minSize={200}
-      elementStyle={elementStyle}
-      gutterStyle={gutterStyle}
-    >
-        <ProjectTree/>
-        <Split
-          className="split split-horizontal"
-          direction="horizontal"
-          sizes={[50, 50]}
-          elementStyle={elementStyle}
-          gutterStyle={gutterStyle}
-        >
-          <Editor/>
-          <Interpreter/>
-        </Split>
-    </Split>
+     <Wrapper>
+       <span aria-label="Toggle editor" onClick={() => toggleEditor(!isEditorEnabled)}>editor </span>
+       <span aria-label="Toggle interpreter" onClick={() => toggleInterpreter(!isInterpreterEnabled)}>interpreter </span>
+       <span aria-label="Set as horizontal" onClick={() => changeInterpreterSplitDirection('horizontal')}>horizontal </span>
+       <span aria-label="Set as vertical" onClick={() => changeInterpreterSplitDirection('vertical')}>vertical </span>
+       <SplitPane direction={interpreterSplitDirection} defaultSizes={[50, 50]} aria-label="Main panels">
+        { isEditorEnabled ? <Editor/> : undefined }
+        { isInterpreterEnabled ? <Interpreter/>: undefined }
+       </SplitPane>
     </Wrapper>
   );
 };
 
-const elementStyle = (_dimension, size, gutterSize) => {
-  return {
-    'flex-basis': 'calc(' + size + '% - ' + gutterSize + 'px)',
-  }
+MainPanels.propTypes = {
+  isEditorEnabled: PropTypes.bool,
+  isInterpreterEnabled: PropTypes.bool,
+  toggleProjectTree: PropTypes.func,
+  toggleEditor: PropTypes.func,
+  toggleInterpreter: PropTypes.func,
+  interpreterSplitDirection: PropTypes.string,
 };
-
-const gutterStyle = (_dimension, gutterSize) => {
-  return {
-    'flex-basis': gutterSize + 'px',
-  }
-};
-
