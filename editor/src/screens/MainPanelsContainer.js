@@ -10,6 +10,7 @@ import {
 
 const mapStateToProps = (state, props) => ({
   ...state.interfaceConfig,
+  editorDefaultValue: state.editor.currentValue,
   ...props
 });
 

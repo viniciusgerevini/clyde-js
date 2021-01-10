@@ -16,6 +16,7 @@ export default function setupClydeMode(ace) {
     const HighlightRules = acequire('ace/mode/clyde_highlight_rules').ClydeHighlightRules;
 
     const ClydeMode = function ClydeMode() {
+      this.$id = "ace/mode/clyde"
       this.HighlightRules = HighlightRules;
       this.lineCommentStart = '#';
 

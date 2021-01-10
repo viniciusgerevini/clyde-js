@@ -8,7 +8,6 @@ export function createEmptyState() {
   return {
     isEditorEnabled: true,
     isInterpreterEnabled: true,
-    isProjectTreeEnabled: true,
     interpreterSplitDirection: 'vertical'
   };
 }

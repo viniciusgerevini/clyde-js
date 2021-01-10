@@ -5,11 +5,9 @@ import styled from 'styled-components';
 
 import "ace-builds/src-noconflict/theme-dracula";
 // import "ace-builds/src-noconflict/keybinding-vim";
-
 /* keyboardHandler='vim' */
 
 import ClydeMode from './clyde-ace-mode';
-
 
 const EditorWrapper = styled.div`
   width: 100%;
@@ -17,7 +15,7 @@ const EditorWrapper = styled.div`
   overflow: hidden;
 `;
 
-export default function Editor(props) {
+export default function Editor({ defaultValue, ...props}) {
   const { ref, width = 500, height = 500 } = useResizeObserver();
 
   const onBeforeLoad = (editor) => {
@@ -27,6 +25,7 @@ export default function Editor(props) {
   return (
     <EditorWrapper ref={ref} {...props} aria-label="Text editor">
       <AceEditor
+        defaultValue={defaultValue}
         mode="clyde"
         theme="dracula"
         onBeforeLoad={onBeforeLoad}
@@ -34,6 +33,7 @@ export default function Editor(props) {
         width={`${width}px`}
         height={`${height}px`}
         editorProps={{ $blockScrolling: true }}
+        fontSize="16px"
       />
     </EditorWrapper>
   );

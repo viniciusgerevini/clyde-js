@@ -27,6 +27,7 @@ describe('MainPanels component', () => {
     const stubToggleEditor = jest.fn();
     const { getByLabelText } = render(<MainPanels toggleEditor={stubToggleEditor} />);
 
+    fireEvent.click(getByLabelText(/Toggle settings menu/i));
     fireEvent.click(getByLabelText(/Toggle editor/i));
 
     expect(stubToggleEditor).toHaveBeenCalledWith(false);
@@ -36,6 +37,7 @@ describe('MainPanels component', () => {
     const stubToggleInterpreter = jest.fn();
     const { getByLabelText } = render(<MainPanels isInterpreterEnabled={false} toggleInterpreter={stubToggleInterpreter} />);
 
+    fireEvent.click(getByLabelText(/Toggle settings menu/i));
     fireEvent.click(getByLabelText(/Toggle interpreter/i));
 
     expect(stubToggleInterpreter).toHaveBeenCalledWith(true);
@@ -59,16 +61,18 @@ describe('MainPanels component', () => {
     const stubDirectionChange = jest.fn();
     const { getByLabelText } = render(<MainPanels changeInterpreterSplitDirection={stubDirectionChange} />);
 
-    fireEvent.click(getByLabelText(/Set as horizontal/i));
+    fireEvent.click(getByLabelText(/Toggle settings menu/i));
+    fireEvent.click(getByLabelText(/Change split direction/i));
 
     expect(stubDirectionChange).toHaveBeenCalledWith('horizontal');
   });
 
   it('sets split direction as vertical', () => {
     const stubDirectionChange = jest.fn();
-    const { getByLabelText } = render(<MainPanels changeInterpreterSplitDirection={stubDirectionChange} />);
+    const { getByLabelText } = render(<MainPanels interpreterSplitDirection="horizontal" changeInterpreterSplitDirection={stubDirectionChange} />);
 
-    fireEvent.click(getByLabelText(/Set as vertical/i));
+    fireEvent.click(getByLabelText(/Toggle settings menu/i));
+    fireEvent.click(getByLabelText(/Change split direction/i));
 
     expect(stubDirectionChange).toHaveBeenCalledWith('vertical');
   });
