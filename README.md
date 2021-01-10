@@ -15,8 +15,8 @@
 
 - [ ] Editor
 - [ ] CLI
-- [ ] interpreter: show lines
-- [ ] interpreter: interactive
+- [x] interpreter: show lines
+- [x] interpreter: interactive
 - [ ] interpreter: show diagram?
 - [ ] online interpreter/editor
 - [ ] Godot client / example
@@ -26,7 +26,6 @@
 
 ### Clean up
 - run tests on CI
-- fix dependencies
 - build script
 - generate electron app on ci
 

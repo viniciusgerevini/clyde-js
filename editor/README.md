@@ -2,15 +2,11 @@
 
 ### TODO
 - [ ] interface
-    - [ ] main structure
-    - [ ] docks, undock (desktop only)
-    - [x] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
+    - [x] main structure
+    - [ ] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
     - [ ] full screen
-    - [ ] zen mode
     - [ ] help screen
     - [ ] sync interpreter and editor file
-    - [ ] ctrl + p: file navigation
-    - [ ] ctrl + p: command navigation
 - [ ] interpreter
     - [ ] action bar: play, reset, clean
     - [ ] show debug bottom pane
@@ -33,18 +29,12 @@
     - [ ] go to definition?
     - [ ] line wrap?
     - [ ] theme, dark or light mode
-    - [ ]  soft tabs
-    - [ ]  hightligh current line
-    - [ ] zen mode?
+    - [ ] soft tabs
+    - [ ] hightligh current line
     - [ ] can we change the generated document incrementally???
-- [ ] file tree [desktop only. Maybe we can list open tabs without saving]http://storybookjs.github.io/react-treebeard/
-    - [ ] open in a new window
-    - [ ] show current folder
-    - [ ] open folder
     - [ ] open file
     - [ ] switch files
     - [ ] rename files
-    - [ ] toggle tree
     - [ ] run file
     - [ ] compile file
     - [ ] search
@@ -73,6 +63,7 @@
     - [ ] new version notification
 - [ ]  desktop app
     - [ ] electron wrapper
+- [ ] portable CLI https://github.com/vercel/pkg
 
 
 

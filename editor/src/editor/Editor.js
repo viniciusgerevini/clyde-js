@@ -3,11 +3,13 @@ import AceEditor from "react-ace";
 import useResizeObserver from "use-resize-observer";
 import styled from 'styled-components';
 
-import "ace-builds/src-noconflict/mode-javascript";
-import "ace-builds/src-noconflict/theme-github";
+import "ace-builds/src-noconflict/theme-dracula";
 // import "ace-builds/src-noconflict/keybinding-vim";
 
 /* keyboardHandler='vim' */
+
+import ClydeMode from './clyde-ace-mode';
+
 
 const EditorWrapper = styled.div`
   width: 100%;
@@ -18,16 +20,16 @@ const EditorWrapper = styled.div`
 export default function Editor(props) {
   const { ref, width = 500, height = 500 } = useResizeObserver();
 
-  // const onChange = (_newValue) => {
-  //   console.log("change", newValue);
-  // };
+  const onBeforeLoad = (editor) => {
+    ClydeMode(editor);
+  };
 
   return (
     <EditorWrapper ref={ref} {...props} aria-label="Text editor">
       <AceEditor
-        mode="javascript"
-        theme="github"
-        //onChange={onChange}
+        mode="clyde"
+        theme="dracula"
+        onBeforeLoad={onBeforeLoad}
         name="mainEditor"
         width={`${width}px`}
         height={`${height}px`}
