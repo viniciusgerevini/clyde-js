@@ -238,7 +238,6 @@ function ClydeHighlightRules() {
       },
     ],
   };
-  console.log(this.$rules);
 
   this.normalizeRules();
 }
