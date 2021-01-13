@@ -12,7 +12,7 @@ describe('Interpreter component', () => {
   it('renders all dialogue lines', () => {
     const content = 'Hello!\nHi\n';
     const timeline = [
-      { type: 'dialogue', text: 'Hello!' },
+      { type: 'dialogue', speaker: 'test', text: 'Hello!' },
       { type: 'dialogue', text: 'Hi!' },
     ];
     const { getByText } = render(<Interpreter content={content} timeline={timeline}/>);
@@ -116,7 +116,7 @@ describe('Interpreter component', () => {
     });
 
     const content = `
->> what do you think?
+>> speaker: what do you think?
   * yes
     nice!
   * no
@@ -473,6 +473,66 @@ hi
 
       expect(setBlockStub).toHaveBeenCalledWith(undefined);
       expect(clearTimelineStub).toHaveBeenCalled();
+    });
+
+    it('fast forward to next option', () => {
+      let timeline = [];
+      const addDialogueLineStub = jest.fn().mockImplementation((line) => {
+        timeline.push(line);
+      });
+
+      const chooseOptionStub = jest.fn();
+
+      const content = `
+first line
+second line
+third line
+>>
+  * yes
+    nice!
+<<
+`;
+
+      const { getByLabelText } = render(
+        <Interpreter
+            content={content}
+            timeline={timeline}
+            chooseOption={chooseOptionStub}
+            addDialogueLine={addDialogueLineStub}/>
+      );
+
+      fireEvent.click(getByLabelText(/Forward untill next choice/i));
+
+      expect(addDialogueLineStub).toHaveBeenCalledTimes(4);
+      expect(addDialogueLineStub).toHaveBeenLastCalledWith({ type: 'options', options: [{ label: 'yes' }]});
+    });
+
+    it('stops in the end when no option found', () => {
+      let timeline = [];
+      const addDialogueLineStub = jest.fn().mockImplementation((line) => {
+        timeline.push(line);
+      });
+
+      const chooseOptionStub = jest.fn();
+
+      const content = `
+first line
+second line
+third line
+`;
+
+      const { getByLabelText } = render(
+        <Interpreter
+            content={content}
+            timeline={timeline}
+            chooseOption={chooseOptionStub}
+            addDialogueLine={addDialogueLineStub}/>
+      );
+
+      fireEvent.click(getByLabelText(/Forward untill next choice/i));
+
+      expect(addDialogueLineStub).toHaveBeenCalledTimes(4);
+      expect(addDialogueLineStub).toHaveBeenLastCalledWith(undefined);
     });
   });
 });

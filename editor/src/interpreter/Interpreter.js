@@ -174,6 +174,7 @@ export default function Interpreter(p) {
         setDebugPaneDirection={setDebugPaneDirection}
         enableSingleBubbleDialogue={enableSingleBubbleDialogue}
         disableSingleBubbleDialogue={disableSingleBubbleDialogue}
+        addDialogueLine={addDialogueLine}
         dialogue={dialogue}
       />
 
@@ -272,7 +273,8 @@ function InterpreterToolbar(properties) {
     setDebugPaneDirection,
     enableSingleBubbleDialogue,
     disableSingleBubbleDialogue,
-    dialogue
+    dialogue,
+    addDialogueLine
   } = properties;
 
   const [isMenuVisible, setMenuVisibility] = useState(false);
@@ -329,7 +331,13 @@ function InterpreterToolbar(properties) {
   };
 
   const forwardToNextOption = () => {
-    // TODO
+    const line = dialogue.getContent();
+    addDialogueLine(line);
+
+    if (!line || line.type === 'options') {
+      return;
+    }
+    forwardToNextOption();
   };
 
   const poltergeist = () => {
