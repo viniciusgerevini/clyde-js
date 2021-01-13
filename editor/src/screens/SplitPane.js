@@ -10,6 +10,7 @@ const Wrapper = styled.div`
   flex-grow: 1;
   height: auto;
   flex-direction: ${props => props.direction === 'horizontal' ? 'column' : 'row' };
+  max-height: 100%;
 `;
 
 const Gutter = styled.div`
@@ -27,6 +28,7 @@ export default function SplitPane(props) {
   const {
     direction = 'vertical',
     defaultSizes,
+    style
   } = props;
 
   const children = Array.isArray(props.children) ? props.children : [props.children];
@@ -75,13 +77,13 @@ export default function SplitPane(props) {
       acc.push(<Gutter direction={direction}/>);
     }
 
-    acc.push(React.cloneElement(item, {key: index, style: { flexBasis: sizes[index] }}));
+    acc.push(React.cloneElement(item, {key: index, style: { flexBasis: sizes[index], flexGrow: 1}}));
 
     return acc;
   }, []);
 
   return (
-    <Wrapper direction={direction}>
+    <Wrapper direction={direction} style={style}>
       {panes.map((item, key) => React.cloneElement(item, {key}))}
     </Wrapper>
   );

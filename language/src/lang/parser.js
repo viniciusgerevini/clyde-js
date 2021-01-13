@@ -1,12 +1,13 @@
-import fs from 'fs';
+// import fs from 'fs';
 import jison from 'jison';
 import { Lexer, getTokenHint } from './lexer.js';
+import grammar from './grammar';
 
 const { Parser: JisonParser } = jison;
 
 export function Parser() {
-  const grammar = fs.readFileSync(new URL('./grammar.jison', import.meta.url), 'utf8');
-  const parser = new JisonParser(grammar);
+  // const grammar = fs.readFileSync(new URL('./grammar.jison', import.meta.url), 'utf8');
+  const parser = new JisonParser(grammar());
   parser.lexer = Lexer();
 
   parser.yy.parseError = errorHandling;

@@ -34,11 +34,12 @@ const ItemWrapper = styled.div`
 export default function DropDownMenu(props) {
   const {
     children,
-    onClick
+    onClick,
+    style
   } = props;
 
   return (
-    <Wrapper onClick={onClick}>
+    <Wrapper onClick={onClick} style={style}>
       {React.Children.toArray(children)}
     </Wrapper>
   );

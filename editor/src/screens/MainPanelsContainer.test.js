@@ -14,17 +14,34 @@ import {
   createEmptyState as createEmptyEditorState
 } from '../redux/editor';
 
+import {
+  setBlock,
+  addDialogueLine,
+  clearTimeline,
+  showExtraMetadata,
+  hideExtraMetadata,
+  showDebugPane,
+  hideDebugPane,
+  setDebugPaneDirection,
+  enableSingleBubbleDialogue,
+  disableSingleBubbleDialogue,
+  chooseOption,
+  createEmptyState as createInterpreterEmptyState
+} from '../redux/interpreter';
+
 import MainPanelsContainer from './MainPanelsContainer';
 
 describe('MainPanelsContainer', () => {
   const mockStore = configureStore();
 
-  const createMockStore = (customInterfaceState = {}, customEditorState = {}) => {
-    let interfaceState = createEmptyInterfaceState();
-    let editorState = createEmptyEditorState();
+  const createMockStore = (customInterfaceState = {}, customEditorState = {}, customInterpreterState = {}) => {
+    const interfaceState = createEmptyInterfaceState();
+    const editorState = createEmptyEditorState();
+    const interpreterState = createInterpreterEmptyState();
     return mockStore({
       interfaceConfig: { ...interfaceState, ...customInterfaceState },
-      editor: { ...editorState, ...customEditorState }
+      editor: { currentValue: 'hi\n', ...editorState, ...customEditorState },
+      interpreter: { ...interpreterState, ...customInterpreterState },
     });
   };
 
@@ -100,6 +117,191 @@ describe('MainPanelsContainer', () => {
 
     expect(action.type).toEqual(changeInterpreterSplitDirection.toString());
     expect(action.payload).toEqual({ direction: 'horizontal' });
+  });
+
+  describe('interpreter', () => {
+    it('clears timeline', () => {
+      const store = createMockStore(
+        { isInterpreterEnabled: true },
+        { currentValue:'Hello from container!\nHi\n'},
+        { timeline: [] }
+      );
+      const { getByLabelText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+      fireEvent.click(getByLabelText(/Restart dialogue/i));
+
+      const action = store.getActions()[0];
+
+      expect(action.type).toEqual(clearTimeline.toString());
+    });
+
+    it('adds dialogue line', () => {
+      const store = createMockStore(
+        { isInterpreterEnabled: true },
+        { currentValue:'Hello from container!\nHi\n'},
+        { timeline: [] }
+      );
+      const { getByLabelText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+      fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));
+
+      const action = store.getActions()[0];
+
+      expect(action.type).toEqual(addDialogueLine.toString());
+      expect(action.payload).toEqual({ type: 'dialogue', text: 'Hello from container!' });
+    });
+
+    it('sets starting block', () => {
+      const store = createMockStore(
+        { isInterpreterEnabled: true },
+        { currentValue:'Hello from container!\nHi\n'},
+        { timeline: [], currentBlock: 'some_block' }
+      );
+      render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+      const action = store.getActions()[0];
+
+      expect(action.type).toEqual(setBlock.toString());
+      expect(action.payload).toEqual('some_block');
+    });
+
+    it('triggers show debug pane when pane is hidden', () => {
+      const store = createMockStore(
+        { isInterpreterEnabled: true },
+        { currentValue:'Hi\n' },
+        { timeline: [], shouldShowDebugPane: false }
+      );
+      const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+      fireEvent.click(getByLabelText(/Interpreter options/i));
+      fireEvent.click(getByText(/Show debug pane/i));
+
+      const action = store.getActions()[0];
+
+      expect(action.type).toEqual(showDebugPane.toString());
+    });
+
+    it('triggers hide debug pane when pane is visible', () => {
+      const store = createMockStore(
+        { isInterpreterEnabled: true },
+        { currentValue:'Hi\n' },
+        { timeline: [], shouldShowDebugPane: true }
+      );
+      const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+      fireEvent.click(getByLabelText(/Interpreter options/i));
+      fireEvent.click(getByText(/Hide debug pane/i));
+
+      const action = store.getActions()[0];
+
+      expect(action.type).toEqual(hideDebugPane.toString());
+    });
+
+    it('set debug pane direction', () => {
+      const store = createMockStore(
+        { isInterpreterEnabled: true },
+        { currentValue:'Hi\n' },
+        { timeline: [], shouldShowDebugPane: true }
+      );
+      const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+      fireEvent.click(getByLabelText(/Interpreter options/i));
+      fireEvent.click(getByText(/Debug pane split: vertical/i));
+
+      const action = store.getActions()[0];
+      expect(action.type).toEqual(setDebugPaneDirection.toString());
+      expect(action.payload).toEqual({ direction: 'vertical' });
+    });
+
+    it('triggers show extra metadata', () => {
+      const store = createMockStore(
+        { isInterpreterEnabled: true },
+        { currentValue:'Hi\n' },
+        { timeline: [], shouldShowExtraMetadata: false }
+      );
+      const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+      fireEvent.click(getByLabelText(/Interpreter options/i));
+      fireEvent.click(getByText(/Show metadata/i));
+
+      const action = store.getActions()[0];
+
+      expect(action.type).toEqual(showExtraMetadata.toString());
+    });
+
+    it('triggers hide extra metadata', () => {
+      const store = createMockStore(
+        { isInterpreterEnabled: true },
+        { currentValue:'Hi\n' },
+        { timeline: [], shouldShowExtraMetadata: true }
+      );
+      const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+      fireEvent.click(getByLabelText(/Interpreter options/i));
+      fireEvent.click(getByText(/Hide metadata/i));
+
+      const action = store.getActions()[0];
+
+      expect(action.type).toEqual(hideExtraMetadata.toString());
+    });
+
+
+    it('enables single bubble dialogue', () => {
+      const store = createMockStore(
+        { isInterpreterEnabled: true },
+        { currentValue:'Hi\n' },
+        { timeline: [], singleBubblePresentation: false }
+      );
+      const { getByLabelText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+      fireEvent.click(getByLabelText(/Interpreter options/i));
+      fireEvent.click(getByLabelText(/Set single bubble dialogue/i));
+
+      const action = store.getActions()[0];
+
+      expect(action.type).toEqual(enableSingleBubbleDialogue.toString());
+    });
+
+    it('enables multi bubble dialogues', () => {
+      const store = createMockStore(
+        { isInterpreterEnabled: true },
+        { currentValue:'Hi\n' },
+        { timeline: [], singleBubblePresentation: true }
+      );
+      const { getByLabelText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+      fireEvent.click(getByLabelText(/Interpreter options/i));
+      fireEvent.click(getByLabelText(/Set multi bubble dialogue/i));
+
+      const action = store.getActions()[0];
+
+      expect(action.type).toEqual(disableSingleBubbleDialogue.toString());
+    });
+
+    it('chooses option', () => {
+      const content = `
+>> what do you think?
+  * yes
+    nice!
+  * no
+    ok!
+<<
+`;
+      const store = createMockStore(
+        { isEditorEnabled: false, isInterpreterEnabled: true },
+        { currentValue: content },
+        { timeline: [{ type: 'options', options: [{ label: 'yes' }]}] }
+      );
+      const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+      fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));
+      fireEvent.click(getByText(/yes/i));
+
+      const action = store.getActions()[0];
+
+      expect(action.type).toEqual(chooseOption.toString());
+      expect(action.payload).toEqual(0);
+    });
   });
 });
 

@@ -8,9 +8,24 @@ import {
   changeInterpreterSplitDirection
 } from '../redux/interface';
 
+import {
+  setBlock,
+  addDialogueLine,
+  clearTimeline,
+  showExtraMetadata,
+  hideExtraMetadata,
+  showDebugPane,
+  hideDebugPane,
+  setDebugPaneDirection,
+  enableSingleBubbleDialogue,
+  disableSingleBubbleDialogue,
+  chooseOption,
+} from '../redux/interpreter';
+
 const mapStateToProps = (state, props) => ({
   ...state.interfaceConfig,
   editorDefaultValue: state.editor.currentValue,
+  ...state.interpreter,
   ...props
 });
 
@@ -23,6 +38,39 @@ const mapDispatchToProps = dispatch => ({
   },
   changeInterpreterSplitDirection: (direction) => {
     dispatch(changeInterpreterSplitDirection({direction}));
+  },
+  setBlock: (blockName) => {
+    dispatch(setBlock(blockName));
+  },
+  addDialogueLine: (line) => {
+    dispatch(addDialogueLine(line));
+  },
+  clearTimeline: () => {
+    dispatch(clearTimeline());
+  },
+  showExtraMetadata: () => {
+    dispatch(showExtraMetadata());
+  },
+  hideExtraMetadata: () => {
+    dispatch(hideExtraMetadata());
+  },
+  showDebugPane: () => {
+    dispatch(showDebugPane());
+  },
+  hideDebugPane: () => {
+    dispatch(hideDebugPane());
+  },
+  setDebugPaneDirection: (direction) => {
+    dispatch(setDebugPaneDirection({direction}));
+  },
+  enableSingleBubbleDialogue: () => {
+    dispatch(enableSingleBubbleDialogue());
+  },
+  disableSingleBubbleDialogue: () => {
+    dispatch(disableSingleBubbleDialogue());
+  },
+  chooseOption: (optionIndex) => {
+    dispatch(chooseOption(optionIndex));
   },
 });
 

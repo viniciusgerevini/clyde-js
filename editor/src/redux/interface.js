@@ -12,7 +12,6 @@ export function createEmptyState() {
   };
 }
 
-
 const toggleEditorReducer = (state, action) => {
   state.isEditorEnabled = action.payload.state;
   return state;

@@ -23,7 +23,6 @@ describe('Interface reducers', () => {
 
   it('change interpreter split direction', () => {
     const action = changeInterpreterSplitDirection({ direction: 'horizontal' });
-
     expect(reducers({}, action)).toEqual({ interpreterSplitDirection: 'horizontal' });
   });
 });

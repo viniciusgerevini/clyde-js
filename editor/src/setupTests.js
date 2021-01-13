@@ -17,3 +17,6 @@ class ResizeObserver {
 
 window.ResizeObserver = ResizeObserver;
 
+window.HTMLElement.prototype.scrollIntoView = () => {};
+
+// Element.prototype.scroll = jest.fn()

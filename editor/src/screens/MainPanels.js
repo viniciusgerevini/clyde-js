@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCog, faColumns, faCode, faEye } from '@fortawesome/free-solid-svg-icons'
 
@@ -13,6 +12,7 @@ import Interpreter from '../interpreter/Interpreter';
 
 const Wrapper = styled.div`
   height: 100%;
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
 `;
@@ -34,13 +34,34 @@ const IconWrapper = styled.span`
 
 export default function MainPanels(props) {
   const {
+    // interface
     isEditorEnabled = true,
     isInterpreterEnabled = true,
     toggleEditor,
     toggleInterpreter,
     interpreterSplitDirection = 'vertical',
     changeInterpreterSplitDirection,
-    editorDefaultValue
+    // editor
+    editorDefaultValue,
+    // interpreter
+    currentBlock,
+    timeline,
+    shouldShowExtraMetadata,
+    shouldShowDebugPane,
+    debugPaneDirection,
+    singleBubblePresentation,
+    document: clydeDocument,
+    setBlock,
+    addDialogueLine,
+    clearTimeline,
+    showExtraMetadata,
+    hideExtraMetadata,
+    showDebugPane,
+    hideDebugPane,
+    setDebugPaneDirection,
+    enableSingleBubbleDialogue,
+    disableSingleBubbleDialogue,
+    chooseOption
   } = props;
 
   const [isMenuVisible, setMenuVisibility] = useState(false);
@@ -70,26 +91,55 @@ export default function MainPanels(props) {
                   icon={faColumns}
                   text={`Split mode: ${interpreterSplitDirection}`}
                 />
-                <DropDownItem
-                  label="Toggle editor"
-                  onClick={() => toggleEditor(!isEditorEnabled)}
-                  icon={faCode}
-                  text={`${isEditorEnabled ? 'Hide' : 'Show' } editor`}
-                />
-                <DropDownItem
-                  label="Toggle interpreter"
-                  onClick={() => toggleInterpreter(!isInterpreterEnabled)}
-                  icon={faEye}
-                  text={`${isInterpreterEnabled ? 'Hide' : 'Show' } interpreter`}
-                />
+                { isInterpreterEnabled ?
+                    <DropDownItem
+                      label="Toggle editor"
+                      onClick={() => toggleEditor(!isEditorEnabled)}
+                      icon={faCode}
+                      text={`${isEditorEnabled ? 'Hide' : 'Show' } editor`}
+                    /> : undefined
+                }
+                { isEditorEnabled ?
+                  <DropDownItem
+                    label="Toggle interpreter"
+                    onClick={() => toggleInterpreter(!isInterpreterEnabled)}
+                    icon={faEye}
+                    text={`${isInterpreterEnabled ? 'Hide' : 'Show' } interpreter`}
+                  /> : undefined
+                }
               </DropDownMenu>
              ) : ''
            }
          </IconWrapper>
         </Header>
-       <SplitPane direction={interpreterSplitDirection} defaultSizes={[50, 50]} aria-label="Main panels">
-        { isEditorEnabled ? <Editor defaultValue={editorDefaultValue}/> : undefined }
-        { isInterpreterEnabled ? <Interpreter/>: undefined }
+       <SplitPane
+         direction={interpreterSplitDirection}
+         defaultSizes={[50, 50]}
+         style={{height: 'calc(100% - 40px)'}}
+         aria-label="Main panels">
+        { isEditorEnabled ? <Editor defaultValue={editorDefaultValue} /> : undefined }
+        { isInterpreterEnabled ?
+           <Interpreter
+             content={editorDefaultValue}
+             currentBlock={currentBlock}
+             timeline={timeline}
+             shouldShowExtraMetadata={shouldShowExtraMetadata}
+             shouldShowDebugPane={shouldShowDebugPane}
+             debugPaneDirection={debugPaneDirection}
+             singleBubblePresentation={singleBubblePresentation}
+             clydeDocument={clydeDocument}
+             setBlock={setBlock}
+             addDialogueLine={addDialogueLine}
+             clearTimeline={clearTimeline}
+             showExtraMetadata={showExtraMetadata}
+             hideExtraMetadata={hideExtraMetadata}
+             showDebugPane={showDebugPane}
+             hideDebugPane={hideDebugPane}
+             setDebugPaneDirection={setDebugPaneDirection}
+             enableSingleBubbleDialogue={enableSingleBubbleDialogue}
+             disableSingleBubbleDialogue={disableSingleBubbleDialogue}
+             chooseOption={chooseOption}
+         />: undefined }
        </SplitPane>
     </Wrapper>
   );
@@ -103,5 +153,24 @@ MainPanels.propTypes = {
   toggleInterpreter: PropTypes.func,
   interpreterSplitDirection: PropTypes.string,
   editorDefaultValue: PropTypes.string,
+
+  currentBlock: PropTypes.string,
+  timeline: PropTypes.array,
+  shouldShowExtraMetadata: PropTypes.bool,
+  shouldShowDebugPane: PropTypes.bool,
+  debugPaneDirection: PropTypes.string,
+  singleBubblePresentation: PropTypes.bool,
+  clydeDocument: PropTypes.string,
+
+  setBlock: PropTypes.func,
+  addDialogueLine: PropTypes.func,
+  clearTimeline: PropTypes.func,
+  showExtraMetadata: PropTypes.func,
+  hideExtraMetadata: PropTypes.func,
+  showDebugPane: PropTypes.func,
+  hideDebugPane: PropTypes.func,
+  setDebugPaneDirection: PropTypes.func,
+  enableSingleBubbleDialogue: PropTypes.func,
+  disableSingleBubbleDialogue: PropTypes.func,
 };
 

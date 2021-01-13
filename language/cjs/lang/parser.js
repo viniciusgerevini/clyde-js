@@ -1,13 +1,14 @@
 'use strict';
-const fs = (m => m.__esModule ? /* istanbul ignore next */ m.default : /* istanbul ignore next */ m)(require('fs'));
+// import fs from 'fs';
 const jison = (m => m.__esModule ? /* istanbul ignore next */ m.default : /* istanbul ignore next */ m)(require('jison'));
 const { Lexer, getTokenHint } = require('./lexer.js');
+const grammar = (m => m.__esModule ? /* istanbul ignore next */ m.default : /* istanbul ignore next */ m)(require('./grammar'));
 
 const { Parser: JisonParser } = jison;
 
 function Parser() {
-  const grammar = fs.readFileSync(new URL('./grammar.jison', ({url: require('url').pathToFileURL(__filename).href}).url), 'utf8');
-  const parser = new JisonParser(grammar);
+  // const grammar = fs.readFileSync(new URL('./grammar.jison', ({url: require('url').pathToFileURL(__filename).href}).url), 'utf8');
+  const parser = new JisonParser(grammar());
   parser.lexer = Lexer();
 
   parser.yy.parseError = errorHandling;

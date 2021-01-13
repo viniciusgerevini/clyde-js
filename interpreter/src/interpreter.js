@@ -167,9 +167,11 @@ export function Interpreter(doc, data, dictionary = {}) {
       while (!['document', 'block', 'option', 'options'].includes(stackHead().current.type)) {
         stack.pop();
       }
-      stack.pop();
 
-      return handleNextNode(stackHead().current);
+      if (stack.length > 1) {
+        stack.pop();
+        return handleNextNode(stackHead().current);
+      }
     } else if (divert.target === '<end>') {
       initializeStack();
       stackHead().contentIndex = stackHead().current.content.length;
