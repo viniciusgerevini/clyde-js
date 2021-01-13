@@ -15,7 +15,8 @@ import {
   faReceipt,
   faGhost,
   faTimes,
-  faColumns
+  faColumns,
+  faHandSparkles,
 } from '@fortawesome/free-solid-svg-icons'
 
 import { Interpreter as ClydeInterpreter } from 'clyde-interpreter';
@@ -176,6 +177,7 @@ export default function Interpreter(p) {
         disableSingleBubbleDialogue={disableSingleBubbleDialogue}
         addDialogueLine={addDialogueLine}
         dialogue={dialogue}
+        chooseOption={chooseOption}
       />
 
       <SplitPane
@@ -274,7 +276,8 @@ function InterpreterToolbar(properties) {
     enableSingleBubbleDialogue,
     disableSingleBubbleDialogue,
     dialogue,
-    addDialogueLine
+    addDialogueLine,
+    chooseOption,
   } = properties;
 
   const [isMenuVisible, setMenuVisibility] = useState(false);
@@ -335,14 +338,32 @@ function InterpreterToolbar(properties) {
     addDialogueLine(line);
 
     if (!line || line.type === 'options') {
-      return;
+      return line;
     }
-    forwardToNextOption();
+
+    return forwardToNextOption();
   };
 
   const poltergeist = () => {
-    // TODO
+    const optionList = forwardToNextOption();
+
+    if (!optionList) {
+      return;
+    }
+
+    const choice = Math.floor(Math.random() * optionList.options.length);
+    chooseOption(choice);
+    dialogue.choose(choice);
+
+    poltergeist();
   };
+
+  const cleanMemory = () => {
+    dialogue.clearData();
+    addDialogueLine({ type: 'INTERPRETER_INFO', text: 'Memory cleared'})
+    dialogue.begin(currentBlock);
+  };
+
   return (
     <InterpreterToolbarWrapper>
       <BlockList document={doc} currentBlock={currentBlock} onBlockSelected={selectBlock}/>
@@ -350,7 +371,9 @@ function InterpreterToolbar(properties) {
 
       <FontAwesomeIcon icon={faFastForward} title="Forward untill next choice" onClick={forwardToNextOption}/>
 
-      <FontAwesomeIcon icon={faGhost} title="Execute dialogue in Poltergeist mode" onClick={poltergeist}/>
+      <FontAwesomeIcon icon={faGhost} title="Execute Poltergeist mode (auto anwser)" onClick={poltergeist}/>
+
+      <FontAwesomeIcon icon={faHandSparkles} title="Clear memory" onClick={cleanMemory}/>
 
       <FontAwesomeIcon
         icon={ singleBubblePresentation ? faComments : faComment }
@@ -461,9 +484,15 @@ function DialogueEntry(props) {
     return <InfoBubble>DIALOGUE ENDED</InfoBubble>;
   }
 
-  return line.type === 'dialogue' ?
-    <DialogueLine {...line}/>
-    : <DialogueOptions {...line} onSelection={onSelection}/>;
+  if (line.type === 'dialogue') {
+    return <DialogueLine {...line}/>
+  }
+
+  if (line.type === 'options') {
+    return <DialogueOptions {...line} onSelection={onSelection}/>
+  }
+
+  return <InfoBubble>{line.text}</InfoBubble>
 }
 
 function DialogueLine(props) {

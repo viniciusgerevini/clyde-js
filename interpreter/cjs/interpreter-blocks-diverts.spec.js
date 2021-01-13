@@ -167,6 +167,19 @@ this will never be seeing
       expect(dialogue.getContent()).toEqual(undefined);
     });
 
+    it('does not fail when divert to parent in the root node', () => {
+      const parser = Parser();
+      const content = parser.parse(`
+Hello!
+<-
+`);
+      const dialogue = Interpreter(content);
+
+      dialogue.begin();
+
+      expect(dialogue.getContent().text).toEqual('Hello!');
+      expect(dialogue.getContent()).toEqual(undefined);
+    });
   });
 });
 

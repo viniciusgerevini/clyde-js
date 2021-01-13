@@ -129,6 +129,19 @@ result is %someVar%
 
       expect(anotherDialogue.getContent().text).toEqual('result is 1');
     });
+
+    it('clear all data', () =>{
+      const parser = Parser();
+      const content = parser.parse(`
+Hi!{ set someVar = 1 }
+hello %someVar%
+`);
+      const dialogue = Interpreter(content);
+
+      expect(dialogue.getContent().text).toEqual('Hi!');
+      dialogue.clearData();
+      expect(dialogue.getContent().text).toEqual('hello ');
+    });
   });
 
   describe('End of dialogue', () => {

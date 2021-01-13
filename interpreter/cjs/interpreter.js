@@ -170,9 +170,11 @@ function Interpreter(doc, data, dictionary = {}) {
       while (!['document', 'block', 'option', 'options'].includes(stackHead().current.type)) {
         stack.pop();
       }
-      stack.pop();
 
-      return handleNextNode(stackHead().current);
+      if (stack.length > 1) {
+        stack.pop();
+        return handleNextNode(stackHead().current);
+      }
     } else if (divert.target === '<end>') {
       initializeStack();
       stackHead().contentIndex = stackHead().current.content.length;
@@ -333,7 +335,7 @@ function Interpreter(doc, data, dictionary = {}) {
           return { name: match, value };
         })
         .forEach( variable => {
-          text = text.replace(variable.name, variable.value);
+          text = text.replace(variable.name, variable.value === undefined ? '' : variable.value);
         });
     }
     return text;
@@ -354,6 +356,9 @@ function Interpreter(doc, data, dictionary = {}) {
     },
     loadData(data) {
       mem.load(data);
+    },
+    clearData() {
+      mem.clear();
     },
     loadDictionary(dictionary) {
       textDictionary = dictionary;

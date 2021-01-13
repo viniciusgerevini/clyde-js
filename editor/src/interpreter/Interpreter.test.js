@@ -13,6 +13,7 @@ describe('Interpreter component', () => {
     const content = 'Hello!\nHi\n';
     const timeline = [
       { type: 'dialogue', speaker: 'test', text: 'Hello!' },
+      { type: 'INTERPRETER_INFO', text: 'Memory cleared' },
       { type: 'dialogue', text: 'Hi!' },
     ];
     const { getByText } = render(<Interpreter content={content} timeline={timeline}/>);
@@ -533,6 +534,68 @@ third line
 
       expect(addDialogueLineStub).toHaveBeenCalledTimes(4);
       expect(addDialogueLineStub).toHaveBeenLastCalledWith(undefined);
+    });
+
+    it('run poltergeist mode: choose all options', () => {
+      let timeline = [];
+      const addDialogueLineStub = jest.fn().mockImplementation((line) => {
+        timeline.push(line);
+      });
+      const chooseOptionStub = jest.fn();
+
+      const content = `
+first line
+>> hello
+  * hi
+    hi!
+<<
+second line
+>> hello
+  * hi
+    hi!
+<<
+third line
+>> hello
+  * hi
+    hi!
+<<
+this is the end
+`;
+
+      const { getByLabelText } = render(
+        <Interpreter
+            content={content}
+            timeline={timeline}
+            chooseOption={chooseOptionStub}
+            addDialogueLine={addDialogueLineStub}/>
+      );
+
+      fireEvent.click(getByLabelText(/Execute Poltergeist mode \(auto anwser\)/i));
+
+      expect(addDialogueLineStub).toHaveBeenCalledTimes(11);
+      expect(addDialogueLineStub).toHaveBeenLastCalledWith(undefined);
+      expect(chooseOptionStub).toHaveBeenCalledTimes(3);
+      expect(timeline[timeline.length - 2]).toEqual({ type: 'dialogue', text: 'this is the end'});
+    });
+
+    it('cleans memory', () => {
+      let timeline = [];
+      const content = '\nvalue %a%\n{ set a = 1 }\nagain %a%\n';
+      const addDialogueLineStub = jest.fn().mockImplementation((line) => {
+        timeline.push(line);
+      });
+      const { getByLabelText } = render(
+        <Interpreter content={content} timeline={timeline} addDialogueLine={addDialogueLineStub}/>
+      );
+      fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));
+      fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));
+      fireEvent.click(getByLabelText(/Clear memory/i));
+      fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));
+
+      expect(timeline[0]).toEqual({ type: 'dialogue', text: 'value ' });
+      expect(timeline[1]).toEqual({ type: 'dialogue', text: 'again 1' });
+      expect(timeline[2]).toEqual({ type: 'INTERPRETER_INFO', text: 'Memory cleared' });
+      expect(timeline[3]).toEqual({ type: 'dialogue', text: 'value ' });
     });
   });
 });

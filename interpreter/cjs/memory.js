@@ -53,6 +53,14 @@ function Memory(listeners, init) {
     load(data) {
       mem = data;
     },
+
+    clear() {
+      mem = {
+        access: {},
+        variables: {},
+        internal: {}
+      };
+    },
   };
 }
 exports.Memory = Memory;

@@ -85,5 +85,13 @@ mod {set e = 100 % 2 }
 
     expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'vars some other id some name' });
   });
+
+  it('prints undefined variables as ""', () => {
+    const parser = Parser();
+    const content = parser.parse('var %id% here\n');
+    const dialogue = Interpreter(content);
+
+    expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'var  here' });
+  });
 });
 

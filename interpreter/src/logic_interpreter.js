@@ -30,7 +30,7 @@ export const LogicInterpreter = (mem) => {
     'assign': (name, value) => mem.setVariable(name, value),
     'add_assign': (name, value) => mem.setVariable(name, mem.getVariable(name) + value),
     'sub_assign': (name, value) => mem.setVariable(name, mem.getVariable(name) - value),
-    'error': (n, v, a) => { throw new Error(`Unknown operation "${a.operation}"`) }
+    'error': (_n, _v, a) => { throw new Error(`Unknown operation "${a.operation}"`) }
   };
 
   const nodeValueHandlers = {
