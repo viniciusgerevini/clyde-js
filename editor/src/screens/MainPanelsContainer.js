@@ -22,6 +22,10 @@ import {
   chooseOption,
 } from '../redux/interpreter';
 
+import {
+  setDocumentContent
+} from '../redux/editor';
+
 const mapStateToProps = (state, props) => ({
   ...state.interfaceConfig,
   editorDefaultValue: state.editor.currentValue,
@@ -72,6 +76,9 @@ const mapDispatchToProps = dispatch => ({
   chooseOption: (optionIndex) => {
     dispatch(chooseOption(optionIndex));
   },
+  setDocumentContent: (content) => {
+    dispatch(setDocumentContent(content));
+  }
 });
 
 export default connect(

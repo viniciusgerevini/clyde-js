@@ -1,30 +1,32 @@
 # Clyde Editor
 
 ### TODO
+- [ ] language
+    - [ ] parent divert in block does not work
+    - [ ] divert to uunkown block fails
+
 - [ ] interface
     - [x] main structure
-    - [ ] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
-    - [ ] full screen
+    - [x] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
     - [ ] help screen
     - [ ] sync interpreter and editor file
 - [ ] interpreter
-    - [ ] action bar: play, reset, clean
+    - [x] action bar: play, reset, clean
     - [ ] show debug bottom pane
     - [ ] options menu: 'verbose, persistent, etc'
-    - [ ] scroll
-    - [ ] mouse support
+    - [x] scroll
+    - [x] mouse support
     - [ ] keyboard support
-    - [ ] text only mode
-    - [ ] dialog bubbles mode
+    - [x] dialog bubbles mode
     - [ ] watch mode
-    - [ ] interpreter only view
+    - [x] interpreter only view
     - [ ] tabs? multi files open
     - [ ] show current position on editor
 - [ ] editor
     - [ ] read only
     - [ ] show invisibles
     - [ ] vim mode/ emacs mode
-    - [ ] create clyde syntax mode
+    - [x] create clyde syntax mode
     - [ ] auto complete?
     - [ ] go to definition?
     - [ ] line wrap?
@@ -38,15 +40,12 @@
     - [ ] run file
     - [ ] compile file
     - [ ] search
+    - [ ] persist preferences
 - [ ] translator
     - [ ] auto generate ids
     - [ ] generate ids buttom
     - [ ] translation editor
     - [ ] generate clyde file using dictionary
-    - [ ] define translation folder
-    - [ ] save translation per file
-    - [ ] save global dictionary file
-    - [ ] add new dictionaries
 - [ ] configuration
     - [ ] editor configuration file
     - [ ] project configuration file

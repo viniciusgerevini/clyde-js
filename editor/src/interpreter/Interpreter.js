@@ -114,6 +114,23 @@ const InfoBubble = styled.div `
   cursor: default;
 `;
 
+const ErrorBubble = styled.div`
+  text-align: center;
+  width: auto;
+  background-color: #ffeeee;
+  margin: 10px 10px;
+  padding: 30px 20px;
+  border-radius: 5px;
+  cursor: default;
+  font-weight: 500;
+  display: flex;
+  //align-items: center;
+  justify-content: center;
+  white-space: pre-line;
+  line-height: 26px;
+`;
+
+
 export default function Interpreter(p) {
   const {
     content,
@@ -143,17 +160,26 @@ export default function Interpreter(p) {
   // const data = argv['save-data'] ? loadSaveFile(argv['save-data']) : undefined;
   // dialogue.on(dialogue.events.VARIABLE_CHANGED, trackInternalChanges('variable', events));
   // dialogue.on(dialogue.events.EVENT_TRIGGERED, trackInternalChanges('event', events));
-  const parser = Parser();
-  const doc = parser.parse(content || '');
+  let doc;
+  let errorMessage;
 
-  if (!dialogue || content !== lastContent) {
-    setLastContent(content);
-    dialogue = ClydeInterpreter(doc);
-    if (currentBlock) {
-      dialogue.begin(currentBlock);
-      setBlock(currentBlock);
+  try {
+    const parser = Parser();
+    doc = parser.parse(`${content || ''}\n`);
+
+    if (!dialogue || content !== lastContent) {
+      setLastContent(content);
+      dialogue = ClydeInterpreter(doc);
+      if (currentBlock) {
+        dialogue.begin(currentBlock);
+        setBlock(currentBlock);
+      }
+      setDialogue(dialogue);
     }
-    setDialogue(dialogue);
+  } catch (e) {
+    errorMessage = e.message;
+    const parser = Parser();
+    doc = parser.parse(`${lastContent || ''}\n`);
   }
 
   return (
@@ -185,7 +211,7 @@ export default function Interpreter(p) {
         defaultSizes={[80, 20]}
         style={{height: 'calc(100% - 40px)'}}
        >
-        { content && content !== '' ?
+        { !errorMessage && content && content !== '' ?
           <InterpreterScreen
             dialogue={dialogue}
             currentBlock={currentBlock}
@@ -197,7 +223,7 @@ export default function Interpreter(p) {
             clearTimeline={clearTimeline}
             chooseOption={chooseOption}
             />
-          : <div>Nothing to show.</div>}
+            : (errorMessage ? <ErrorBubble style={{ backgroundColor: '#eeefef' }}>{errorMessage}</ErrorBubble> :  <InfoBubble>Nothing to show.</InfoBubble>)}
 
         { shouldShowDebugPane ?
             <DebugPane aria-label="Debug pane">debug window
@@ -362,6 +388,7 @@ function InterpreterToolbar(properties) {
     dialogue.clearData();
     addDialogueLine({ type: 'INTERPRETER_INFO', text: 'Memory cleared'})
     dialogue.begin(currentBlock);
+    clearTimeline();
   };
 
   return (
@@ -460,7 +487,7 @@ function InterpreterScreen(props) {
 
   return (
       <InterpreterScreenWrapper onClick={next} style={style} aria-label="Interpreter Dialogue Timeline">
-        {!timeline || !timeline.length ? <InfoBubble>Dialogue not started.</InfoBubble> : ''}
+        {!timeline || !timeline.length ? <InfoBubble>Dialogue not started. Click for next line.</InfoBubble> : ''}
         {
           singleBubblePresentation ?
             ( timeline.length ?  <DialogueEntry line={timeline[timeline.length - 1]} onSelection={choose} /> : undefined )

@@ -32,13 +32,15 @@ function errorHandling(_err, hash) {
     throw new Error(`Unexpected indentation on line ${hash.line}.\nExpected: ${expected}`);
   }
 
-
   const message = `Unexpected token on line ${hash.line}: '${token}'.\nExpected: ${expected}`;
 
   throw new Error(message);
 }
 
 function cleanToken(token) {
-  return token.replace(/\'/g, '');
+  if (token.replace) {
+    return token.replace(/\'/g, '');
+  }
+  return token;
 }
 

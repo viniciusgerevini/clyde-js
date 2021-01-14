@@ -15,11 +15,15 @@ const EditorWrapper = styled.div`
   overflow: hidden;
 `;
 
-export default function Editor({ defaultValue, ...props}) {
+export default function Editor({ defaultValue, setDocumentContent, ...props}) {
   const { ref, width = 500, height = 500 } = useResizeObserver();
 
   const onBeforeLoad = (editor) => {
     ClydeMode(editor);
+  };
+
+  const onChange = (value) => {
+    setDocumentContent(value);
   };
 
   return (
@@ -29,11 +33,13 @@ export default function Editor({ defaultValue, ...props}) {
         mode="clyde"
         theme="dracula"
         onBeforeLoad={onBeforeLoad}
+        onChange={onChange}
         name="mainEditor"
         width={`${width}px`}
         height={`${height}px`}
         editorProps={{ $blockScrolling: true }}
         fontSize="16px"
+        debounceChangePeriod={1000}
       />
     </EditorWrapper>
   );

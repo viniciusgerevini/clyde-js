@@ -43,6 +43,7 @@ export default function MainPanels(props) {
     changeInterpreterSplitDirection,
     // editor
     editorDefaultValue,
+    setDocumentContent,
     // interpreter
     currentBlock,
     timeline,
@@ -117,7 +118,7 @@ export default function MainPanels(props) {
          defaultSizes={[50, 50]}
          style={{height: 'calc(100% - 40px)'}}
          aria-label="Main panels">
-        { isEditorEnabled ? <Editor defaultValue={editorDefaultValue} /> : undefined }
+        { isEditorEnabled ? <Editor defaultValue={editorDefaultValue} setDocumentContent={setDocumentContent} /> : undefined }
         { isInterpreterEnabled ?
            <Interpreter
              content={editorDefaultValue}
@@ -153,6 +154,7 @@ MainPanels.propTypes = {
   toggleInterpreter: PropTypes.func,
   interpreterSplitDirection: PropTypes.string,
   editorDefaultValue: PropTypes.string,
+  setDocumentContent: PropTypes.func,
 
   currentBlock: PropTypes.string,
   timeline: PropTypes.array,

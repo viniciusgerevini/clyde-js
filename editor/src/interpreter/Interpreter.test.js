@@ -27,7 +27,7 @@ describe('Interpreter component', () => {
     const timeline = [];
     const { getByText } = render(<Interpreter content={content} timeline={timeline}/>);
 
-    expect(getByText('Dialogue not started.')).toBeInTheDocument();
+    expect(getByText('Dialogue not started. Click for next line.')).toBeInTheDocument();
   });
 
   it('get dialogue line when clicked on interpreter', () => {
@@ -584,8 +584,9 @@ this is the end
       const addDialogueLineStub = jest.fn().mockImplementation((line) => {
         timeline.push(line);
       });
+      const clearTimelineStub = jest.fn();
       const { getByLabelText } = render(
-        <Interpreter content={content} timeline={timeline} addDialogueLine={addDialogueLineStub}/>
+        <Interpreter content={content} timeline={timeline} addDialogueLine={addDialogueLineStub} clearTimeline={clearTimelineStub}/>
       );
       fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));
       fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));
