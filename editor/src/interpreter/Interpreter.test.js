@@ -210,6 +210,22 @@ describe('Interpreter component', () => {
     expect(getByLabelText(/Debug pane/i)).toBeInTheDocument();
   });
 
+  it('renders metadata', () => {
+    const { getByLabelText } = render(
+      <Interpreter
+        content={'Hello! $id: some_id |tag|\n'}
+        shouldShowExtraMetadata={true}
+        timeline={[{ type: 'dialogue', text: 'Hello!', id: 'some_id', tags: ['tag']}]}/>
+    );
+
+    const id = getByLabelText(/line id/i);
+    const tags = getByLabelText(/line tags/i);
+
+    expect(getByLabelText(/metadata/i)).toBeInTheDocument();
+    expect(id.innerHTML).toMatch(/.*id:.*some_id/);
+    expect(tags.innerHTML).toMatch(/.*tags:.*tag/);
+  });
+
   it('starts with selected block', () => {
     const addDialogueLineStub = jest.fn();
     const setBlockStub = jest.fn();

@@ -33,7 +33,6 @@ const Wrapper = styled.div`
 
 const InterpreterScreenWrapper = styled.div`
   width: auto;
-  background: #eee;
   overflow: scroll;
 `;
 
@@ -72,11 +71,13 @@ const IconWrapper = styled.span`
 
 const DialogueBubble = styled.div`
   width: auto;
-  background-color: #efccef;
+  background-color: #fff5da;
+  color: #34383c;
   margin: 10px 10px;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: default;
+  position: relative;
 `;
 
 const DialogueContent = styled.div`
@@ -94,12 +95,13 @@ const DialogueOptionsList = styled.ol`
 `;
 
 const DialogueOption = styled.li`
+  position: relative;
   opacity: ${p => p.optionSelected !== undefined && p.optionSelected !== p.index ? 0.5 : 1 };
   ${p => p.optionSelected === p.index ? 'font-weight: 600;' : '' }
   cursor: ${p => p.optionSelected === undefined ? 'pointer' : 'default' };
   margin: 4px;
 
-  span:hover {
+  > span:hover {
     ${p => p.optionSelected !== undefined ? '' : 'font-weight: 600;' }
   }
 `;
@@ -124,10 +126,24 @@ const ErrorBubble = styled.div`
   cursor: default;
   font-weight: 500;
   display: flex;
-  //align-items: center;
   justify-content: center;
   white-space: pre-line;
   line-height: 26px;
+`;
+
+const DialogueMetadataWrapper = styled.span`
+  color: #444;
+  font-weight: normal;
+  background-color: rgba(245,235,208, 1);
+  opacity: 0.8;
+  border-radius: 5px;
+  padding-right: 10px;
+  margin-left: 10px;
+
+  label {
+    margin-left: 10px;
+    font-weight: 500;
+  }
 `;
 
 
@@ -490,10 +506,10 @@ function InterpreterScreen(props) {
         {!timeline || !timeline.length ? <InfoBubble>Dialogue not started. Click for next line.</InfoBubble> : ''}
         {
           singleBubblePresentation ?
-            ( timeline.length ?  <DialogueEntry line={timeline[timeline.length - 1]} onSelection={choose} /> : undefined )
+            ( timeline.length ?  <DialogueEntry line={timeline[timeline.length - 1]} onSelection={choose} showMetadata={shouldShowExtraMetadata} /> : undefined )
           :
             timeline.map((line, key) => {
-                return <DialogueEntry line={line} key={key} onSelection={choose}/>
+                return <DialogueEntry line={line} key={key} onSelection={choose} showMetadata={shouldShowExtraMetadata}/>
             })
         }
         <div ref={scrollableRef}/>
@@ -504,7 +520,8 @@ function InterpreterScreen(props) {
 function DialogueEntry(props) {
   const {
     line,
-    onSelection
+    onSelection,
+    showMetadata
   } = props;
 
   if (line === undefined) {
@@ -512,11 +529,11 @@ function DialogueEntry(props) {
   }
 
   if (line.type === 'dialogue') {
-    return <DialogueLine {...line}/>
+    return <DialogueLine {...line} showMetadata={showMetadata}/>
   }
 
   if (line.type === 'options') {
-    return <DialogueOptions {...line} onSelection={onSelection}/>
+    return <DialogueOptions {...line} onSelection={onSelection} showMetadata={showMetadata}/>
   }
 
   return <InfoBubble>{line.text}</InfoBubble>
@@ -524,15 +541,18 @@ function DialogueEntry(props) {
 
 function DialogueLine(props) {
   const {
+    id,
+    tags,
     speaker,
-    text
+    text,
+    showMetadata
   } = props;
 
   return (
     <DialogueBubble>
       { speaker ? <DialogueSpeaker>{speaker}</DialogueSpeaker> : undefined }
       <DialogueContent>
-        {text}
+        {text} <DialogueMetadata id={id} tags={tags} isVisible={showMetadata}/>
       </DialogueContent>
     </DialogueBubble>
   );
@@ -540,11 +560,14 @@ function DialogueLine(props) {
 
 function DialogueOptions(props) {
   const {
+    id,
+    tags,
     speaker,
     name,
     options,
     onSelection,
-    selected
+    selected,
+    showMetadata
   } = props;
 
   const select = (option) => {
@@ -558,7 +581,7 @@ function DialogueOptions(props) {
     <DialogueBubble>
       { speaker ? <DialogueSpeaker>{speaker}</DialogueSpeaker> : undefined }
       <DialogueContent>
-        {name}
+        {name} <DialogueMetadata id={id} tags={tags} isVisible={showMetadata}/>
         <DialogueOptionsList>
           { options.map((option, index) => (
             <DialogueOption
@@ -566,12 +589,23 @@ function DialogueOptions(props) {
               optionSelected={selected}
               index={index}
             >
-              <span onClick={e => { e.stopPropagation(); select(index) }}>{option.label}</span>
+              <span onClick={e => { e.stopPropagation(); select(index) }}>{option.label} <DialogueMetadata {...option} isVisible={showMetadata}/></span>
+
             </DialogueOption>
             ))}
         </DialogueOptionsList>
       </DialogueContent>
     </DialogueBubble>
   );
+}
+
+function DialogueMetadata({ id, tags, isVisible }) {
+  if (!isVisible || (id === undefined && tags === undefined )) {
+    return<span></span>;
+  }
+
+  return <DialogueMetadataWrapper aria-label="metadata">
+    { id !== undefined ? <span aria-label="line id"><label>id:</label> {id}</span>: undefined } { tags !== undefined ? <span aria-label="line tags"><label>tags:</label> {tags.join(', ')}</span>: undefined }
+  </DialogueMetadataWrapper>
 }
 
