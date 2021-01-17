@@ -7,11 +7,11 @@
     - [x] main structure
     - [x] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
     - [ ] help screen
-    - [ ] sync interpreter and editor file
+    - [x] sync interpreter and editor file
 - [ ] editor interpreter
     - [x] action bar: play, reset, clean
-    - [ ] show debug bottom pane
-    - [ ] options menu: 'verbose, persistent, etc'
+    - [x] show debug bottom pane
+    - [x] options menu: 'verbose, persistent, etc'
     - [x] scroll
     - [x] mouse support
     - [ ] keyboard support
@@ -40,9 +40,10 @@
     - [ ] search
     - [ ] persist preferences
 - [ ] translator
-    - [ ] auto generate ids
     - [ ] generate ids buttom
     - [ ] translation editor
+    - [ ] shows used translation lines in translation editor
+    - [ ] shows id with not lines defined in the editor
     - [ ] generate clyde file using dictionary
 - [ ] configuration
     - [ ] editor configuration file

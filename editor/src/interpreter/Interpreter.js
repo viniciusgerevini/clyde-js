@@ -225,6 +225,11 @@ function DebugPane(properties) {
     return entries;
   }, {});
 
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} ${date.toLocaleTimeString()}`;
+  };
+
   return <DebugPaneWrapper aria-label="Debug pane" {...props}>
     <DebugPaneCloseButton>
       <FontAwesomeIcon icon={faTimes} onClick={hideDebugPane} aria-label="Close debug pane"/>
@@ -242,7 +247,7 @@ function DebugPane(properties) {
       <tbody>
     {Object.keys(entries).map((key) => {
       const entry = entries[key];
-      return <tr key={key}><td>{entry.type}</td><td>{entry.name}</td><td>{entry.value}</td><td>{entry.eventTime}</td></tr>;
+      return <tr key={key}><td>{entry.type}</td><td>{entry.name}</td><td>{entry.value !== undefined ? entry.value.toString() : undefined}</td><td>{formatDate(entry.eventTime)}</td></tr>;
     })}
      </tbody>
     </DebugEntryTable>
