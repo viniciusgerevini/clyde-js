@@ -1,4 +1,5 @@
 import { render, fireEvent } from '@testing-library/react';
+import {notifyEvent} from '../redux/interpreter';
 import Interpreter from './Interpreter';
 
 
@@ -205,9 +206,10 @@ describe('Interpreter component', () => {
       <Interpreter
         content={'Hello!\nHi\n'}
         shouldShowDebugPane={true}
+        events={[]}
         timeline={[]}/>
     );
-    expect(getByLabelText(/Debug pane/i)).toBeInTheDocument();
+    expect(getByLabelText(/Debug pane/)).toBeInTheDocument();
   });
 
   it('renders metadata', () => {
@@ -249,6 +251,56 @@ neither this one
 
     expect(addDialogueLineStub).toHaveBeenCalledWith({ type: 'dialogue', text: 'this one'});
     expect(setBlockStub).toHaveBeenCalledWith('block_one');
+  });
+
+  it('notifies variable changed and event triggered', () => {
+    Date.now = jest.fn(() => 123);
+    let timeline = [];
+    const content = '{ set a = 1 }\n{trigger b}\n';
+    const addDialogueLineStub = jest.fn();
+    const clearTimelineStub = jest.fn();
+    const clearEventsStub = jest.fn();
+    const notifyEventStub = jest.fn();
+    const { getByLabelText } = render(
+      <Interpreter
+        content={content}
+        timeline={timeline}
+        addDialogueLine={addDialogueLineStub}
+        clearTimeline={clearTimelineStub}
+        clearEvents={clearEventsStub}
+        notifyEvent={notifyEventStub}
+      />
+    );
+    fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));
+
+    expect(notifyEventStub).toHaveBeenCalledTimes(2);
+    expect(notifyEventStub).toHaveBeenCalledWith({ type: 'variable', eventTime: 123, data: { name: 'a', value: 1 }});
+    expect(notifyEventStub).toHaveBeenCalledWith({ type: 'event', eventTime: 123, data: { name: 'b' }});
+  });
+
+  it('renders debug events', () => {
+    Date.now = jest.fn(() => 123);
+    const event = { type: 'variable', eventTime: 12, data: { name: 'this_is_a_variable', value: 1 }};
+    const events = [event, event];
+    const content = '{ set a = 1 }\n{trigger b}\n';
+    const addDialogueLineStub = jest.fn();
+    const clearTimelineStub = jest.fn();
+    const clearEventsStub = jest.fn();
+    const notifyEventStub = jest.fn();
+    const { getByText } = render(
+      <Interpreter
+        content={content}
+        timeline={[]}
+        events={events}
+        addDialogueLine={addDialogueLineStub}
+        clearTimeline={clearTimelineStub}
+        clearEvents={clearEventsStub}
+        notifyEvent={notifyEventStub}
+        shouldShowDebugPane={true}
+      />
+    );
+
+    expect(getByText('this_is_a_variable')).toBeInTheDocument();
   });
 
   describe('toolbar commands', () => {
@@ -298,6 +350,7 @@ neither this one
           hideDebugPane={hideDebugPaneStub}
           showDebugPane={showDebugPaneStub}
           shouldShowDebugPane={true}
+          events={[]}
           timeline={[]}/>
       );
 
@@ -601,8 +654,17 @@ this is the end
         timeline.push(line);
       });
       const clearTimelineStub = jest.fn();
+      const clearEventsStub = jest.fn();
+      const notifyEventStub = jest.fn();
       const { getByLabelText } = render(
-        <Interpreter content={content} timeline={timeline} addDialogueLine={addDialogueLineStub} clearTimeline={clearTimelineStub}/>
+        <Interpreter
+          content={content}
+          timeline={timeline}
+          addDialogueLine={addDialogueLineStub}
+          clearTimeline={clearTimelineStub}
+          clearEvents={clearEventsStub}
+          notifyEvent={notifyEventStub}
+        />
       );
       fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));
       fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));

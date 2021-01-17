@@ -26,6 +26,8 @@ import {
   enableSingleBubbleDialogue,
   disableSingleBubbleDialogue,
   chooseOption,
+  notifyEvent,
+  clearEvents,
   createEmptyState as createInterpreterEmptyState
 } from '../redux/interpreter';
 
@@ -211,6 +213,36 @@ describe('MainPanelsContainer', () => {
       const action = store.getActions()[0];
       expect(action.type).toEqual(setDebugPaneDirection.toString());
       expect(action.payload).toEqual({ direction: 'vertical' });
+    });
+
+    it('notifies event', () => {
+      const store = createMockStore(
+        { isInterpreterEnabled: true },
+        { currentValue:'{set hi=1}\n' },
+        { timeline: [], events: [], shouldShowDebugPane: true }
+      );
+      const { getByLabelText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+      fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));
+
+      const action = store.getActions()[0];
+
+      expect(action.type).toEqual(notifyEvent.toString());
+    });
+
+    it('clears event', () => {
+      const store = createMockStore(
+        { isInterpreterEnabled: true },
+        { currentValue: undefined },
+        { timeline: [], events: [], shouldShowDebugPane: true }
+      );
+      const { getByLabelText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+      fireEvent.click(getByLabelText(/Clear memory/i));
+
+      const action = store.getActions()[1];
+
+      expect(action.type).toEqual(clearEvents.toString());
     });
 
     it('triggers show extra metadata', () => {

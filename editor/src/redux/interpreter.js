@@ -11,6 +11,8 @@ export const setDebugPaneDirection = createAction('editor/interpreter/set_debug_
 export const enableSingleBubbleDialogue = createAction('editor/interpreter/enable_single_bubble_dialogue');
 export const disableSingleBubbleDialogue = createAction('editor/interpreter/disable_single_bubble_dialogue');
 export const chooseOption = createAction('editor/interpreter/choose_option');
+export const notifyEvent = createAction('editor/interpreter/notify_event');
+export const clearEvents = createAction('editor/interpreter/clear_events');
 
 
 export function createEmptyState() {
@@ -21,7 +23,8 @@ export function createEmptyState() {
     shouldShowDebugPane: false,
     debugPaneDirection: 'horizontal',
     singleBubblePresentation: false,
-    document: undefined
+    document: undefined,
+    events: []
   };
 }
 
@@ -83,6 +86,16 @@ const chooseOptionReducer = (state, action) => {
   return state;
 };
 
+const notifyEventReducer = (state, action) => {
+  state.events = [...state.events, action.payload];
+  return state;
+};
+
+const clearEventsReducer = (state, _action) => {
+  state.events = [];
+  return state;
+};
+
 const interpreterReducers = createReducer(createEmptyState(), {
   [setBlock]: setBlockReducer,
   [addDialogueLine]: addDialogueLineReducer,
@@ -95,6 +108,8 @@ const interpreterReducers = createReducer(createEmptyState(), {
   [enableSingleBubbleDialogue]: enableSingleBubbleDialogueReducer,
   [disableSingleBubbleDialogue]: disableSingleBubbleDialogReducer,
   [chooseOption]: chooseOptionReducer,
+  [notifyEvent]: notifyEventReducer,
+  [clearEvents]: clearEventsReducer,
 });
 
 export default interpreterReducers;

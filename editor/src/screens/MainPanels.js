@@ -62,7 +62,10 @@ export default function MainPanels(props) {
     setDebugPaneDirection,
     enableSingleBubbleDialogue,
     disableSingleBubbleDialogue,
-    chooseOption
+    chooseOption,
+    events,
+    notifyEvent,
+    clearEvents,
   } = props;
 
   const [isMenuVisible, setMenuVisibility] = useState(false);
@@ -140,6 +143,9 @@ export default function MainPanels(props) {
              enableSingleBubbleDialogue={enableSingleBubbleDialogue}
              disableSingleBubbleDialogue={disableSingleBubbleDialogue}
              chooseOption={chooseOption}
+             events={events}
+             notifyEvent={notifyEvent}
+             clearEvents={clearEvents}
          />: undefined }
        </SplitPane>
     </Wrapper>
@@ -174,5 +180,8 @@ MainPanels.propTypes = {
   setDebugPaneDirection: PropTypes.func,
   enableSingleBubbleDialogue: PropTypes.func,
   disableSingleBubbleDialogue: PropTypes.func,
+
+  notifyEvent: PropTypes.func,
+  clearEvents: PropTypes.func,
 };
 

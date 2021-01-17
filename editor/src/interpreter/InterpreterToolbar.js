@@ -68,6 +68,7 @@ export default function InterpreterToolbar(properties) {
     dialogue,
     addDialogueLine,
     chooseOption,
+    clearEvents,
   } = properties;
 
   const [isMenuVisible, setMenuVisibility] = useState(false);
@@ -152,6 +153,7 @@ export default function InterpreterToolbar(properties) {
     dialogue.clearData();
     addDialogueLine({ type: 'INTERPRETER_INFO', text: 'Memory cleared'})
     dialogue.begin(currentBlock);
+    clearEvents();
     clearTimeline();
   };
 

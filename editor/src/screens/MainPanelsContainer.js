@@ -20,6 +20,8 @@ import {
   enableSingleBubbleDialogue,
   disableSingleBubbleDialogue,
   chooseOption,
+  notifyEvent,
+  clearEvents,
 } from '../redux/interpreter';
 
 import {
@@ -78,7 +80,13 @@ const mapDispatchToProps = dispatch => ({
   },
   setDocumentContent: (content) => {
     dispatch(setDocumentContent(content));
-  }
+  },
+  notifyEvent: (event) => {
+    dispatch(notifyEvent(event));
+  },
+  clearEvents: () => {
+    dispatch(clearEvents());
+  },
 });
 
 export default connect(

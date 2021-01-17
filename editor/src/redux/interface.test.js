@@ -5,6 +5,7 @@ import reducers, {
 } from './interface';
 
 describe('Interface reducers', () => {
+
   it('toggle editor', () => {
     const action = toggleEditor({ state: false });
     const action2 = toggleEditor({ state: true });

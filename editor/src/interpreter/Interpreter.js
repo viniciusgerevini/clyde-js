@@ -23,9 +23,6 @@ const Wrapper = styled.div`
   height: 100%;
 `;
 
-const DebugPane = styled.div`
-`;
-
 export default function Interpreter(p) {
   const {
     content,
@@ -47,6 +44,9 @@ export default function Interpreter(p) {
     enableSingleBubbleDialogue,
     disableSingleBubbleDialogue,
     chooseOption,
+    notifyEvent,
+    clearEvents,
+    events,
     ...props } = p;
   const [lastContent, setLastContent] = useState(content);
   const [persistedDialogue, setDialogue] = useState();
@@ -57,6 +57,18 @@ export default function Interpreter(p) {
   // dialogue.on(dialogue.events.EVENT_TRIGGERED, trackInternalChanges('event', events));
   let doc;
   let errorMessage;
+
+  const updateEventInfo = (data) => {
+    updateDebugInfo('event', data);
+  };
+
+  const updateVariableInfo = (data) => {
+    updateDebugInfo('variable', data);
+  };
+
+  const updateDebugInfo = (type, data) => {
+    notifyEvent({ type, data, eventTime: Date.now() });
+  };
 
   try {
     const parser = Parser();
@@ -70,6 +82,9 @@ export default function Interpreter(p) {
         setBlock(currentBlock);
       }
       setDialogue(dialogue);
+
+      dialogue.on(dialogue.events.VARIABLE_CHANGED, updateVariableInfo);
+      dialogue.on(dialogue.events.EVENT_TRIGGERED, updateEventInfo);
     }
   } catch (e) {
     errorMessage = e.message;
@@ -99,6 +114,7 @@ export default function Interpreter(p) {
         addDialogueLine={addDialogueLine}
         dialogue={dialogue}
         chooseOption={chooseOption}
+        clearEvents={clearEvents}
       />
 
       <SplitPane
@@ -121,10 +137,7 @@ export default function Interpreter(p) {
             : (errorMessage ? <ErrorBubble style={{ backgroundColor: '#eeefef' }}>{errorMessage}</ErrorBubble> :  <InfoBubble>Nothing to show.</InfoBubble>)}
 
         { shouldShowDebugPane ?
-            <DebugPane aria-label="Debug pane">debug window
-              <FontAwesomeIcon icon={faSave}/>
-              <FontAwesomeIcon icon={faTimes}/>
-            </DebugPane>
+            <DebugPane events={events} hideDebugPane={hideDebugPane}/>
         : undefined }
       </SplitPane>
     </Wrapper>
@@ -151,3 +164,87 @@ Interpreter.propTypes = {
   disableSingleBubbleDialogue: PropTypes.func,
 };
 
+const DebugPaneWrapper = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  overflow: scroll;
+`;
+
+const DebugPaneCloseButton = styled.div`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+`;
+
+const DebugEntryTable = styled.table`
+  width: 90%;
+  margin: 10px;
+
+  thead > tr > td {
+    font-weight: 500;
+    padding-bottom: 5px;
+  }
+
+  tbody {
+    > tr:nth-child(even) {
+      background-color: #f3f3f3;
+    }
+    td {
+      padding: 2px 0px;
+    }
+  }
+`;
+
+function DebugPane(properties) {
+  const {
+    events,
+    hideDebugPane,
+    ...props
+  } = properties;
+
+
+  const entries = events.reduce((entries, event) => {
+    const identifier = `${event.type}${event.data.name}`;
+    let record = entries[identifier];
+    if (!record) {
+      entries[identifier] = {
+        type: event.type,
+        name: event.data.name,
+        value: event.data.value,
+        eventTime: event.eventTime,
+      }
+      return entries;
+    }
+    record.eventTime = event.eventTime;
+
+    if (event.data.value) {
+      record.value = event.data.value;
+    }
+    return entries;
+  }, {});
+
+  return <DebugPaneWrapper aria-label="Debug pane" {...props}>
+    <DebugPaneCloseButton>
+      <FontAwesomeIcon icon={faTimes} onClick={hideDebugPane} aria-label="Close debug pane"/>
+    </DebugPaneCloseButton>
+
+    <DebugEntryTable>
+      <thead>
+        <tr>
+          <td>Type</td>
+          <td>Name</td>
+          <td>Value</td>
+          <td>Time</td>
+        </tr>
+      </thead>
+      <tbody>
+    {Object.keys(entries).map((key) => {
+      const entry = entries[key];
+      return <tr key={key}><td>{entry.type}</td><td>{entry.name}</td><td>{entry.value}</td><td>{entry.eventTime}</td></tr>;
+    })}
+     </tbody>
+    </DebugEntryTable>
+  </DebugPaneWrapper>;
+}

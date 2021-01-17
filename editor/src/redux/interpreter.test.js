@@ -10,6 +10,8 @@ import reducers, {
   enableSingleBubbleDialogue,
   disableSingleBubbleDialogue,
   chooseOption,
+  notifyEvent,
+  clearEvents,
 } from './interpreter';
 
 describe('Interpreter reducers', () => {
@@ -72,6 +74,17 @@ describe('Interpreter reducers', () => {
   it('do not change state when choosing option but latest event is not options', () => {
     const action = chooseOption(0);
     expect(reducers({ timeline: [{ type: 'dialogue'}] }, action)).toEqual({ timeline: [{ type: 'dialogue' }] });
+  });
+
+  it('notify event', () => {
+    const someObject = { some: 'object' };
+    const action = notifyEvent(someObject);
+    expect(reducers({ events: [] }, action)).toEqual({ events: [someObject] });
+  });
+
+  it('clear events', () => {
+    const action = clearEvents();
+    expect(reducers({ events: [1, 2 , 3] }, action)).toEqual({ events: [] });
   });
 });
 
