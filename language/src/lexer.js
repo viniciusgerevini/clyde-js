@@ -2,6 +2,7 @@ export const TOKENS = {
   TEXT: 'TEXT',
   INDENT: 'INDENT',
   DEDENT: 'DEDENT',
+  EOF: 'EOF',
 }
 
 
@@ -114,6 +115,10 @@ export function tokenize(input) {
           }
         }
       }
+
+      position += 1;
+      tokens.push(Token(TOKENS.EOF, undefined, line, row));
+
       return tokens;
     },
 
@@ -121,6 +126,11 @@ export function tokenize(input) {
     next() {
       if (pendingTokens.length) {
         return pendingTokens.shift();
+      }
+
+      if (position === length) {
+        position += 1;
+        return Token(TOKENS.EOF, undefined, line, row);
       }
 
       while (position < length) {

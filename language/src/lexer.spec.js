@@ -3,7 +3,7 @@ import { TOKENS, tokenize } from './lexer';
 describe('Lexer', () => {
   it('text', () => {
     const tokens = tokenize('this is a line').getAll();
-    expect(tokens.length).toBe(1);
+    expect(tokens.length).toBe(2);
     expect(tokens[0]).toEqual({
       token: TOKENS.TEXT,
       value: 'this is a line',
@@ -14,7 +14,7 @@ describe('Lexer', () => {
 
   it('text with multiple lines', () => {
     const tokens = tokenize('this is a line\nthis is another line 2').getAll();
-    expect(tokens.length).toBe(2);
+    expect(tokens.length).toBe(3);
     expect(tokens[0]).toEqual({
       token: TOKENS.TEXT,
       value: 'this is a line',
@@ -37,7 +37,7 @@ this is a line
 this is another line 2
 # another one
 `).getAll();
-    expect(tokens.length).toBe(2);
+    expect(tokens.length).toBe(3);
     expect(tokens[0]).toEqual({
       token: TOKENS.TEXT,
       value: 'this is a line',
@@ -87,6 +87,7 @@ he he
       { token: TOKENS.TEXT, value: 'tab test', line: 9, row: 2 },
       { token: TOKENS.DEDENT, line: 10, row: 0 },
       { token: TOKENS.TEXT, value: 'he he', line: 10, row: 0 },
+      { token: TOKENS.EOF, line: 11, row: 0 },
     ]);
   });
 
@@ -104,6 +105,13 @@ now another dedent`);
     expect(tokens.next()).toEqual({ token: TOKENS.DEDENT, line: 3, row: 4 });
     expect(tokens.next()).toEqual({ token: TOKENS.DEDENT, line: 3, row: 0 });
     expect(tokens.next()).toEqual({ token: TOKENS.TEXT, value: 'now another dedent', line: 3, row: 0 });
+  });
+
+  it('returns EOF', () => {
+    const tokens = tokenize(`normal line`);
+
+    expect(tokens.next()).toEqual({ token: TOKENS.TEXT, value: 'normal line', line: 0, row: 0, });
+    expect(tokens.next()).toEqual({ token: TOKENS.EOF, line: 0, row: 11 });
     expect(tokens.next()).toEqual(undefined);
   });
 });
