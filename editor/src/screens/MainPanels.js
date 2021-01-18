@@ -2,13 +2,20 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCog, faColumns, faCode, faEye } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCog,
+  faColumns,
+  faCode,
+  faEye,
+  faSlidersH,
+} from '@fortawesome/free-solid-svg-icons'
 
 import SplitPane from './SplitPane';
 import DropDownMenu, { DropDownItem } from './DropdownMenu';
 
 import Editor from '../editor/Editor';
 import Interpreter from '../interpreter/Interpreter';
+import EditorSettingsModal from '../editor/EditorSettingsModal';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -44,6 +51,8 @@ export default function MainPanels(props) {
     // editor
     editorDefaultValue,
     setDocumentContent,
+    editorPreferences,
+    updateEditorPreference,
     // interpreter
     currentBlock,
     timeline,
@@ -69,6 +78,7 @@ export default function MainPanels(props) {
   } = props;
 
   const [isMenuVisible, setMenuVisibility] = useState(false);
+  const [isEditorSettingsVisible, setEditorSettingsVisibility] = useState(false);
 
   const toggleSplitDirection = () => {
     if (interpreterSplitDirection === 'vertical') {
@@ -80,6 +90,10 @@ export default function MainPanels(props) {
 
   const toggleMenu = () => {
     setMenuVisibility(!isMenuVisible);
+  };
+
+  const openEditorSettings = () => {
+    setEditorSettingsVisibility(true);
   };
 
   return (
@@ -111,6 +125,13 @@ export default function MainPanels(props) {
                     text={`${isInterpreterEnabled ? 'Hide' : 'Show' } interpreter`}
                   /> : undefined
                 }
+
+                <DropDownItem
+                  label="Editor preferences"
+                  onClick={openEditorSettings}
+                  icon={faSlidersH}
+                  text="Editor preferences"
+                />
               </DropDownMenu>
              ) : ''
            }
@@ -121,7 +142,7 @@ export default function MainPanels(props) {
          defaultSizes={[50, 50]}
          style={{height: 'calc(100% - 40px)'}}
          aria-label="Main panels">
-        { isEditorEnabled ? <Editor defaultValue={editorDefaultValue} setDocumentContent={setDocumentContent} /> : undefined }
+        { isEditorEnabled ? <Editor defaultValue={editorDefaultValue} setDocumentContent={setDocumentContent} preferences={editorPreferences}/> : undefined }
         { isInterpreterEnabled ?
            <Interpreter
              content={editorDefaultValue}
@@ -148,6 +169,9 @@ export default function MainPanels(props) {
              clearEvents={clearEvents}
          />: undefined }
        </SplitPane>
+      { isEditorSettingsVisible ?
+        <EditorSettingsModal updatePreference={updateEditorPreference} preferences={editorPreferences} onCloseClick={() => setEditorSettingsVisibility(false)} />
+      : undefined }
     </Wrapper>
   );
 };

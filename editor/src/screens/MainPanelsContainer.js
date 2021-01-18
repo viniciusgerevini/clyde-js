@@ -25,12 +25,14 @@ import {
 } from '../redux/interpreter';
 
 import {
-  setDocumentContent
+  setDocumentContent,
+  updatePreference
 } from '../redux/editor';
 
 const mapStateToProps = (state, props) => ({
   ...state.interfaceConfig,
   editorDefaultValue: state.editor.currentValue,
+  editorPreferences: state.editor.preferences,
   ...state.interpreter,
   ...props
 });
@@ -86,6 +88,9 @@ const mapDispatchToProps = dispatch => ({
   },
   clearEvents: () => {
     dispatch(clearEvents());
+  },
+  updateEditorPreference: (name, value) => {
+    dispatch(updatePreference({ name, value }));
   },
 });
 

@@ -122,16 +122,7 @@ const store = configureStore({
 })
 
 function loadState() {
-  return {
-    interfaceConfig: {
-      isEditorEnabled: true,
-      isProjectTreeEnabled: true,
-      isInterpreterEnabled: true
-    },
-    editor: {
-      currentValue: value
-    }
-  };
+  return;
 }
 
 function App() {

@@ -11,7 +11,8 @@ import {
 } from '../redux/interface';
 
 import {
-  createEmptyState as createEmptyEditorState
+  createEmptyState as createEmptyEditorState,
+  updatePreference,
 } from '../redux/editor';
 
 import {
@@ -119,6 +120,24 @@ describe('MainPanelsContainer', () => {
 
     expect(action.type).toEqual(changeInterpreterSplitDirection.toString());
     expect(action.payload).toEqual({ direction: 'horizontal' });
+  });
+
+  it('updates editor settings', () => {
+    const store = createMockStore(
+      {},
+      { currentValue:'Hi\n', preferences: {} },
+      { timeline: [] }
+    );
+    const { container, getByLabelText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+    fireEvent.click(getByLabelText(/Toggle settings menu/i));
+    fireEvent.click(getByLabelText(/Editor preferences/i));
+    fireEvent.click(container.querySelector(`input[name="showInvisibles"]`));
+
+    const action = store.getActions()[0];
+
+    expect(action.type).toEqual(updatePreference.toString());
+    expect(action.payload).toEqual({ name: 'showInvisibles', value: true });
   });
 
   describe('interpreter', () => {

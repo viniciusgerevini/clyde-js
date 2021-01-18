@@ -8,6 +8,7 @@
     - [x] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
     - [ ] help screen
     - [x] sync interpreter and editor file
+    - [ ] dark mode
 - [ ] editor interpreter
     - [x] action bar: play, reset, clean
     - [x] show debug bottom pane
@@ -20,6 +21,7 @@
     - [x] interpreter only view
     - [ ] tabs? multi files open
     - [ ] show current position on editor
+    - [ ] add file change notification in interpreter timeline?
 - [ ] editor
     - [ ] read only
     - [ ] show invisibles
