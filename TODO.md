@@ -20,19 +20,15 @@
     - [ ] watch mode
     - [x] interpreter only view
     - [ ] tabs? multi files open
-    - [ ] show current position on editor
     - [ ] add file change notification in interpreter timeline?
 - [ ] editor
-    - [ ] read only
-    - [ ] show invisibles
+    - [x] show invisibles
     - [ ] vim mode/ emacs mode
     - [x] create clyde syntax mode
-    - [ ] auto complete?
-    - [ ] go to definition?
-    - [ ] line wrap?
-    - [ ] theme, dark or light mode
-    - [ ] soft tabs
-    - [ ] hightligh current line
+    - [x] line wrap?
+    - [x] theme, dark or light mode
+    - [x] soft tabs
+    - [x] hightligh current line
     - [ ] can we change the generated document incrementally???
     - [ ] open file
     - [ ] switch files
