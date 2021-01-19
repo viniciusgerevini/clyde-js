@@ -5,7 +5,7 @@
   "main": "./cjs/index.js",
   "scripts": {
     "build": "npm run cjs && npm run copy_grammar",
-    "cjs": "ascjs src cjs",
+    "cjs": "mkdir -p cjs && ascjs src cjs",
     "copy_grammar": "cp src/lang/grammar.jison cjs/lang/grammar.jison",
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage"
   },

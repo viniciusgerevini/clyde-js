@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node ./src/cli.js",
     "build": "npm run cjs",
-    "cjs": "ascjs src cjs",
+    "cjs": "mkdir -p cjs && ascjs src cjs",
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage"
   },
   "bin": {
