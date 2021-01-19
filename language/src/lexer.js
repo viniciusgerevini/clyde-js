@@ -2,13 +2,22 @@ export const TOKENS = {
   TEXT: 'TEXT',
   INDENT: 'INDENT',
   DEDENT: 'DEDENT',
-  OPTION_LIST_START: 'OPTION_LIST_START',
-  OPTION_LIST_END: 'OPTION_LIST_END',
   OPTION: 'OPTION',
   STICKY_OPTION: 'STICKY_OPTION',
+  SQR_BRACKET_OPEN: 'SQR_BRACKET_OPEN',
+  SQR_BRACKET_CLOSE: 'SQR_BRACKET_CLOSE',
   EOF: 'EOF',
+  SPEAKER: 'SPEAKER',
+  LINE_ID: 'LINE_ID',
+  TAG: 'TAG',
 }
 
+const MODES = {
+  DEFAULT: 'DEFAULT',
+  OPTION: 'OPTION',
+  QSTRING: 'QSTRING',
+  LOGIC: 'LOGIC'
+};
 
 export function tokenize(input) {
   let indent = [0];
@@ -17,6 +26,7 @@ export function tokenize(input) {
   let row = 0;
   let length = input.length;
   let pendingTokens = [];
+  let mode = MODES.DEFAULT;
 
   // handle indentation
   const handleIndent = () => {
@@ -64,6 +74,18 @@ export function tokenize(input) {
       position += 1;
       row = 0;
     }
+
+    if (mode === MODES.OPTION) {
+      mode = MODES.DEFAULT;
+    }
+  };
+
+  // handle spaces
+  const handleSpace = () => {
+    while (input[position] === ' ') {
+      position += 1;
+      row += 1;
+    }
   };
 
   // handle text
@@ -71,42 +93,27 @@ export function tokenize(input) {
     const initialLine = line;
     const initialRow = row;
     let value = [];
-    let leadingSpaces = 0;
 
     while (position < input.length) {
       const currentChar = input[position];
 
-      if (currentChar === '\n') {
+      if (['\n', '$', '#' ].includes(currentChar) || (mode === MODES.OPTION && currentChar === ']')) {
         break;
       }
 
-      if (!value.length && currentChar === ' ') {
-        leadingSpaces += 1;
-      } else {
-        value.push(currentChar);
+      if (currentChar === ':') {
+        position += 1;
+        row += 1;
+        return Token(TOKENS.SPEAKER, initialLine, initialRow, value.join('').trim());
       }
+
+      value.push(currentChar);
 
       position += 1;
       row += 1;
     }
 
-    return Token(TOKENS.TEXT, initialLine, initialRow + leadingSpaces, value.join('').trim());
-  };
-
-  // handle options list start
-  const handleOptionsListStart = () => {
-    const initialRow = row;
-    row += 2;
-    position += 2;
-    return Token(TOKENS.OPTION_LIST_START, line, initialRow);
-  };
-
-  // handle options list start
-  const handleOptionsListEnd = () => {
-    const initialRow = row;
-    row += 2;
-    position += 2;
-    return Token(TOKENS.OPTION_LIST_END, line, initialRow);
+    return Token(TOKENS.TEXT, initialLine, initialRow, value.join('').trim());
   };
 
   // handle options
@@ -115,7 +122,45 @@ export function tokenize(input) {
     const initialRow = row;
     row += 1;
     position += 1;
+    mode = MODES.OPTION;
     return Token(token, line, initialRow);
+  };
+
+  // handle brackets
+  const handleBrackets = () => {
+    const token = input[position] === '[' ? TOKENS.SQR_BRACKET_OPEN : TOKENS.SQR_BRACKET_CLOSE;
+    const initialRow = row;
+    row += 1;
+    position += 1;
+    return Token(token, line, initialRow);
+  };
+
+  const handleLineId = () => {
+    const initialRow = row;
+    let values = [];
+    position += 1;
+    row += 1;
+
+    while (input[position].match(/[A-z|0-9]/)) {
+      values.push(input[position]);
+      position += 1;
+      row += 1;
+    }
+    return Token(TOKENS.LINE_ID, line, initialRow, values.join(''));
+  };
+
+  const handleTag = () => {
+    const initialRow = row;
+    let values = [];
+    position += 1;
+    row += 1;
+
+    while (input[position].match(/[A-z|0-9]/)) {
+      values.push(input[position]);
+      position += 1;
+      row += 1;
+    }
+    return Token(TOKENS.TAG, line, initialRow, values.join(''));
   };
 
   // get next token
@@ -124,7 +169,7 @@ export function tokenize(input) {
       return handleIndent();
     }
 
-    if (input[position] === '#') {
+    if (input[position] === '-' && input[position + 1] === '-') {
       return handleComments();
     }
 
@@ -132,16 +177,24 @@ export function tokenize(input) {
       return handleLineBreaks();
     }
 
-    if (input[position] === '>' && input[position + 1] === '>') {
-      return handleOptionsListStart();
-    }
-
-    if (input[position] === '<' && input[position + 1] === '<') {
-      return handleOptionsListEnd();
+    if (input[position] === ' ') {
+      return handleSpace();
     }
 
     if (input[position] === '*' || input[position] === '+') {
       return handleOption();
+    }
+
+    if (mode === MODES.OPTION && ['[', ']' ].includes(input[position])) {
+      return handleBrackets();
+    }
+
+    if (input[position] === '$') {
+      return handleLineId();
+    }
+
+    if (input[position] === '#') {
+      return handleTag();
     }
 
     return handleText();
