@@ -19,11 +19,33 @@ const MODES = {
   LOGIC: 'LOGIC'
 };
 
+const tokenFriendlyHint = {
+  [TOKENS.TEXT]: 'text',
+  [TOKENS.INDENT]: 'INDENT',
+  [TOKENS.DEDENT]: 'DEDENT',
+  [TOKENS.OPTION]: '*',
+  [TOKENS.STICKY_OPTION]: '+',
+  [TOKENS.SQR_BRACKET_OPEN]: '[',
+  [TOKENS.SQR_BRACKET_CLOSE]: ']',
+  [TOKENS.EOF]: 'EOF',
+  [TOKENS.SPEAKER]: '<speaker name>:',
+  [TOKENS.LINE_ID]: '$id',
+  [TOKENS.TAG]: '#tag',
+}
+
+export function getTokenFriendlyHint(token) {
+  const hint = tokenFriendlyHint[token];
+  if (!hint) {
+    return token;
+  }
+  return hint;
+}
+
 export function tokenize(input) {
   let indent = [0];
   let position = 0;
   let line = 0;
-  let row = 0;
+  let column = 0;
   let length = input.length;
   let pendingTokens = [];
   let mode = MODES.DEFAULT;
@@ -39,21 +61,21 @@ export function tokenize(input) {
     }
     if (indentation > indent[0]) {
         const previousIndent = indent[0];
-        row += indentation;
+        column += indentation;
         indent.unshift(indentation);
         return Token(TOKENS.INDENT, initialLine, previousIndent);
     }
 
     if (indentation === indent[0]) {
-      row = indent[0]
+      column = indent[0]
       return;
     }
 
     let tokens = [];
     while (indentation < indent[0]) {
         indent.shift();
-        row = indent[0];
-        tokens.push(Token(TOKENS.DEDENT, line, row));
+        column = indent[0];
+        tokens.push(Token(TOKENS.DEDENT, line, column));
     }
 
     return tokens;
@@ -72,7 +94,7 @@ export function tokenize(input) {
     while (input[position] === '\n') {
       line += 1;
       position += 1;
-      row = 0;
+      column = 0;
     }
 
     if (mode === MODES.OPTION) {
@@ -84,14 +106,14 @@ export function tokenize(input) {
   const handleSpace = () => {
     while (input[position] === ' ') {
       position += 1;
-      row += 1;
+      column += 1;
     }
   };
 
   // handle text
   const handleText = () => {
     const initialLine = line;
-    const initialRow = row;
+    const initialColumn = column;
     let value = [];
 
     while (position < input.length) {
@@ -103,69 +125,69 @@ export function tokenize(input) {
 
       if (currentChar === ':') {
         position += 1;
-        row += 1;
-        return Token(TOKENS.SPEAKER, initialLine, initialRow, value.join('').trim());
+        column += 1;
+        return Token(TOKENS.SPEAKER, initialLine, initialColumn, value.join('').trim());
       }
 
       value.push(currentChar);
 
       position += 1;
-      row += 1;
+      column += 1;
     }
 
-    return Token(TOKENS.TEXT, initialLine, initialRow, value.join('').trim());
+    return Token(TOKENS.TEXT, initialLine, initialColumn, value.join('').trim());
   };
 
   // handle options
   const handleOption = () => {
     const token = input[position] === '*' ? TOKENS.OPTION : TOKENS.STICKY_OPTION;
-    const initialRow = row;
-    row += 1;
+    const initialColumn = column;
+    column += 1;
     position += 1;
     mode = MODES.OPTION;
-    return Token(token, line, initialRow);
+    return Token(token, line, initialColumn);
   };
 
   // handle brackets
   const handleBrackets = () => {
     const token = input[position] === '[' ? TOKENS.SQR_BRACKET_OPEN : TOKENS.SQR_BRACKET_CLOSE;
-    const initialRow = row;
-    row += 1;
+    const initialColumn = column;
+    column += 1;
     position += 1;
-    return Token(token, line, initialRow);
+    return Token(token, line, initialColumn);
   };
 
   const handleLineId = () => {
-    const initialRow = row;
+    const initialColumn = column;
     let values = [];
     position += 1;
-    row += 1;
+    column += 1;
 
     while (input[position].match(/[A-z|0-9]/)) {
       values.push(input[position]);
       position += 1;
-      row += 1;
+      column += 1;
     }
-    return Token(TOKENS.LINE_ID, line, initialRow, values.join(''));
+    return Token(TOKENS.LINE_ID, line, initialColumn, values.join(''));
   };
 
   const handleTag = () => {
-    const initialRow = row;
+    const initialColumn = column;
     let values = [];
     position += 1;
-    row += 1;
+    column += 1;
 
-    while (input[position].match(/[A-z|0-9]/)) {
+    while (input[position] && input[position].match(/[A-z|0-9]/)) {
       values.push(input[position]);
       position += 1;
-      row += 1;
+      column += 1;
     }
-    return Token(TOKENS.TAG, line, initialRow, values.join(''));
+    return Token(TOKENS.TAG, line, initialColumn, values.join(''));
   };
 
   // get next token
   function getNextToken() {
-    if ((row === 0 && input[position].match(/[\t ]/)) || (row === 0 && indent.length > 1)) {
+    if ((column === 0 && input[position].match(/[\t ]/)) || (column === 0 && indent.length > 1)) {
       return handleIndent();
     }
 
@@ -205,7 +227,7 @@ export function tokenize(input) {
     getAll() {
       let tokens = [];
       while (position < length) {
-        const token = getNextToken(input, position, line, row, indent);
+        const token = getNextToken(input, position, line, column, indent);
         if (token) {
           if (Array.isArray(token)) {
             tokens = tokens.concat(token);
@@ -216,7 +238,7 @@ export function tokenize(input) {
       }
 
       position += 1;
-      tokens.push(Token(TOKENS.EOF, line, row));
+      tokens.push(Token(TOKENS.EOF, line, column));
 
       return tokens;
     },
@@ -229,11 +251,11 @@ export function tokenize(input) {
 
       if (position === length) {
         position += 1;
-        return Token(TOKENS.EOF, line, row);
+        return Token(TOKENS.EOF, line, column);
       }
 
       while (position < length) {
-        const token = getNextToken(input, position, line, row, indent);
+        const token = getNextToken(input, position, line, column, indent);
         if (token) {
           if (Array.isArray(token)) {
             pendingTokens = token;
@@ -247,12 +269,12 @@ export function tokenize(input) {
   }
 }
 
-export function Token(token, line, row, value) {
+export function Token(token, line, column, value) {
   return {
     token,
     value,
     line,
-    row
+    column
   };
 }
 
