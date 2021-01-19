@@ -55,7 +55,7 @@ export function tokenize(input) {
     let initialLine = line;
 
     let indentation = 0;
-    while (input[position].match(/[\t ]/)) {
+    while (input[position] && input[position].match(/[\t ]/)) {
       indentation += 1;
       position += 1;
     }
@@ -83,7 +83,7 @@ export function tokenize(input) {
 
   // handle comments
   const handleComments = () => {
-    while (input[position] !== undefined && input[position] !== '\n') {
+    while (input[position] && input[position] !== '\n') {
       position += 1;
     }
     position += 1;

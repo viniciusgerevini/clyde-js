@@ -3,15 +3,21 @@ import { TOKENS, tokenize, getTokenFriendlyHint } from './lexer';
 
 export default function parse(doc) {
   const tokens = tokenize(doc);
+  // const test = tokenize(doc);
+  // console.log(test.getAll());
   let currentToken;
   let lookahead = undefined;
+
+  const wrongTokenError = (token, expected) => {
+    throw new Error(`Unexpected token "${getTokenFriendlyHint(token.token)}" on line ${token.line} column ${token.column}. Expected ${expected.map(getTokenFriendlyHint).join(', ')} `);
+  }
 
   const consume = (expected) => {
     if (!lookahead) {
       lookahead = tokens.next();
     }
     if (expected && !expected.includes(lookahead.token)) {
-      throw new Error(`Unexpected token "${getTokenFriendlyHint(lookahead.token)}" on line ${lookahead.line} column ${lookahead.column}. Expected ${expected.map(getTokenFriendlyHint).join(', ')} `);
+      wrongTokenError(lookahead, expected);
     }
     currentToken = lookahead;
     lookahead = undefined;
@@ -29,22 +35,25 @@ export default function parse(doc) {
   };
 
   const Document = () => {
-    consume([TOKENS.EOF, TOKENS.SPEAKER, TOKENS.TEXT]);
+    const expected = [TOKENS.EOF, TOKENS.SPEAKER, TOKENS.TEXT]
+    const next = peek();
 
-    switch (currentToken.token) {
+    switch (next.token) {
       case TOKENS.EOF:
         return DocumentNode();
       case TOKENS.SPEAKER:
       case TOKENS.TEXT:
         return DocumentNode([ContentNode(Lines())]);
+      default:
+        wrongTokenError(next, expected);
     };
   };
 
   const Lines = () => {
     const acceptableNext = [TOKENS.SPEAKER, TOKENS.TEXT];
+    consume(acceptableNext);
     let lines = [DialogueLine()];
     if (peek(acceptableNext)) {
-      consume(acceptableNext);
       lines = lines.concat(Lines());
     }
 
@@ -57,6 +66,8 @@ export default function parse(doc) {
         return LineWithSpeaker();
       case TOKENS.TEXT:
         return TextLine();
+      // default:
+      //   wrongTokenError(currentToken, [TOKENS.SPEAKER, TOKENS.TEXT])
     }
   };
 
@@ -71,15 +82,35 @@ export default function parse(doc) {
   const TextLine = () => {
     const { value } = currentToken;
     const next = peek([TOKENS.LINE_ID, TOKENS.TAG]);
+    let line;
 
     if (next) {
       consume([TOKENS.LINE_ID, TOKENS.TAG]);
-      const line = LineWithMetadata();
+      line = LineWithMetadata();
       line.text = value;
-      return line;
+    } else {
+      line = LineNode(value);
     }
 
-    return LineNode(value);
+    const isMultiline = peek([TOKENS.INDENT]);
+    if (isMultiline) {
+      consume([TOKENS.INDENT]);
+      while (!peek([TOKENS.DEDENT, TOKENS.EOF])) {
+        consume([TOKENS.TEXT]);
+        const nextLine = TextLine();
+        line.text += ` ${nextLine.text}`;
+        if (nextLine.id) {
+          line.id = nextLine.id;
+        }
+
+        if (nextLine.tags) {
+          line.tags = nextLine.tags;
+        }
+      }
+      consume([TOKENS.DEDENT, TOKENS.EOF]);
+    }
+
+    return line;
   }
 
   const LineWithMetadata = () => {
@@ -187,11 +218,11 @@ export default function parse(doc) {
   //   };
   // };
 
-  try {
-    return Document();
-  } catch (e) {
-    throw new Error(e.message);
-  };
+  const result = Document();
+  if (peek()) {
+    consume([ TOKENS.EOF ]);
+  }
+  return result;
 }
 
 
