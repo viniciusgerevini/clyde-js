@@ -114,4 +114,32 @@ now another dedent`);
     expect(tokens.next()).toEqual({ token: TOKENS.EOF, line: 0, row: 11 });
     expect(tokens.next()).toEqual(undefined);
   });
+
+  it('options', () => {
+    const tokens = tokenize(`
+>> this is something
+  * this is another thing
+    hello
+  + this is a sticky option
+    hello again
+<<`).getAll();
+    expect(tokens).toEqual([
+      { token: TOKENS.OPTION_LIST_START, line: 1, row: 0, },
+      { token: TOKENS.TEXT, value: 'this is something', line: 1, row: 3 },
+      { token: TOKENS.INDENT, line: 2, row: 0 },
+      { token: TOKENS.OPTION, line: 2, row: 2 },
+      { token: TOKENS.TEXT, value: 'this is another thing', line: 2, row: 4 },
+      { token: TOKENS.INDENT, line: 3, row: 2 },
+      { token: TOKENS.TEXT, value: 'hello', line: 3, row: 4 },
+      { token: TOKENS.DEDENT, line: 4, row: 2 },
+      { token: TOKENS.STICKY_OPTION, line: 4, row: 2 },
+      { token: TOKENS.TEXT, value: 'this is a sticky option', line: 4, row: 4 },
+      { token: TOKENS.INDENT, line: 5, row: 2 },
+      { token: TOKENS.TEXT, value: 'hello again', line: 5, row: 4 },
+      { token: TOKENS.DEDENT, line: 6, row: 2 },
+      { token: TOKENS.DEDENT, line: 6, row: 0 },
+      { token: TOKENS.OPTION_LIST_END, line: 6, row: 0 },
+      { token: TOKENS.EOF, line: 6, row: 2 },
+    ]);
+  });
 });

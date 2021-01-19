@@ -2,6 +2,10 @@ export const TOKENS = {
   TEXT: 'TEXT',
   INDENT: 'INDENT',
   DEDENT: 'DEDENT',
+  OPTION_LIST_START: 'OPTION_LIST_START',
+  OPTION_LIST_END: 'OPTION_LIST_END',
+  OPTION: 'OPTION',
+  STICKY_OPTION: 'STICKY_OPTION',
   EOF: 'EOF',
 }
 
@@ -27,7 +31,7 @@ export function tokenize(input) {
         const previousIndent = indent[0];
         row += indentation;
         indent.unshift(indentation);
-        return Token(TOKENS.INDENT, undefined, initialLine, previousIndent);
+        return Token(TOKENS.INDENT, initialLine, previousIndent);
     }
 
     if (indentation === indent[0]) {
@@ -39,7 +43,7 @@ export function tokenize(input) {
     while (indentation < indent[0]) {
         indent.shift();
         row = indent[0];
-        tokens.push(Token(TOKENS.DEDENT, undefined, line, row));
+        tokens.push(Token(TOKENS.DEDENT, line, row));
     }
 
     return tokens;
@@ -64,9 +68,10 @@ export function tokenize(input) {
 
   // handle text
   const handleText = () => {
-    let initialLine = line;
-    let initialRow = row;
+    const initialLine = line;
+    const initialRow = row;
     let value = [];
+    let leadingSpaces = 0;
 
     while (position < input.length) {
       const currentChar = input[position];
@@ -75,13 +80,42 @@ export function tokenize(input) {
         break;
       }
 
-      value.push(currentChar);
+      if (!value.length && currentChar === ' ') {
+        leadingSpaces += 1;
+      } else {
+        value.push(currentChar);
+      }
 
       position += 1;
       row += 1;
     }
 
-    return Token(TOKENS.TEXT, value.join(''), initialLine, initialRow);
+    return Token(TOKENS.TEXT, initialLine, initialRow + leadingSpaces, value.join('').trim());
+  };
+
+  // handle options list start
+  const handleOptionsListStart = () => {
+    const initialRow = row;
+    row += 2;
+    position += 2;
+    return Token(TOKENS.OPTION_LIST_START, line, initialRow);
+  };
+
+  // handle options list start
+  const handleOptionsListEnd = () => {
+    const initialRow = row;
+    row += 2;
+    position += 2;
+    return Token(TOKENS.OPTION_LIST_END, line, initialRow);
+  };
+
+  // handle options
+  const handleOption = () => {
+    const token = input[position] === '*' ? TOKENS.OPTION : TOKENS.STICKY_OPTION;
+    const initialRow = row;
+    row += 1;
+    position += 1;
+    return Token(token, line, initialRow);
   };
 
   // get next token
@@ -96,6 +130,18 @@ export function tokenize(input) {
 
     if (input[position] === '\n') {
       return handleLineBreaks();
+    }
+
+    if (input[position] === '>' && input[position + 1] === '>') {
+      return handleOptionsListStart();
+    }
+
+    if (input[position] === '<' && input[position + 1] === '<') {
+      return handleOptionsListEnd();
+    }
+
+    if (input[position] === '*' || input[position] === '+') {
+      return handleOption();
     }
 
     return handleText();
@@ -117,7 +163,7 @@ export function tokenize(input) {
       }
 
       position += 1;
-      tokens.push(Token(TOKENS.EOF, undefined, line, row));
+      tokens.push(Token(TOKENS.EOF, line, row));
 
       return tokens;
     },
@@ -130,7 +176,7 @@ export function tokenize(input) {
 
       if (position === length) {
         position += 1;
-        return Token(TOKENS.EOF, undefined, line, row);
+        return Token(TOKENS.EOF, line, row);
       }
 
       while (position < length) {
@@ -148,7 +194,7 @@ export function tokenize(input) {
   }
 }
 
-export function Token(token, value, line, row) {
+export function Token(token, line, row, value) {
   return {
     token,
     value,
