@@ -210,7 +210,7 @@ export function tokenize(input) {
     position += 1;
     column += 1;
 
-    while (input[position].match(/[A-z|0-9]/)) {
+    while (input[position].match(/[A-Z|a-z|0-9|_]/)) {
       values.push(input[position]);
       position += 1;
       column += 1;
@@ -224,7 +224,7 @@ export function tokenize(input) {
     position += 1;
     column += 1;
 
-    while (input[position] && input[position].match(/[A-z|0-9]/)) {
+    while (input[position] && input[position].match(/[A-Z|a-z|0-9|_]/)) {
       values.push(input[position]);
       position += 1;
       column += 1;
