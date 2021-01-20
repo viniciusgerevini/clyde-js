@@ -28,6 +28,7 @@ describe('Check compilation results', () => {
       'options.clyde',
       'blocks.clyde',
       'diverts.clyde',
+      'tab_indentation.clyde',
     ];
     const source = getSourceFile(sourceFileName);
     const expectedResult = getExpectedResult(sourceFileName);
