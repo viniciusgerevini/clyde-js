@@ -47,10 +47,29 @@ export default function parse(doc) {
       case TOKENS.QUOTE:
       case TOKENS.OPTION:
       case TOKENS.STICKY_OPTION:
-        return DocumentNode([ContentNode(Lines())]);
+        const result =  DocumentNode([ContentNode(Lines())]);
+        if (peek([TOKENS.BLOCK])) {
+          result.blocks = Blocks();
+        }
+        return result;
+      case TOKENS.BLOCK:
+        return DocumentNode([], Blocks());
       default:
         wrongTokenError(next, expected);
     };
+  };
+
+  const Blocks = () => {
+    consume([TOKENS.BLOCK]);
+    let blocks =  [
+      BlockNode(currentToken.value, ContentNode(Lines()))
+    ];
+
+    while (peek([TOKENS.BLOCK])) {
+      blocks = blocks.concat(Blocks());
+    }
+
+    return blocks;
   };
 
   const Lines = () => {
@@ -301,14 +320,18 @@ const ContentNode = (content) => {
   return { type: 'content', content };
 };
 
+const BlockNode = (blockName, content = []) => {
+  return { type: 'block', name: blockName, content };
+}
+
 const LineNode = (value, speaker, id, tags) => {
   return { type: 'line', value, speaker, id, tags };
 };
 
-function OptionsNode(content = [], name, id, speaker, tags) {
+const OptionsNode = (content = [], name, id, speaker, tags) => {
   return { type: 'options', name, content, id, speaker, tags };
 }
 
-function OptionNode(content = [], mode, name, id, speaker, tags) {
+const OptionNode = (content = [], mode, name, id, speaker, tags) => {
   return { type: 'option', name, mode, content, id, speaker, tags };
 }

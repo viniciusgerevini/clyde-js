@@ -11,6 +11,7 @@ export const TOKENS = {
   SPEAKER: 'SPEAKER',
   LINE_ID: 'LINE_ID',
   TAG: 'TAG',
+  BLOCK: 'BLOCK',
 }
 
 const MODES = {
@@ -33,6 +34,7 @@ const tokenFriendlyHint = {
   [TOKENS.SPEAKER]: '<speaker name>:',
   [TOKENS.LINE_ID]: '$id',
   [TOKENS.TAG]: '#tag',
+  [TOKENS.BLOCK]: '== <block name>',
 }
 
 export function getTokenFriendlyHint(token) {
@@ -233,6 +235,20 @@ export function tokenize(input) {
     return Token(TOKENS.TAG, line, initialColumn, values.join(''));
   };
 
+  const handleBlock = () => {
+    const initialColumn = column;
+    let values = [];
+    position += 2;
+    column += 2;
+
+    while (input[position] && input[position].match(/[A-Z|a-z|0-9|_| ]/)) {
+      values.push(input[position]);
+      position += 1;
+      column += 1;
+    }
+    return Token(TOKENS.BLOCK, line, initialColumn, values.join('').trim());
+  };
+
   // get next token
   function getNextToken() {
     if (mode === MODES.DEFAULT && input[position] === '-' && input[position + 1] === '-') {
@@ -258,6 +274,10 @@ export function tokenize(input) {
 
     if (input[position] === ' ') {
       return handleSpace();
+    }
+
+    if (column === 0 && input[position] === '=' && input[position] === '=') {
+      return handleBlock();
     }
 
     if (input[position] === '*' || input[position] === '+') {

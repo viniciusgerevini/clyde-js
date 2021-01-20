@@ -88,6 +88,7 @@ this is another line 4
       { token: TOKENS.EOF, line: 8, column: 0 },
     ]);
   });
+
   it('detects indents and dedents', () => {
     const tokens = tokenize(`normal line
     indented line
@@ -281,6 +282,27 @@ this is something #hello #happy #something_else
       { token: TOKENS.TAG, value: 'happy', line: 1, column: 25 },
       { token: TOKENS.TAG, value: 'something_else', line: 1, column: 32 },
       { token: TOKENS.EOF, line: 2, column: 0 },
+    ]);
+  });
+
+  it('blocks', () => {
+    const tokens = tokenize(`
+== first_block
+line
+line 2
+
+== second block
+line 3
+line 4
+`).getAll();
+    expect(tokens).toEqual([
+      { token: TOKENS.BLOCK, value: 'first_block', line: 1, column: 0, },
+      { token: TOKENS.TEXT, value: 'line', line: 2, column: 0, },
+      { token: TOKENS.TEXT, value: 'line 2', line: 3, column: 0, },
+      { token: TOKENS.BLOCK, value: 'second block', line: 5, column: 0, },
+      { token: TOKENS.TEXT, value: 'line 3', line: 6, column: 0, },
+      { token: TOKENS.TEXT, value: 'line 4', line: 7, column: 0, },
+      { token: TOKENS.EOF, line: 8, column: 0 },
     ]);
   });
 
