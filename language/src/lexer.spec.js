@@ -329,6 +329,73 @@ hello
     ]);
   });
 
+  it('alternatives', () => {
+    const tokens = tokenize(`
+(
+  - nope
+  - yep
+)
+
+( shuffle
+  - nope
+  - yep
+)
+
+( shuffle once
+  - nope
+  - yep
+  (
+    - "another one"
+  )
+)
+
+`).getAll();
+    expect(tokens).toEqual([
+      { token: TOKENS.BRACKET_OPEN, line: 1, column: 0, },
+      { token: TOKENS.INDENT, line: 2, column: 0 },
+      { token: TOKENS.MINUS, line: 2, column: 2, },
+      { token: TOKENS.TEXT, value: 'nope', line: 2, column: 4 },
+      { token: TOKENS.MINUS, line: 3, column: 2, },
+      { token: TOKENS.TEXT, value: 'yep', line: 3, column: 4 },
+      { token: TOKENS.DEDENT, line: 4, column: 0 },
+      { token: TOKENS.BRACKET_CLOSE, line: 4, column: 0, },
+
+      { token: TOKENS.BRACKET_OPEN, line: 6, column: 0, },
+      { token: TOKENS.ALTERNATIVES_MODE, value: 'shuffle', line: 6, column: 2, },
+      { token: TOKENS.INDENT, line: 7, column: 0 },
+      { token: TOKENS.MINUS, line: 7, column: 2, },
+      { token: TOKENS.TEXT, value: 'nope', line: 7, column: 4 },
+      { token: TOKENS.MINUS, line: 8, column: 2, },
+      { token: TOKENS.TEXT, value: 'yep', line: 8, column: 4 },
+      { token: TOKENS.DEDENT, line: 9, column: 0 },
+      { token: TOKENS.BRACKET_CLOSE, line: 9, column: 0, },
+
+      { token: TOKENS.BRACKET_OPEN, line: 11, column: 0, },
+      { token: TOKENS.ALTERNATIVES_MODE, value: 'shuffle once', line: 11, column: 2, },
+      { token: TOKENS.INDENT, line: 12, column: 0 },
+      { token: TOKENS.MINUS, line: 12, column: 2, },
+      { token: TOKENS.TEXT, value: 'nope', line: 12, column: 4 },
+      { token: TOKENS.MINUS, line: 13, column: 2, },
+      { token: TOKENS.TEXT, value: 'yep', line: 13, column: 4 },
+
+      { token: TOKENS.BRACKET_OPEN, line: 14, column: 2, },
+      { token: TOKENS.INDENT, line: 15, column: 2 },
+      { token: TOKENS.MINUS, line: 15, column: 4, },
+
+      { token: TOKENS.QUOTE, line: 15, column: 6, },
+      { token: TOKENS.TEXT, value: 'another one', line: 15, column: 7 },
+      { token: TOKENS.QUOTE, line: 15, column: 18, },
+
+      { token: TOKENS.DEDENT, line: 16, column: 2 },
+      { token: TOKENS.BRACKET_CLOSE, line: 16, column: 2, },
+
+      { token: TOKENS.DEDENT, line: 17, column: 0 },
+      { token: TOKENS.BRACKET_CLOSE, line: 17, column: 0, },
+      { token: TOKENS.EOF, line: 19, column: 0 },
+
+    ]);
+  });
+
   it('returns line by line', () => {
     const tokens = tokenize(`normal line
     indented line

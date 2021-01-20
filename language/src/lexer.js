@@ -6,6 +6,8 @@ export const TOKENS = {
   STICKY_OPTION: 'STICKY_OPTION',
   SQR_BRACKET_OPEN: 'SQR_BRACKET_OPEN',
   SQR_BRACKET_CLOSE: 'SQR_BRACKET_CLOSE',
+  BRACKET_OPEN: 'BRACKET_OPEN',
+  BRACKET_CLOSE: 'BRACKET_CLOSE',
   QUOTE: '"',
   EOF: 'EOF',
   SPEAKER: 'SPEAKER',
@@ -14,13 +16,16 @@ export const TOKENS = {
   BLOCK: 'BLOCK',
   DIVERT: 'DIVERT',
   DIVERT_PARENT: 'DIVERT_PARENT',
+  ALTERNATIVES_MODE: 'ALTERNATIVES_MODE',
+  MINUS: 'MINUS',
 }
 
 const MODES = {
   DEFAULT: 'DEFAULT',
   OPTION: 'OPTION',
   QSTRING: 'QSTRING',
-  LOGIC: 'LOGIC'
+  LOGIC: 'LOGIC',
+  ALTERNATIVES: 'ALTERNATIVES',
 };
 
 const tokenFriendlyHint = {
@@ -31,6 +36,8 @@ const tokenFriendlyHint = {
   [TOKENS.STICKY_OPTION]: '+',
   [TOKENS.SQR_BRACKET_OPEN]: '[',
   [TOKENS.SQR_BRACKET_CLOSE]: ']',
+  [TOKENS.BRACKET_OPEN]: '(',
+  [TOKENS.BRACKET_CLOSE]: ')',
   [TOKENS.QUOTE]: '"',
   [TOKENS.EOF]: 'EOF',
   [TOKENS.SPEAKER]: '<speaker name>:',
@@ -39,6 +46,8 @@ const tokenFriendlyHint = {
   [TOKENS.BLOCK]: '== <block name>',
   [TOKENS.DIVERT]: '-> <target name>',
   [TOKENS.DIVERT_PARENT]: '<-',
+  [TOKENS.ALTERNATIVES_MODE]: 'shuffle, once, sequence, cycle, shuffle once, shuffle sequence, shuffle cycle',
+  [TOKENS.MINUS]: '-',
 }
 
 export function getTokenFriendlyHint(token) {
@@ -56,7 +65,26 @@ export function tokenize(input) {
   let column = 0;
   let length = input.length;
   let pendingTokens = [];
-  let mode = MODES.DEFAULT;
+  const modes = [
+    MODES.DEFAULT
+  ];
+
+  const stackMode = (mode) => {
+    modes.unshift(mode);
+  };
+
+  const popMode = () => {
+    if (modes.length > 1) {
+      modes.shift();
+    }
+  };
+
+  const isCurrentMode = (mode) => {
+    return modes[0] === mode;
+  };
+
+
+
 
   // handle indentation
   const handleIndent = () => {
@@ -106,8 +134,8 @@ export function tokenize(input) {
       column = 0;
     }
 
-    if (mode === MODES.OPTION) {
-      mode = MODES.DEFAULT;
+    if (isCurrentMode(MODES.OPTION)) {
+      popMode();
     }
   };
 
@@ -128,7 +156,7 @@ export function tokenize(input) {
     while (position < input.length) {
       const currentChar = input[position];
 
-      if (['\n', '$', '#' ].includes(currentChar) || (mode === MODES.OPTION && currentChar === ']')) {
+      if (['\n', '$', '#' ].includes(currentChar) || (isCurrentMode(MODES.OPTION) && currentChar === ']')) {
         break;
       }
 
@@ -184,10 +212,10 @@ export function tokenize(input) {
     const initialColumn = column;
     column += 1;
     position += 1;
-    if (mode === MODES.QSTRING) {
-      mode = MODES.DEFAULT;
+    if (isCurrentMode(MODES.QSTRING)) {
+      popMode();
     } else {
-      mode = MODES.QSTRING;
+      stackMode(MODES.QSTRING);
     }
     return Token(TOKENS.QUOTE, line, initialColumn);
   };
@@ -198,7 +226,7 @@ export function tokenize(input) {
     const initialColumn = column;
     column += 1;
     position += 1;
-    mode = MODES.OPTION;
+    stackMode(MODES.OPTION);
     return Token(token, line, initialColumn);
   };
 
@@ -275,9 +303,50 @@ export function tokenize(input) {
     return Token(TOKENS.DIVERT_PARENT, line, initialColumn);
   };
 
+  const handleStartAlternatives = () => {
+    const initialColumn = column;
+    const values = [];
+    column += 1;
+    position += 1;
+    stackMode(MODES.ALTERNATIVES);
+
+    while (input[position] && input[position].match(/[A-Z|a-z| ]/)) {
+      values.push(input[position]);
+      position += 1;
+      column += 1;
+    }
+
+    const tokens = [
+      Token(TOKENS.BRACKET_OPEN, line, initialColumn)
+    ];
+
+    const value = values.join('').trim();
+
+    if (value.length) {
+      tokens.push(Token(TOKENS.ALTERNATIVES_MODE, line, initialColumn + 2, value));
+    }
+
+    return tokens;
+  };
+
+  const handleStopAlternatives = () => {
+    const initialColumn = column;
+    column += 1;
+    position += 1;
+    popMode();
+    return Token(TOKENS.BRACKET_CLOSE, line, initialColumn);
+  };
+
+  const handleAlternativeItem = () => {
+    const initialColumn = column;
+    column += 1;
+    position += 1;
+    return Token(TOKENS.MINUS, line, initialColumn);
+  };
+
   // get next token
   function getNextToken() {
-    if (mode === MODES.DEFAULT && input[position] === '-' && input[position + 1] === '-') {
+    if (isCurrentMode(MODES.DEFAULT) && input[position] === '-' && input[position + 1] === '-') {
       return handleComments();
     }
 
@@ -285,7 +354,7 @@ export function tokenize(input) {
       return handleIndent();
     }
 
-    if (mode !== MODES.QSTRING && input[position] === '\n') {
+    if (!isCurrentMode(MODES.QSTRING) && input[position] === '\n') {
       return handleLineBreaks();
     }
 
@@ -293,13 +362,23 @@ export function tokenize(input) {
       return handleQuote();
     }
 
-    if (mode === MODES.QSTRING) {
+    if (isCurrentMode(MODES.QSTRING)) {
       return handleQText();
     }
 
-
     if (input[position] === ' ') {
       return handleSpace();
+    }
+
+    if (input[position] === '(') {
+      return handleStartAlternatives();
+    }
+
+    if (input[position] === ')') {
+      return handleStopAlternatives();
+    }
+    if (isCurrentMode(MODES.ALTERNATIVES) && input[position] === '-') {
+      return handleAlternativeItem();
     }
 
     if (column === 0 && input[position] === '=' && input[position + 1] === '=') {
@@ -318,7 +397,7 @@ export function tokenize(input) {
       return handleOption();
     }
 
-    if (mode === MODES.OPTION && ['[', ']' ].includes(input[position])) {
+    if (isCurrentMode(MODES.OPTION) && ['[', ']' ].includes(input[position])) {
       return handleBrackets();
     }
 
