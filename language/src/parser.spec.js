@@ -20,7 +20,7 @@ describe('Parse', () => {
           type: 'content',
           content: [{
             type: 'line',
-            text: 'say what one more time!',
+            value: 'say what one more time!',
             id: 'first',
             speaker: 'jules',
             tags: [
@@ -48,12 +48,12 @@ id last #tag #another_tag $some_id
         content: [{
           type: 'content',
           content: [
-            { type: 'line', text: 'say what one more time!', id: 'first', speaker: 'jules', tags: [ 'yelling', 'mad' ] },
-            { type: 'line', text: 'just text' },
-            { type: 'line', text: 'just id', id: 'another' },
-            { type: 'line', text: 'just tags', tags: [ 'tag' ] },
-            { type: 'line', text: 'just speaker', speaker: 'speaker' },
-            { type: 'line', text: 'id last', id: 'some_id', tags: [ 'tag', 'another_tag' ] },
+            { type: 'line', value: 'say what one more time!', id: 'first', speaker: 'jules', tags: [ 'yelling', 'mad' ] },
+            { type: 'line', value: 'just text' },
+            { type: 'line', value: 'just id', id: 'another' },
+            { type: 'line', value: 'just tags', tags: [ 'tag' ] },
+            { type: 'line', value: 'just speaker', speaker: 'speaker' },
+            { type: 'line', value: 'id last', id: 'some_id', tags: [ 'tag', 'another_tag' ] },
           ]
         }],
         blocks: []
@@ -74,8 +74,8 @@ hello! $id_on_first_line #and_tags
         content: [{
           type: 'content',
           content: [
-            { type: 'line', text: 'say what one more time! Just say it', id: 'some_id', speaker: 'jules', tags: [ 'tag' ] },
-            { type: 'line', text: 'hello! Just talking.', id: 'id_on_first_line', tags: [ 'and_tags' ] },
+            { type: 'line', value: 'say what one more time! Just say it', id: 'some_id', speaker: 'jules', tags: [ 'tag' ] },
+            { type: 'line', value: 'hello! Just talking.', id: 'id_on_first_line', tags: [ 'and_tags' ] },
           ]
         }],
         blocks: []
@@ -83,6 +83,29 @@ hello! $id_on_first_line #and_tags
       expect(result).toEqual(expected);
     });
 
+    it('parse text in quotes', () => {
+      const result = parse(`
+"jules: say what one more time!
+       Just say it $some_id #tag"
+"hello! $id_on_first_line #and_tags
+  Just talking."
+
+"this has $everything:" $id_on_first_line #and_tags
+`);
+      const expected = {
+        type: 'document',
+        content: [{
+          type: 'content',
+          content: [
+            { type: 'line', value: 'jules: say what one more time!\n       Just say it $some_id #tag' },
+            { type: 'line', value: 'hello! $id_on_first_line #and_tags\n  Just talking.' },
+            { type: 'line', value: 'this has $everything:', id: 'id_on_first_line', tags: [ 'and_tags' ] },
+          ]
+        }],
+        blocks: []
+      };
+      expect(result).toEqual(expected);
+    });
   });
 
   it('throws error when wrong parsing', () => {

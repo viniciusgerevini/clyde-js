@@ -43,6 +43,7 @@ export default function parse(doc) {
         return DocumentNode();
       case TOKENS.SPEAKER:
       case TOKENS.TEXT:
+      case TOKENS.QUOTE:
         return DocumentNode([ContentNode(Lines())]);
       default:
         wrongTokenError(next, expected);
@@ -50,15 +51,50 @@ export default function parse(doc) {
   };
 
   const Lines = () => {
-    const acceptableNext = [TOKENS.SPEAKER, TOKENS.TEXT];
+    const acceptableNext = [TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.QUOTE];
+    let lines;
     consume(acceptableNext);
-    let lines = [DialogueLine()];
+    switch (currentToken.token) {
+      case TOKENS.SPEAKER:
+      case TOKENS.TEXT:
+        lines = [DialogueLine()];
+        break;
+      case TOKENS.QUOTE:
+        lines = [LineInQuotes()];
+        break;
+    }
+
     if (peek(acceptableNext)) {
       lines = lines.concat(Lines());
     }
 
     return lines;
   }
+
+  const LineInQuotes = () => {
+    const acceptableNext = [TOKENS.TEXT, TOKENS.QUOTE];
+    let line;
+    consume(acceptableNext);
+
+    switch (currentToken.token) {
+      case TOKENS.TEXT:
+        line= LineNode(currentToken.value);
+        consume([TOKENS.QUOTE]);
+      case TOKENS.QUOTE:
+        const value = line.value;
+        const next = peek([TOKENS.LINE_ID, TOKENS.TAG]);
+        if (next) {
+          consume([TOKENS.LINE_ID, TOKENS.TAG]);
+          line = LineWithMetadata();
+          line.value = value;
+        } else {
+          line = LineNode(value);
+        }
+        break;
+    }
+
+    return line;
+  };
 
   const DialogueLine = () => {
     switch (currentToken.token) {
@@ -87,7 +123,7 @@ export default function parse(doc) {
     if (next) {
       consume([TOKENS.LINE_ID, TOKENS.TAG]);
       line = LineWithMetadata();
-      line.text = value;
+      line.value = value;
     } else {
       line = LineNode(value);
     }
@@ -98,7 +134,7 @@ export default function parse(doc) {
       while (!peek([TOKENS.DEDENT, TOKENS.EOF])) {
         consume([TOKENS.TEXT]);
         const nextLine = TextLine();
-        line.text += ` ${nextLine.text}`;
+        line.value += ` ${nextLine.value}`;
         if (nextLine.id) {
           line.id = nextLine.id;
         }
@@ -234,8 +270,8 @@ const ContentNode = (content) => {
   return { type: 'content', content };
 };
 
-const LineNode = (text, speaker, id, tags) => {
-  return { type: 'line', text, speaker, id, tags };
+const LineNode = (value, speaker, id, tags) => {
+  return { type: 'line', value, speaker, id, tags };
 };
 
 // document

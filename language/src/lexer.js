@@ -6,6 +6,7 @@ export const TOKENS = {
   STICKY_OPTION: 'STICKY_OPTION',
   SQR_BRACKET_OPEN: 'SQR_BRACKET_OPEN',
   SQR_BRACKET_CLOSE: 'SQR_BRACKET_CLOSE',
+  QUOTE: '"',
   EOF: 'EOF',
   SPEAKER: 'SPEAKER',
   LINE_ID: 'LINE_ID',
@@ -27,6 +28,7 @@ const tokenFriendlyHint = {
   [TOKENS.STICKY_OPTION]: '+',
   [TOKENS.SQR_BRACKET_OPEN]: '[',
   [TOKENS.SQR_BRACKET_CLOSE]: ']',
+  [TOKENS.QUOTE]: '"',
   [TOKENS.EOF]: 'EOF',
   [TOKENS.SPEAKER]: '<speaker name>:',
   [TOKENS.LINE_ID]: '$id',
@@ -135,7 +137,44 @@ export function tokenize(input) {
       column += 1;
     }
 
+
     return Token(TOKENS.TEXT, initialLine, initialColumn, value.join('').trim());
+  };
+
+  // handle text in quotes
+  const handleQText = () => {
+    const initialLine = line;
+    const initialColumn = column;
+    let value = [];
+
+    while (position < input.length) {
+      const currentChar = input[position];
+
+      if (currentChar === '"') {
+        break;
+      }
+
+      value.push(currentChar);
+
+      position += 1;
+      column += 1;
+    }
+
+
+    return Token(TOKENS.TEXT, initialLine, initialColumn, value.join('').trim());
+  };
+
+  // handle quote
+  const handleQuote = () => {
+    const initialColumn = column;
+    column += 1;
+    position += 1;
+    if (mode === MODES.QSTRING) {
+      mode = MODES.DEFAULT;
+    } else {
+      mode = MODES.QSTRING;
+    }
+    return Token(TOKENS.QUOTE, line, initialColumn);
   };
 
   // handle options
@@ -187,6 +226,14 @@ export function tokenize(input) {
 
   // get next token
   function getNextToken() {
+    if (input[position] === '"') {
+      return handleQuote();
+    }
+
+    if (mode === MODES.QSTRING) {
+      return handleQText();
+    }
+
     if ((column === 0 && input[position].match(/[\t ]/)) || (column === 0 && indent.length > 1)) {
       return handleIndent();
     }

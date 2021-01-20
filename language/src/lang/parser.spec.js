@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { Parser } from './parser';
+import parse from '../parser';
 
 describe('Check compilation results', () => {
   const EXAMPLES_FOLDER = './test/samples/';
@@ -22,10 +23,19 @@ describe('Check compilation results', () => {
   };
 
   test.each(getSourceFiles())('check: %s', (sourceFileName) => {
-    const parser = Parser();
+    const newParser = ['simple_lines.clyde'];
     const source = getSourceFile(sourceFileName);
     const expectedResult = getExpectedResult(sourceFileName);
-    const result = parser.parse(source);
+
+    let result;
+
+    if (newParser.includes(sourceFileName)) {
+      result = parse(source);
+    } else {
+      const parser = Parser();
+      result = parser.parse(source);
+    }
+
 
     expect(JSON.parse(JSON.stringify(result))).toEqual(JSON.parse(expectedResult));
   });
