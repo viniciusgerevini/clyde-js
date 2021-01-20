@@ -377,9 +377,6 @@ export function tokenize(input) {
     if (input[position] === ')') {
       return handleStopAlternatives();
     }
-    if (isCurrentMode(MODES.ALTERNATIVES) && input[position] === '-') {
-      return handleAlternativeItem();
-    }
 
     if (column === 0 && input[position] === '=' && input[position + 1] === '=') {
       return handleBlock();
@@ -391,6 +388,10 @@ export function tokenize(input) {
 
     if (input[position] === '<' && input[position + 1] === '-') {
       return handleDivertToParent();
+    }
+
+    if (isCurrentMode(MODES.ALTERNATIVES) && input[position] === '-') {
+      return handleAlternativeItem();
     }
 
     if (input[position] === '*' || input[position] === '+') {

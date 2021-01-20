@@ -337,7 +337,7 @@ hello
 )
 
 ( shuffle
-  - nope
+  - -> nope
   - yep
 )
 
@@ -364,7 +364,7 @@ hello
       { token: TOKENS.ALTERNATIVES_MODE, value: 'shuffle', line: 6, column: 2, },
       { token: TOKENS.INDENT, line: 7, column: 0 },
       { token: TOKENS.MINUS, line: 7, column: 2, },
-      { token: TOKENS.TEXT, value: 'nope', line: 7, column: 4 },
+      { token: TOKENS.DIVERT, value: 'nope', line: 7, column: 4 },
       { token: TOKENS.MINUS, line: 8, column: 2, },
       { token: TOKENS.TEXT, value: 'yep', line: 8, column: 4 },
       { token: TOKENS.DEDENT, line: 9, column: 0 },
