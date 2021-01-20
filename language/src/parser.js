@@ -107,6 +107,16 @@ export default function parse(doc) {
         break;
     }
 
+    if (peek([TOKENS.INDENT])) {
+      consume([TOKENS.INDENT]);
+      consume([TOKENS.OPTION, TOKENS.STICKY_OPTION])
+      const options = Options();
+      options.id = line.id;
+      options.name = line.value;
+      options.tags = line.tags;
+      line = options;
+    }
+
     return line;
   };
 

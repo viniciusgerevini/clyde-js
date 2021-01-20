@@ -238,6 +238,10 @@ export function tokenize(input) {
       return handleComments();
     }
 
+    if ((column === 0 && input[position].match(/[\t ]/)) || (column === 0 && indent.length > 1)) {
+      return handleIndent();
+    }
+
     if (input[position] === '"') {
       return handleQuote();
     }
@@ -245,11 +249,6 @@ export function tokenize(input) {
     if (mode === MODES.QSTRING) {
       return handleQText();
     }
-
-    if ((column === 0 && input[position].match(/[\t ]/)) || (column === 0 && indent.length > 1)) {
-      return handleIndent();
-    }
-
 
     if (input[position] === '\n') {
       return handleLineBreaks();

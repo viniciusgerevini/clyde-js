@@ -375,6 +375,66 @@ spk: second try
       };
       expect(result).toEqual(expected);
     });
+
+    it('use previous line in quotes as label', () => {
+      const result = parse(`
+"spk: this line will be the label $some_id #some_tag"
+  * life
+    player: I want to talk about life!
+
+
+"spk: this line will be the label $some_id #some_tag"
+  * universe
+    player: I want to talk about the universe!
+`);
+      const expected = {
+        type: 'document',
+        content: [{
+          type: 'content',
+          content: [
+            {
+              type: 'options',
+              name: 'spk: this line will be the label $some_id #some_tag',
+              content: [
+                {
+                  type: 'option',
+                  name: 'life',
+                  mode: 'once',
+                  content: {
+                    type: 'content',
+                    content: [
+                      { type: 'line', value: 'life' },
+                      { type: 'line', value: 'I want to talk about life!', speaker: 'player', },
+                    ],
+                  },
+                },
+              ],
+            },
+            {
+              type: 'options',
+              name: 'spk: this line will be the label $some_id #some_tag',
+              content: [
+                {
+                  type: 'option',
+                  name: 'universe',
+                  mode: 'once',
+                  content: {
+                    type: 'content',
+                    content: [
+                      { type: 'line', value: 'universe' },
+                      { type: 'line', value: 'I want to talk about the universe!', speaker: 'player', },
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        ],
+        blocks: [],
+      };
+      expect(result).toEqual(expected);
+    });
   });
 
   describe('error handling', () => {

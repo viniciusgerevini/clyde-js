@@ -106,6 +106,39 @@ he he
     ]);
   });
 
+  it('detects indents and dedents after quoted options', () => {
+    const tokens = tokenize(`
+"indented line"
+  * indented line
+    hello
+
+"indented line"
+  * indented line
+    hello
+`).getAll();
+    expect(tokens).toEqual([
+      { token: TOKENS.QUOTE, line: 1, column: 0, },
+      { token: TOKENS.TEXT, value: 'indented line', line: 1, column: 1, },
+      { token: TOKENS.QUOTE, line: 1, column: 14, },
+      { token: TOKENS.INDENT, line: 2, column: 0 },
+      { token: TOKENS.OPTION, line: 2, column: 2 },
+      { token: TOKENS.TEXT, value: 'indented line', line: 2, column: 4 },
+      { token: TOKENS.INDENT, line: 3, column: 2 },
+      { token: TOKENS.TEXT, value: 'hello', line: 3, column: 4 },
+      { token: TOKENS.DEDENT, line: 5, column: 2 },
+      { token: TOKENS.DEDENT, line: 5, column: 0 },
+      { token: TOKENS.QUOTE, line: 5, column: 0, },
+      { token: TOKENS.TEXT, value: 'indented line', line: 5, column: 1, },
+      { token: TOKENS.QUOTE, line: 5, column: 14, },
+      { token: TOKENS.INDENT, line: 6, column: 0 },
+      { token: TOKENS.OPTION, line: 6, column: 2 },
+      { token: TOKENS.TEXT, value: 'indented line', line: 6, column: 4 },
+      { token: TOKENS.INDENT, line: 7, column: 2 },
+      { token: TOKENS.TEXT, value: 'hello', line: 7, column: 4 },
+      { token: TOKENS.EOF, line: 8, column: 0 },
+    ]);
+  });
+
   it('returns EOF', () => {
     const tokens = tokenize(`normal line`);
 
