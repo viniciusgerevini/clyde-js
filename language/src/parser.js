@@ -1,7 +1,8 @@
-import { TOKENS, tokenize, getTokenFriendlyHint } from './lexer';
+import { TOKENS, tokenize, getTokenFriendlyHint } from './lexer.js';
 
 
 export default function parse(doc) {
+  const variationsModes = ['sequence', 'once', 'cycle', 'shuffle', 'shuffle sequence', 'shuffle once', 'shuffle cycle' ];
   const tokens = tokenize(doc);
   // const test = tokenize(doc);
   // console.log(test.getAll());
@@ -44,6 +45,7 @@ export default function parse(doc) {
       TOKENS.STICKY_OPTION,
       TOKENS.DIVERT,
       TOKENS.DIVERT_PARENT,
+      TOKENS.BRACKET_OPEN,
     ];
     const next = peek();
 
@@ -57,6 +59,7 @@ export default function parse(doc) {
       case TOKENS.STICKY_OPTION:
       case TOKENS.DIVERT:
       case TOKENS.DIVERT_PARENT:
+      case TOKENS.BRACKET_OPEN:
         const result =  DocumentNode([ContentNode(Lines())]);
         if (peek([TOKENS.BLOCK])) {
           result.blocks = Blocks();
@@ -91,6 +94,7 @@ export default function parse(doc) {
       TOKENS.STICKY_OPTION,
       TOKENS.DIVERT,
       TOKENS.DIVERT_PARENT,
+      TOKENS.BRACKET_OPEN,
     ];
     let lines;
     consume(acceptableNext);
@@ -107,6 +111,9 @@ export default function parse(doc) {
       case TOKENS.DIVERT:
       case TOKENS.DIVERT_PARENT:
         lines = [Divert()];
+        break;
+      case TOKENS.BRACKET_OPEN:
+        lines = [Variations()];
         break;
     }
 
@@ -338,6 +345,34 @@ export default function parse(doc) {
     }
   };
 
+  const Variations = () => {
+    const variations = VariationsNode('sequence');
+
+    if (peek([TOKENS.VARIATIONS_MODE])) {
+      const mode = consume([TOKENS.VARIATIONS_MODE]);
+      if (!variationsModes.includes(mode.value)) {
+        throw new Error(`Wrong variation mode set "${mode.value}". Valid modes: ${variationsModes.join(', ')}.`);
+      };
+      variations.mode = mode.value;
+    }
+
+    while(peek([TOKENS.INDENT, TOKENS.MINUS])) {
+      if (peek([TOKENS.INDENT])) {
+        consume([TOKENS.INDENT]);
+        continue;
+      }
+      consume([TOKENS.MINUS])
+      variations.content.push(ContentNode(Lines()));
+
+      if (peek([TOKENS.DEDENT])) {
+        consume([TOKENS.DEDENT]);
+      }
+    }
+    consume([TOKENS.BRACKET_CLOSE]);
+
+    return variations;
+  };
+
   const result = Document();
   if (peek()) {
     consume([ TOKENS.EOF ]);
@@ -375,4 +410,8 @@ const DivertNode = (target) => {
     target = '<end>';
   }
   return { type: 'divert', target };
+}
+
+function VariationsNode(mode, content = []) {
+  return { type: 'variations', mode, content };
 }

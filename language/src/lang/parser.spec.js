@@ -29,6 +29,7 @@ describe('Check compilation results', () => {
       'blocks.clyde',
       'diverts.clyde',
       'tab_indentation.clyde',
+      'variations.clyde',
     ];
     const source = getSourceFile(sourceFileName);
     const expectedResult = getExpectedResult(sourceFileName);
@@ -41,7 +42,6 @@ describe('Check compilation results', () => {
       const parser = Parser();
       result = parser.parse(source);
     }
-
 
     expect(JSON.parse(JSON.stringify(result))).toEqual(JSON.parse(expectedResult));
   });

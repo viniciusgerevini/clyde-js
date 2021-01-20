@@ -329,7 +329,7 @@ hello
     ]);
   });
 
-  it('alternatives', () => {
+  it('variations', () => {
     const tokens = tokenize(`
 (
   - nope
@@ -361,7 +361,7 @@ hello
       { token: TOKENS.BRACKET_CLOSE, line: 4, column: 0, },
 
       { token: TOKENS.BRACKET_OPEN, line: 6, column: 0, },
-      { token: TOKENS.ALTERNATIVES_MODE, value: 'shuffle', line: 6, column: 2, },
+      { token: TOKENS.VARIATIONS_MODE, value: 'shuffle', line: 6, column: 2, },
       { token: TOKENS.INDENT, line: 7, column: 0 },
       { token: TOKENS.MINUS, line: 7, column: 2, },
       { token: TOKENS.DIVERT, value: 'nope', line: 7, column: 4 },
@@ -371,7 +371,7 @@ hello
       { token: TOKENS.BRACKET_CLOSE, line: 9, column: 0, },
 
       { token: TOKENS.BRACKET_OPEN, line: 11, column: 0, },
-      { token: TOKENS.ALTERNATIVES_MODE, value: 'shuffle once', line: 11, column: 2, },
+      { token: TOKENS.VARIATIONS_MODE, value: 'shuffle once', line: 11, column: 2, },
       { token: TOKENS.INDENT, line: 12, column: 0 },
       { token: TOKENS.MINUS, line: 12, column: 2, },
       { token: TOKENS.TEXT, value: 'nope', line: 12, column: 4 },

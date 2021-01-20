@@ -16,7 +16,7 @@ export const TOKENS = {
   BLOCK: 'BLOCK',
   DIVERT: 'DIVERT',
   DIVERT_PARENT: 'DIVERT_PARENT',
-  ALTERNATIVES_MODE: 'ALTERNATIVES_MODE',
+  VARIATIONS_MODE: 'VARIATIONS_MODE',
   MINUS: 'MINUS',
 }
 
@@ -25,7 +25,7 @@ const MODES = {
   OPTION: 'OPTION',
   QSTRING: 'QSTRING',
   LOGIC: 'LOGIC',
-  ALTERNATIVES: 'ALTERNATIVES',
+  VARIATIONS: 'VARIATIONS',
 };
 
 const tokenFriendlyHint = {
@@ -46,7 +46,7 @@ const tokenFriendlyHint = {
   [TOKENS.BLOCK]: '== <block name>',
   [TOKENS.DIVERT]: '-> <target name>',
   [TOKENS.DIVERT_PARENT]: '<-',
-  [TOKENS.ALTERNATIVES_MODE]: 'shuffle, once, sequence, cycle, shuffle once, shuffle sequence, shuffle cycle',
+  [TOKENS.VARIATIONS_MODE]: '<variations mode>',
   [TOKENS.MINUS]: '-',
 }
 
@@ -303,12 +303,12 @@ export function tokenize(input) {
     return Token(TOKENS.DIVERT_PARENT, line, initialColumn);
   };
 
-  const handleStartAlternatives = () => {
+  const handleStartVariations = () => {
     const initialColumn = column;
     const values = [];
     column += 1;
     position += 1;
-    stackMode(MODES.ALTERNATIVES);
+    stackMode(MODES.VARIATIONS);
 
     while (input[position] && input[position].match(/[A-Z|a-z| ]/)) {
       values.push(input[position]);
@@ -323,13 +323,13 @@ export function tokenize(input) {
     const value = values.join('').trim();
 
     if (value.length) {
-      tokens.push(Token(TOKENS.ALTERNATIVES_MODE, line, initialColumn + 2, value));
+      tokens.push(Token(TOKENS.VARIATIONS_MODE, line, initialColumn + 2, value));
     }
 
     return tokens;
   };
 
-  const handleStopAlternatives = () => {
+  const handleStopVariations = () => {
     const initialColumn = column;
     column += 1;
     position += 1;
@@ -337,7 +337,7 @@ export function tokenize(input) {
     return Token(TOKENS.BRACKET_CLOSE, line, initialColumn);
   };
 
-  const handleAlternativeItem = () => {
+  const handleVariationItem = () => {
     const initialColumn = column;
     column += 1;
     position += 1;
@@ -371,11 +371,11 @@ export function tokenize(input) {
     }
 
     if (input[position] === '(') {
-      return handleStartAlternatives();
+      return handleStartVariations();
     }
 
     if (input[position] === ')') {
-      return handleStopAlternatives();
+      return handleStopVariations();
     }
 
     if (column === 0 && input[position] === '=' && input[position + 1] === '=') {
@@ -390,8 +390,8 @@ export function tokenize(input) {
       return handleDivertToParent();
     }
 
-    if (isCurrentMode(MODES.ALTERNATIVES) && input[position] === '-') {
-      return handleAlternativeItem();
+    if (isCurrentMode(MODES.VARIATIONS) && input[position] === '-') {
+      return handleVariationItem();
     }
 
     if (input[position] === '*' || input[position] === '+') {

@@ -1,0 +1,28 @@
+
+
+(
+  - Hello
+  - Hi
+  - Hey
+)
+
+( shuffle
+  - Hello
+  - Hi
+  - Hey
+)
+
+( once
+  - nested example
+  - (
+    - here I am
+  )
+)
+
+
+( cycle
+  - multiline example
+    do you think it works?
+  - yep
+)
+
