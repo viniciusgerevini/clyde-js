@@ -56,17 +56,38 @@ this is another line 2
     expect(tokens[0]).toEqual({
       token: TOKENS.TEXT,
       value: 'this is a line',
-      line: 0,
+      line: 2,
       column: 0,
     });
     expect(tokens[1]).toEqual({
       token: TOKENS.TEXT,
       value: 'this is another line 2',
-      line: 1,
+      line: 4,
       column: 0
     });
   });
 
+  it('count lines correctly', () => {
+    const tokens = tokenize(`-- this is a comment
+-- this is another comment
+this is a line
+-- this is a third comment
+this is another line 2
+"this is another line 3"
+this is another line 4
+-- another one
+`).getAll();
+
+    expect(tokens).toEqual([
+      { token: TOKENS.TEXT, value: 'this is a line', line: 2, column: 0, },
+      { token: TOKENS.TEXT, value: 'this is another line 2', line: 4, column: 0 },
+      { token: TOKENS.QUOTE, line: 5, column: 0 },
+      { token: TOKENS.TEXT, value: 'this is another line 3', line: 5, column: 1 },
+      { token: TOKENS.QUOTE, line: 5, column: 23 },
+      { token: TOKENS.TEXT, value: 'this is another line 4', line: 6, column: 0 },
+      { token: TOKENS.EOF, line: 8, column: 0 },
+    ]);
+  });
   it('detects indents and dedents', () => {
     const tokens = tokenize(`normal line
     indented line

@@ -89,6 +89,7 @@ export function tokenize(input) {
       position += 1;
     }
     position += 1;
+    line += 1;
   };
 
   // handle line breaks
@@ -242,6 +243,10 @@ export function tokenize(input) {
       return handleIndent();
     }
 
+    if (mode !== MODES.QSTRING && input[position] === '\n') {
+      return handleLineBreaks();
+    }
+
     if (input[position] === '"') {
       return handleQuote();
     }
@@ -250,9 +255,6 @@ export function tokenize(input) {
       return handleQText();
     }
 
-    if (input[position] === '\n') {
-      return handleLineBreaks();
-    }
 
     if (input[position] === ' ') {
       return handleSpace();

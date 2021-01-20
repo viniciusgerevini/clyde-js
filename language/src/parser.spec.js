@@ -439,11 +439,11 @@ spk: second try
 
   describe('error handling', () => {
     it('throws error when wrong parsing', () => {
-      expect( () => parse(`$id id should be after text`)).toThrow(/Unexpected token ".*" on line 0 column 0. Expected .+/);
+      expect( () => parse(`$id id should be after text`)).toThrow(/Unexpected token ".*" on line 1 column 1. Expected .+/);
     });
 
     it('throws error when wrong parsing', () => {
-      expect( () => parse(`speaker:`)).toThrow(/Unexpected token "EOF" on line 0 column 8. Expected .+/);
+      expect( () => parse(`speaker:`)).toThrow(/Unexpected token "EOF" on line 1 column 9. Expected .+/);
     });
   });
 });

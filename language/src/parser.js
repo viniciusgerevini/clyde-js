@@ -10,7 +10,7 @@ export default function parse(doc) {
   let isMultilineEnabled = true;
 
   const wrongTokenError = (token, expected) => {
-    throw new Error(`Unexpected token "${getTokenFriendlyHint(token.token)}" on line ${token.line} column ${token.column}. Expected ${expected.map(getTokenFriendlyHint).join(', ')} `);
+    throw new Error(`Unexpected token "${getTokenFriendlyHint(token.token)}" on line ${token.line+1} column ${token.column+1}. Expected ${expected.map(getTokenFriendlyHint).join(', ')} `);
   }
 
   const consume = (expected) => {
