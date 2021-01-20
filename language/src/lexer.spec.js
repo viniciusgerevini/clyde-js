@@ -306,6 +306,29 @@ line 4
     ]);
   });
 
+  it('diverts', () => {
+    const tokens = tokenize(`
+hello
+-> first divert
+
+* test
+  -> divert
+  <-
+  -> END
+`).getAll();
+    expect(tokens).toEqual([
+      { token: TOKENS.TEXT, value: 'hello', line: 1, column: 0, },
+      { token: TOKENS.DIVERT, value: 'first divert', line: 2, column: 0, },
+      { token: TOKENS.OPTION, line: 4, column: 0 },
+      { token: TOKENS.TEXT, value: 'test', line: 4, column: 2 },
+      { token: TOKENS.INDENT, line: 5, column: 0 },
+      { token: TOKENS.DIVERT, value: 'divert', line: 5, column: 2 },
+      { token: TOKENS.DIVERT_PARENT, line: 6, column: 2 },
+      { token: TOKENS.DIVERT, value: 'END', line: 7, column: 2 },
+      { token: TOKENS.EOF, line: 8, column: 0 },
+    ]);
+  });
+
   it('returns line by line', () => {
     const tokens = tokenize(`normal line
     indented line

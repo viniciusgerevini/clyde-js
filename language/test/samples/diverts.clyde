@@ -1,17 +1,17 @@
-# Diverts
+-- Diverts
 
 == initial_dialog
 npc: what do you want to talk about?
->>
-  * Life
-    -> about_life
-  * The universe
-    -> about_universe
-  * Everything else...
-    -> about_everything_else
-  * Goodbye!
-    -> goodbye
-<<
+
+* [Life]
+  -> about_life
+* [The universe]
+  -> about_universe
+* [Everything else...]
+  -> about_everything_else
+* [Goodbye!]
+  -> goodbye
+
 -> END
 
 == about_life

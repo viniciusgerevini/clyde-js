@@ -77,4 +77,45 @@ line 4
     };
     expect(result).toEqual(expected);
   });
+
+  it('parse diverts', () => {
+    const result = parse(`
+-> one
+-> END
+<-
+* [thats it]
+  -> somewhere
+  <-
+* [ does it work this way? ]
+  -> go
+`);
+    const expected = {
+      type: 'document',
+      content: [{
+        type: 'content',
+        content: [
+          { type: 'divert', target: 'one' },
+          { type: 'divert', target: '<end>' },
+          { type: 'divert', target: '<parent>' },
+          { type: 'options', content: [
+              { type: 'option', name: 'thats it', mode: 'once', content: {
+                  type: 'content',
+                  content: [
+                    { type: 'divert', target: 'somewhere' },
+                    { type: 'divert', target: '<parent>' },
+                  ],
+              }},
+              { type: 'option', name: 'does it work this way?', mode: 'once', content: {
+                  type: 'content',
+                  content: [
+                    { type: 'divert', target: 'go' },
+                  ],
+              }},
+          ]},
+        ]
+      }],
+      blocks: []
+    };
+    expect(result).toEqual(expected);
+  });
 });

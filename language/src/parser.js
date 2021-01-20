@@ -36,7 +36,15 @@ export default function parse(doc) {
   };
 
   const Document = () => {
-    const expected = [TOKENS.EOF, TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.OPTION, TOKENS.STICKY_OPTION]
+    const expected = [
+      TOKENS.EOF,
+      TOKENS.SPEAKER,
+      TOKENS.TEXT,
+      TOKENS.OPTION,
+      TOKENS.STICKY_OPTION,
+      TOKENS.DIVERT,
+      TOKENS.DIVERT_PARENT,
+    ];
     const next = peek();
 
     switch (next.token) {
@@ -47,6 +55,8 @@ export default function parse(doc) {
       case TOKENS.QUOTE:
       case TOKENS.OPTION:
       case TOKENS.STICKY_OPTION:
+      case TOKENS.DIVERT:
+      case TOKENS.DIVERT_PARENT:
         const result =  DocumentNode([ContentNode(Lines())]);
         if (peek([TOKENS.BLOCK])) {
           result.blocks = Blocks();
@@ -73,7 +83,15 @@ export default function parse(doc) {
   };
 
   const Lines = () => {
-    const acceptableNext = [TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.QUOTE, TOKENS.OPTION, TOKENS.STICKY_OPTION];
+    const acceptableNext = [
+      TOKENS.SPEAKER,
+      TOKENS.TEXT,
+      TOKENS.QUOTE,
+      TOKENS.OPTION,
+      TOKENS.STICKY_OPTION,
+      TOKENS.DIVERT,
+      TOKENS.DIVERT_PARENT,
+    ];
     let lines;
     consume(acceptableNext);
     switch (currentToken.token) {
@@ -85,6 +103,11 @@ export default function parse(doc) {
       case TOKENS.OPTION:
       case TOKENS.STICKY_OPTION:
         lines = [Options()];
+        break;
+      case TOKENS.DIVERT:
+      case TOKENS.DIVERT_PARENT:
+        lines = [Divert()];
+        break;
     }
 
     if (peek(acceptableNext)) {
@@ -304,6 +327,17 @@ export default function parse(doc) {
     );
   }
 
+  const Divert = () => {
+    const divert = currentToken;
+
+    switch (divert.token) {
+      case TOKENS.DIVERT:
+        return DivertNode(divert.value);
+      case TOKENS.DIVERT_PARENT:
+        return DivertNode('<parent>');
+    }
+  };
+
   const result = Document();
   if (peek()) {
     consume([ TOKENS.EOF ]);
@@ -334,4 +368,11 @@ const OptionsNode = (content = [], name, id, speaker, tags) => {
 
 const OptionNode = (content = [], mode, name, id, speaker, tags) => {
   return { type: 'option', name, mode, content, id, speaker, tags };
+}
+
+const DivertNode = (target) => {
+  if (target === 'END') {
+    target = '<end>';
+  }
+  return { type: 'divert', target };
 }

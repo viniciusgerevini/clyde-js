@@ -23,7 +23,12 @@ describe('Check compilation results', () => {
   };
 
   test.each(getSourceFiles())('check: %s', (sourceFileName) => {
-    const newParser = ['simple_lines.clyde', 'options.clyde'];
+    const newParser = [
+      'simple_lines.clyde',
+      'options.clyde',
+      'blocks.clyde',
+      'diverts.clyde',
+    ];
     const source = getSourceFile(sourceFileName);
     const expectedResult = getExpectedResult(sourceFileName);
 

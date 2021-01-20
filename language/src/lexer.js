@@ -12,6 +12,8 @@ export const TOKENS = {
   LINE_ID: 'LINE_ID',
   TAG: 'TAG',
   BLOCK: 'BLOCK',
+  DIVERT: 'DIVERT',
+  DIVERT_PARENT: 'DIVERT_PARENT',
 }
 
 const MODES = {
@@ -35,6 +37,8 @@ const tokenFriendlyHint = {
   [TOKENS.LINE_ID]: '$id',
   [TOKENS.TAG]: '#tag',
   [TOKENS.BLOCK]: '== <block name>',
+  [TOKENS.DIVERT]: '-> <target name>',
+  [TOKENS.DIVERT_PARENT]: '<-',
 }
 
 export function getTokenFriendlyHint(token) {
@@ -249,6 +253,28 @@ export function tokenize(input) {
     return Token(TOKENS.BLOCK, line, initialColumn, values.join('').trim());
   };
 
+  const handleDivert = () => {
+    const initialColumn = column;
+    let values = [];
+    position += 2;
+    column += 2;
+
+    while (input[position] && input[position].match(/[A-Z|a-z|0-9|_| ]/)) {
+      values.push(input[position]);
+      position += 1;
+      column += 1;
+    }
+    return Token(TOKENS.DIVERT, line, initialColumn, values.join('').trim());
+  };
+
+  const handleDivertToParent = () => {
+    const initialColumn = column;
+    position += 2;
+    column += 2;
+
+    return Token(TOKENS.DIVERT_PARENT, line, initialColumn);
+  };
+
   // get next token
   function getNextToken() {
     if (mode === MODES.DEFAULT && input[position] === '-' && input[position + 1] === '-') {
@@ -276,8 +302,16 @@ export function tokenize(input) {
       return handleSpace();
     }
 
-    if (column === 0 && input[position] === '=' && input[position] === '=') {
+    if (column === 0 && input[position] === '=' && input[position + 1] === '=') {
       return handleBlock();
+    }
+
+    if (input[position] === '-' && input[position + 1] === '>') {
+      return handleDivert();
+    }
+
+    if (input[position] === '<' && input[position + 1] === '-') {
+      return handleDivertToParent();
     }
 
     if (input[position] === '*' || input[position] === '+') {

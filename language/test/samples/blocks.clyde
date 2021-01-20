@@ -1,15 +1,14 @@
-# Blocks are used to help organise dialogues
+-- blocks are used to help organise dialogues
 
 == initial_dialogue
 <> intro
->>
-  * Life
-    -> about_life
-  * The universe
-    -> about_universe
-  * Everything else...
-    -> about_everything_else
-<<
+
+* [Life]
+  -> about_life
+* [The universe]
+  -> about_universe
+* [Everything else...]
+  -> about_everything_else
 
 == intro
 npc: what do you want to talk about?
