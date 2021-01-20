@@ -122,5 +122,56 @@ describe('variations', () => {
 `;
     expect( () => parse(content)).toThrow(/Wrong variation mode set "sffle". Valid modes: sequence, once, cycle, shuffle, shuffle sequence, shuffle once, shuffle cycle./);
   });
+
+  it('variations with options', () => {
+    const result = parse(`
+(
+  - * works?
+    yes
+  * [yep?]
+    yes
+  - nice
+  -
+    * works?
+      yes
+    * [yep?]
+      yes
+)
+`);
+
+    const expected = {
+      type: 'document',
+      blocks: [],
+      content: [{
+        type: 'content',
+        content: [
+          { type: 'variations', mode: 'sequence', content: [
+            { type: 'content', content: [
+              { type: 'options', content: [
+                { type: 'option', name: 'works?', mode: 'once', content: {
+                    type: 'content', content: [ { type: 'line', value: 'works?' }, { type: 'line', value: 'yes' }, ],
+                  },
+                },
+                { type: 'option', name: 'yep?', mode: 'once', content: { type: 'content', content: [ { type: 'line', value: 'yes' }, ], }, },
+              ]},
+            ], },
+            { type: 'content', content: [ { type: 'line', value: 'nice' }, ], },
+            { type: 'content', content: [
+              { type: 'options', content: [
+                { type: 'option', name: 'works?', mode: 'once', content: {
+                    type: 'content', content: [ { type: 'line', value: 'works?' }, { type: 'line', value: 'yes' }, ],
+                  },
+                },
+                { type: 'option', name: 'yep?', mode: 'once', content: { type: 'content', content: [ { type: 'line', value: 'yes' }, ], }, },
+              ]},
+            ], },
+          ],},
+        ],
+      },
+      ],
+    };
+
+    expect(result).toEqual(expected);
+  });
 });
 

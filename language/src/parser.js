@@ -362,7 +362,17 @@ export default function parse(doc) {
         continue;
       }
       consume([TOKENS.MINUS])
+
+      let startsNextLine = false;
+      if (peek([TOKENS.INDENT])) {
+        consume([TOKENS.INDENT]);
+        startsNextLine = true;
+      }
+
       variations.content.push(ContentNode(Lines()));
+      if (startsNextLine) {
+        consume([TOKENS.DEDENT]);
+      }
 
       if (peek([TOKENS.DEDENT])) {
         consume([TOKENS.DEDENT]);
