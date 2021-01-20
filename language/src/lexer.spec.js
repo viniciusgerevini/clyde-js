@@ -30,17 +30,17 @@ describe('Lexer', () => {
   });
 
   it('quotted text', () => {
-    const tokens = tokenize('"this is a line with: special# characters $. Enjoy"').getAll();
+    const tokens = tokenize('"this is a line with: special# characters $.\\" Enjoy"').getAll();
     expect(tokens).toEqual([
       { token: TOKENS.QUOTE, line: 0, column: 0, },
       {
         token: TOKENS.TEXT,
-        value: 'this is a line with: special# characters $. Enjoy',
+        value: 'this is a line with: special# characters $." Enjoy',
         line: 0,
         column: 1,
       },
-      { token: TOKENS.QUOTE, line: 0, column: 50, },
-      { token: TOKENS.EOF, line: 0, column: 51, },
+      { token: TOKENS.QUOTE, line: 0, column: 52, },
+      { token: TOKENS.EOF, line: 0, column: 53, },
     ]);
   });
 

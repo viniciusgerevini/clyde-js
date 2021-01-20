@@ -150,8 +150,16 @@ export function tokenize(input) {
     while (position < input.length) {
       const currentChar = input[position];
 
+
       if (currentChar === '"') {
         break;
+      }
+
+      if (currentChar === '\\' && input[position + 1] === '"') {
+        value.push(input[position + 1]);
+        position += 2;
+        column += 2;
+        continue;
       }
 
       value.push(currentChar);
@@ -226,6 +234,10 @@ export function tokenize(input) {
 
   // get next token
   function getNextToken() {
+    if (mode === MODES.DEFAULT && input[position] === '-' && input[position + 1] === '-') {
+      return handleComments();
+    }
+
     if (input[position] === '"') {
       return handleQuote();
     }
@@ -238,9 +250,6 @@ export function tokenize(input) {
       return handleIndent();
     }
 
-    if (input[position] === '-' && input[position + 1] === '-') {
-      return handleComments();
-    }
 
     if (input[position] === '\n') {
       return handleLineBreaks();
