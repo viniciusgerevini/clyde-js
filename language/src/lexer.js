@@ -17,7 +17,38 @@ export const TOKENS = {
   DIVERT: 'DIVERT',
   DIVERT_PARENT: 'DIVERT_PARENT',
   VARIATIONS_MODE: 'VARIATIONS_MODE',
-  MINUS: 'MINUS',
+  MINUS: '-',
+  PLUS: '+',
+  MULT: '*',
+  DIV: '/',
+  POWER: '^',
+  MOD: '%',
+  BRACE_OPEN: '{',
+  BRACE_CLOSE: '}',
+  AND: 'AND',
+  OR: 'OR',
+  NOT:'NOT',
+  EQUAL: '==, is',
+  NOT_EQUAL: '!=, isnt',
+  GE: '>=',
+  LE: '<=',
+  GREATER: 'GREATER',
+  LESS: 'LESS',
+  NUMBER_LITERAL: 'number',
+  NULL_TOKEN: 'null',
+  BOOLEAN_LITERAL: 'boolean',
+  STRING_LITERAL: 'string',
+  IDENTIFIER: 'identifier',
+  KEYWORD_SET: 'set',
+  KEYWORD_TRIGGER: 'trigger',
+  ASSIGN: '=',
+  ASSIGN_SUM: '+=',
+  ASSIGN_SUB: '-=',
+  ASSIGN_DIV: '/=',
+  ASSIGN_MULT: '*=',
+  ASSIGN_POW: '^=',
+  ASSIGN_MOD: '%=',
+  COMMA: ',',
 }
 
 const MODES = {
@@ -47,7 +78,19 @@ const tokenFriendlyHint = {
   [TOKENS.DIVERT]: '-> <target name>',
   [TOKENS.DIVERT_PARENT]: '<-',
   [TOKENS.VARIATIONS_MODE]: '<variations mode>',
-  [TOKENS.MINUS]: '-',
+  [TOKENS.BRACE_OPEN]: '{',
+  [TOKENS.BRACE_CLOSE]: '}',
+  [TOKENS.AND]: '&&, and',
+  [TOKENS.OR]: '||, or',
+  [TOKENS.NOT]:' not, !',
+  [TOKENS.EQUAL]: '==, is',
+  [TOKENS.NOT_EQUAL]: '!=, isnt',
+  [TOKENS.GE]: '>=',
+  [TOKENS.LE]: '<=',
+  [TOKENS.GREATER]: '>',
+  [TOKENS.LESS]: '<',
+  [TOKENS.PLUSEQUAL]: '+=',
+  [TOKENS.MINUSEQUAL]: '-=',
 }
 
 export function getTokenFriendlyHint(token) {
@@ -83,7 +126,10 @@ export function tokenize(input) {
     return modes[0] === mode;
   };
 
-
+  const checkSequence = (string, initialPosition, value) => {
+    const sequence = string.slice(initialPosition, initialPosition + value.length);
+    return sequence === value;
+  };
 
 
   // handle indentation
@@ -344,19 +390,253 @@ export function tokenize(input) {
     return Token(TOKENS.MINUS, line, initialColumn);
   };
 
+
+  const handleLogicBlockStart = () => {
+    const initialColumn = column;
+    column += 1;
+    position += 1;
+    stackMode(MODES.LOGIC);
+    return Token(TOKENS.BRACE_OPEN, line, initialColumn);
+  };
+
+  const handleLogicBlockStop = () => {
+    const initialColumn = column;
+    column += 1;
+    position += 1;
+    popMode();
+    return Token(TOKENS.BRACE_CLOSE, line, initialColumn);
+  };
+
+  const keywords = [
+    'is', 'isnt', 'or', 'and', 'not', 'true', 'false', 'null',
+    'set', 'trigger'
+  ];
+
+  const handleLogicIdentifier = () => {
+    const initialColumn = column;
+    let values = '';
+
+    while (input[position] && input[position].match(/[A-Z|a-z|0-9|_]/)) {
+      values += input[position];
+      position += 1;
+      column += 1;
+    }
+
+    if (keywords.includes(values)) {
+      return handleLogicDescriptiveOperator(values, initialColumn);
+    }
+
+    return Token(TOKENS.IDENTIFIER, line, initialColumn, values.trim());
+  };
+
+  const handleLogicDescriptiveOperator = (value, initialColumn) => {
+    switch(value.toLowerCase()) {
+      case 'not':
+        return Token(TOKENS.NOT, line, initialColumn);
+      case 'and':
+        return Token(TOKENS.AND, line, initialColumn);
+      case 'or':
+        return Token(TOKENS.OR, line, initialColumn);
+      case 'is':
+        return Token(TOKENS.EQUAL, line, initialColumn);
+      case 'isnt':
+        return Token(TOKENS.NOT_EQUAL, line, initialColumn);
+      case 'true':
+      case 'false':
+        return Token(TOKENS.BOOLEAN_LITERAL, line, initialColumn, value);
+      case 'null':
+        return Token(TOKENS.NULL_TOKEN, line, initialColumn);
+      case 'set':
+        return Token(TOKENS.KEYWORD_SET, line, initialColumn);
+      case 'trigger':
+        return Token(TOKENS.KEYWORD_TRIGGER, line, initialColumn);
+    }
+
+  };
+
+  const handleLogicNot = () => {
+    const initialColumn = column;
+    column += 1;
+    position += 1;
+    return Token(TOKENS.NOT, line, initialColumn);
+  };
+
+  const handleLogicOperator = (token, length) => {
+    const initialColumn = column;
+    column += length;
+    position += length;
+    return Token(token, line, initialColumn);
+  };
+
+  const handleLogicNumber = () => {
+    const initialColumn = column;
+    let values = '';
+
+    while (input[position] && input[position].match(/[0-9|.]/)) {
+      values += input[position];
+      position += 1;
+      column += 1;
+    }
+
+    return Token(TOKENS.NUMBER_LITERAL, line, initialColumn, values);
+  };
+
+  const handleLogicString = () => {
+    const initialColumn = column;
+    column += 1;
+    position += 1;
+    const token = handleQText();
+    column += 1;
+    position += 1;
+
+    token.token = TOKENS.STRING_LITERAL;
+    token.column = initialColumn;
+
+    return token;
+  };
+
+  const createSimpleToken = (token, length = 1) => {
+    const initialColumn = column;
+    column += length;
+    position += length;
+    return Token(token, line, initialColumn);
+  };
+
+  const handleLogicBlock = () => {
+    if (input[position] === '"') {
+      return handleLogicString();
+    }
+
+    if (input[position] === '}') {
+      return handleLogicBlockStop();
+    }
+
+    if (checkSequence(input, position, '==')) {
+      return handleLogicOperator(TOKENS.EQUAL, 2);
+    }
+
+    if (checkSequence(input, position, '!=')) {
+      return handleLogicOperator(TOKENS.NOT_EQUAL, 2);
+    }
+
+    if (checkSequence(input, position, '&&')) {
+      return handleLogicOperator(TOKENS.AND, 2);
+    }
+
+    if (checkSequence(input, position, '||')) {
+      return handleLogicOperator(TOKENS.OR, 2);
+    }
+
+    if (checkSequence(input, position, '<=')) {
+      return handleLogicOperator(TOKENS.LE, 2);
+    }
+
+    if (checkSequence(input, position, '=>')) {
+      return handleLogicOperator(TOKENS.GE, 2);
+    }
+
+    if (checkSequence(input, position, '<')) {
+      return handleLogicOperator(TOKENS.LESS, 1);
+    }
+
+    if (checkSequence(input, position, '>')) {
+      return handleLogicOperator(TOKENS.GREATER, 1);
+    }
+
+    if (input[position] === '=') {
+      return createSimpleToken(TOKENS.ASSIGN);
+    }
+
+    if (checkSequence(input, position, '-=')) {
+      return createSimpleToken(TOKENS.ASSIGN_SUB, 2);
+    }
+
+    if (checkSequence(input, position, '+=')) {
+      return createSimpleToken(TOKENS.ASSIGN_ADD, 2);
+    }
+
+    if (checkSequence(input, position, '*=')) {
+      return createSimpleToken(TOKENS.ASSIGN_MULT, 2);
+    }
+
+    if (checkSequence(input, position, '/=')) {
+      return createSimpleToken(TOKENS.ASSIGN_DIV, 2);
+    }
+
+    if (checkSequence(input, position, '^=')) {
+      return createSimpleToken(TOKENS.ASSIGN_POW, 2);
+    }
+
+    if (checkSequence(input, position, '%=')) {
+      return createSimpleToken(TOKENS.ASSIGN_MOD, 2);
+    }
+
+    if (input[position] === '+') {
+      return createSimpleToken(TOKENS.PLUS, 1);
+    }
+
+    if (input[position] === '-') {
+      return createSimpleToken(TOKENS.MINUS, 1);
+    }
+
+    if (input[position] === '*') {
+      return createSimpleToken(TOKENS.MULT, 1);
+    }
+
+    if (input[position] === '/') {
+      return createSimpleToken(TOKENS.DIV, 1);
+    }
+
+    if (input[position] === '^') {
+      return createSimpleToken(TOKENS.POWER, 1);
+    }
+
+    if (input[position] === '%') {
+      return createSimpleToken(TOKENS.MOD, 1);
+    }
+
+    if (input[position] === ',') {
+      return createSimpleToken(TOKENS.COMMA, 1);
+    }
+
+    if (input[position] === '!') {
+      return handleLogicNot();
+    }
+
+    if (input[position].match(/[0-9]/)) {
+      return handleLogicNumber();
+    }
+
+    if (input[position].match(/[A-Za-z]/)) {
+      return handleLogicIdentifier();
+    }
+  };
+
   // get next token
   function getNextToken() {
-    if (isCurrentMode(MODES.DEFAULT) && input[position] === '-' && input[position + 1] === '-') {
+    if (!isCurrentMode(MODES.QSTRING) && input[position] === '-' && input[position + 1] === '-') {
       return handleComments();
+    }
+
+    if (!isCurrentMode(MODES.QSTRING) && input[position] === '\n') {
+      return handleLineBreaks();
+    }
+
+    if (!isCurrentMode(MODES.QSTRING) && input[position] === '{') {
+      return handleLogicBlockStart();
+    }
+
+    if(isCurrentMode(MODES.LOGIC)) {
+      const response = handleLogicBlock();
+      if (response)  {
+        return response;
+      }
     }
 
     if ((column === 0 && input[position].match(/[\t ]/)) || (column === 0 && indent.length > 1)) {
       return handleIndent();
     }
 
-    if (!isCurrentMode(MODES.QSTRING) && input[position] === '\n') {
-      return handleLineBreaks();
-    }
 
     if (input[position] === '"') {
       return handleQuote();

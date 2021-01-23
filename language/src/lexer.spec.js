@@ -396,6 +396,323 @@ hello
     ]);
   });
 
+
+  it('variables: conditions', () => {
+
+    const tokens = tokenize(`
+{ variable }
+{ not variable }
+{ !variable }
+{ variable == variable2 }
+{ variable != variable2 }
+{ variable && variable2 }
+{ variable || variable2 }
+{ variable <= variable2 }
+{ variable => variable2 }
+{ variable < variable2 }
+{ variable > variable2 }
+{ variable > variable2 < variable3 }
+
+{ variable is variable2 }
+{ variable isnt variable2 }
+{ variable and variable2 }
+{ variable or variable2 }
+
+{ variable == 12.1 }
+{ variable == true }
+{ variable == false }
+{ variable == "s1" }
+{ variable == null }
+
+`).getAll();
+    expect(tokens).toEqual([
+      { token: TOKENS.BRACE_OPEN, line: 1, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 1, column: 2, },
+      { token: TOKENS.BRACE_CLOSE, line: 1, column: 11, },
+
+      { token: TOKENS.BRACE_OPEN, line: 2, column: 0, },
+      { token: TOKENS.NOT, line: 2, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 2, column: 6, },
+      { token: TOKENS.BRACE_CLOSE, line: 2, column: 15, },
+
+      { token: TOKENS.BRACE_OPEN, line: 3, column: 0, },
+      { token: TOKENS.NOT, line: 3, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 3, column: 3, },
+      { token: TOKENS.BRACE_CLOSE, line: 3, column: 12, },
+
+      { token: TOKENS.BRACE_OPEN, line: 4, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 4, column: 2, },
+      { token: TOKENS.EQUAL, line: 4, column: 11, },
+      { token: TOKENS.IDENTIFIER, value: 'variable2', line: 4, column: 14, },
+      { token: TOKENS.BRACE_CLOSE, line: 4, column: 24, },
+
+      { token: TOKENS.BRACE_OPEN, line: 5, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 5, column: 2, },
+      { token: TOKENS.NOT_EQUAL, line: 5, column: 11, },
+      { token: TOKENS.IDENTIFIER, value: 'variable2', line: 5, column: 14, },
+      { token: TOKENS.BRACE_CLOSE, line: 5, column: 24, },
+
+      { token: TOKENS.BRACE_OPEN, line: 6, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 6, column: 2, },
+      { token: TOKENS.AND, line: 6, column: 11, },
+      { token: TOKENS.IDENTIFIER, value: 'variable2', line: 6, column: 14, },
+      { token: TOKENS.BRACE_CLOSE, line: 6, column: 24, },
+
+      { token: TOKENS.BRACE_OPEN, line: 7, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 7, column: 2, },
+      { token: TOKENS.OR, line: 7, column: 11, },
+      { token: TOKENS.IDENTIFIER, value: 'variable2', line: 7, column: 14, },
+      { token: TOKENS.BRACE_CLOSE, line: 7, column: 24, },
+
+      { token: TOKENS.BRACE_OPEN, line: 8, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 8, column: 2, },
+      { token: TOKENS.LE, line: 8, column: 11, },
+      { token: TOKENS.IDENTIFIER, value: 'variable2', line: 8, column: 14, },
+      { token: TOKENS.BRACE_CLOSE, line: 8, column: 24, },
+
+      { token: TOKENS.BRACE_OPEN, line: 9, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 9, column: 2, },
+      { token: TOKENS.GE, line: 9, column: 11, },
+      { token: TOKENS.IDENTIFIER, value: 'variable2', line: 9, column: 14, },
+      { token: TOKENS.BRACE_CLOSE, line: 9, column: 24, },
+
+      { token: TOKENS.BRACE_OPEN, line: 10, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 10, column: 2, },
+      { token: TOKENS.LESS, line: 10, column: 11, },
+      { token: TOKENS.IDENTIFIER, value: 'variable2', line: 10, column: 13, },
+      { token: TOKENS.BRACE_CLOSE, line: 10, column: 23, },
+
+      { token: TOKENS.BRACE_OPEN, line: 11, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 11, column: 2, },
+      { token: TOKENS.GREATER, line: 11, column: 11, },
+      { token: TOKENS.IDENTIFIER, value: 'variable2', line: 11, column: 13, },
+      { token: TOKENS.BRACE_CLOSE, line: 11, column: 23, },
+
+      { token: TOKENS.BRACE_OPEN, line: 12, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 12, column: 2, },
+      { token: TOKENS.GREATER, line: 12, column: 11, },
+      { token: TOKENS.IDENTIFIER, value: 'variable2', line: 12, column: 13, },
+      { token: TOKENS.LESS, line: 12, column: 23, },
+      { token: TOKENS.IDENTIFIER, value: 'variable3', line: 12, column: 25, },
+      { token: TOKENS.BRACE_CLOSE, line: 12, column: 35, },
+
+      { token: TOKENS.BRACE_OPEN, line: 14, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 14, column: 2, },
+      { token: TOKENS.EQUAL, line: 14, column: 11, },
+      { token: TOKENS.IDENTIFIER, value: 'variable2', line: 14, column: 14, },
+      { token: TOKENS.BRACE_CLOSE, line: 14, column: 24, },
+
+      { token: TOKENS.BRACE_OPEN, line: 15, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 15, column: 2, },
+      { token: TOKENS.NOT_EQUAL, line: 15, column: 11, },
+      { token: TOKENS.IDENTIFIER, value: 'variable2', line: 15, column: 16, },
+      { token: TOKENS.BRACE_CLOSE, line: 15, column: 26, },
+
+      { token: TOKENS.BRACE_OPEN, line: 16, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 16, column: 2, },
+      { token: TOKENS.AND, line: 16, column: 11, },
+      { token: TOKENS.IDENTIFIER, value: 'variable2', line: 16, column: 15, },
+      { token: TOKENS.BRACE_CLOSE, line: 16, column: 25, },
+
+      { token: TOKENS.BRACE_OPEN, line: 17, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 17, column: 2, },
+      { token: TOKENS.OR, line: 17, column: 11, },
+      { token: TOKENS.IDENTIFIER, value: 'variable2', line: 17, column: 14, },
+      { token: TOKENS.BRACE_CLOSE, line: 17, column: 24, },
+
+      { token: TOKENS.BRACE_OPEN, line: 19, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 19, column: 2, },
+      { token: TOKENS.EQUAL, line: 19, column: 11, },
+      { token: TOKENS.NUMBER_LITERAL, value: '12.1', line: 19, column: 14, },
+      { token: TOKENS.BRACE_CLOSE, line: 19, column: 19, },
+
+      { token: TOKENS.BRACE_OPEN, line: 20, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 20, column: 2, },
+      { token: TOKENS.EQUAL, line: 20, column: 11, },
+      { token: TOKENS.BOOLEAN_LITERAL, value: 'true', line: 20, column: 14, },
+      { token: TOKENS.BRACE_CLOSE, line: 20, column: 19, },
+
+      { token: TOKENS.BRACE_OPEN, line: 21, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 21, column: 2, },
+      { token: TOKENS.EQUAL, line: 21, column: 11, },
+      { token: TOKENS.BOOLEAN_LITERAL, value: 'false', line: 21, column: 14, },
+      { token: TOKENS.BRACE_CLOSE, line: 21, column: 20, },
+
+      { token: TOKENS.BRACE_OPEN, line: 22, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 22, column: 2, },
+      { token: TOKENS.EQUAL, line: 22, column: 11, },
+      { token: TOKENS.STRING_LITERAL, value: 's1', line: 22, column: 14, },
+      { token: TOKENS.BRACE_CLOSE, line: 22, column: 19, },
+
+      { token: TOKENS.BRACE_OPEN, line: 23, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 23, column: 2, },
+      { token: TOKENS.EQUAL, line: 23, column: 11, },
+      { token: TOKENS.NULL_TOKEN, line: 23, column: 14, },
+      { token: TOKENS.BRACE_CLOSE, line: 23, column: 19, },
+
+      { token: TOKENS.EOF, line: 25, column: 0 },
+
+    ]);
+  });
+
+  it('variables: conditions', () => {
+
+    const tokens = tokenize(`
+{ set variable = 1 }
+{ set variable -= 1 }
+{ set variable += 1 }
+{ set variable *= 1 }
+{ set variable /= 1 }
+{ set variable ^= 1 }
+{ set variable %= 1 }
+{ set variable = a = b }
+
+{ set variable = 1 + 2 }
+{ set variable = 1 - 2 }
+{ set variable = 1 * 2 }
+{ set variable = 1 / 2 }
+{ set variable = 1 ^ 2 }
+{ set variable = 1 % 2 }
+
+{ trigger event_name }
+{ set a = 1, set b = 2 }
+
+`).getAll();
+    expect(tokens).toEqual([
+      { token: TOKENS.BRACE_OPEN, line: 1, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 1, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 1, column: 6, },
+      { token: TOKENS.ASSIGN, line: 1, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 1, column: 17, },
+      { token: TOKENS.BRACE_CLOSE, line: 1, column: 19, },
+
+      { token: TOKENS.BRACE_OPEN, line: 2, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 2, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 2, column: 6, },
+      { token: TOKENS.ASSIGN_SUB, line: 2, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 2, column: 18, },
+      { token: TOKENS.BRACE_CLOSE, line: 2, column: 20, },
+
+      { token: TOKENS.BRACE_OPEN, line: 3, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 3, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 3, column: 6, },
+      { token: TOKENS.ASSIGN_ADD, line: 3, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 3, column: 18, },
+      { token: TOKENS.BRACE_CLOSE, line: 3, column: 20, },
+
+      { token: TOKENS.BRACE_OPEN, line: 4, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 4, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 4, column: 6, },
+      { token: TOKENS.ASSIGN_MULT, line: 4, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 4, column: 18, },
+      { token: TOKENS.BRACE_CLOSE, line: 4, column: 20, },
+
+      { token: TOKENS.BRACE_OPEN, line: 5, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 5, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 5, column: 6, },
+      { token: TOKENS.ASSIGN_DIV, line: 5, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 5, column: 18, },
+      { token: TOKENS.BRACE_CLOSE, line: 5, column: 20, },
+
+      { token: TOKENS.BRACE_OPEN, line: 6, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 6, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 6, column: 6, },
+      { token: TOKENS.ASSIGN_POW, line: 6, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 6, column: 18, },
+      { token: TOKENS.BRACE_CLOSE, line: 6, column: 20, },
+
+
+      { token: TOKENS.BRACE_OPEN, line: 7, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 7, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 7, column: 6, },
+      { token: TOKENS.ASSIGN_MOD, line: 7, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 7, column: 18, },
+      { token: TOKENS.BRACE_CLOSE, line: 7, column: 20, },
+
+      { token: TOKENS.BRACE_OPEN, line: 8, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 8, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 8, column: 6, },
+      { token: TOKENS.ASSIGN, line: 8, column: 15, },
+      { token: TOKENS.IDENTIFIER, value: 'a', line: 8, column: 17, },
+      { token: TOKENS.ASSIGN, line: 8, column: 19, },
+      { token: TOKENS.IDENTIFIER, value: 'b', line: 8, column: 21, },
+      { token: TOKENS.BRACE_CLOSE, line: 8, column: 23, },
+
+      { token: TOKENS.BRACE_OPEN, line: 10, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 10, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 10, column: 6, },
+      { token: TOKENS.ASSIGN, line: 10, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 10, column: 17, },
+      { token: TOKENS.PLUS, line: 10, column: 19, },
+      { token: TOKENS.NUMBER_LITERAL, value: '2', line: 10, column: 21, },
+      { token: TOKENS.BRACE_CLOSE, line: 10, column: 23, },
+
+      { token: TOKENS.BRACE_OPEN, line: 11, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 11, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 11, column: 6, },
+      { token: TOKENS.ASSIGN, line: 11, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 11, column: 17, },
+      { token: TOKENS.MINUS, line: 11, column: 19, },
+      { token: TOKENS.NUMBER_LITERAL, value: '2', line: 11, column: 21, },
+      { token: TOKENS.BRACE_CLOSE, line: 11, column: 23, },
+
+      { token: TOKENS.BRACE_OPEN, line: 12, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 12, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 12, column: 6, },
+      { token: TOKENS.ASSIGN, line: 12, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 12, column: 17, },
+      { token: TOKENS.MULT, line: 12, column: 19, },
+      { token: TOKENS.NUMBER_LITERAL, value: '2', line: 12, column: 21, },
+      { token: TOKENS.BRACE_CLOSE, line: 12, column: 23, },
+
+      { token: TOKENS.BRACE_OPEN, line: 13, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 13, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 13, column: 6, },
+      { token: TOKENS.ASSIGN, line: 13, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 13, column: 17, },
+      { token: TOKENS.DIV, line: 13, column: 19, },
+      { token: TOKENS.NUMBER_LITERAL, value: '2', line: 13, column: 21, },
+      { token: TOKENS.BRACE_CLOSE, line: 13, column: 23, },
+
+      { token: TOKENS.BRACE_OPEN, line: 14, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 14, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 14, column: 6, },
+      { token: TOKENS.ASSIGN, line: 14, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 14, column: 17, },
+      { token: TOKENS.POWER, line: 14, column: 19, },
+      { token: TOKENS.NUMBER_LITERAL, value: '2', line: 14, column: 21, },
+      { token: TOKENS.BRACE_CLOSE, line: 14, column: 23, },
+
+      { token: TOKENS.BRACE_OPEN, line: 15, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 15, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 15, column: 6, },
+      { token: TOKENS.ASSIGN, line: 15, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 15, column: 17, },
+      { token: TOKENS.MOD, line: 15, column: 19, },
+      { token: TOKENS.NUMBER_LITERAL, value: '2', line: 15, column: 21, },
+      { token: TOKENS.BRACE_CLOSE, line: 15, column: 23, },
+
+      { token: TOKENS.BRACE_OPEN, line: 17, column: 0, },
+      { token: TOKENS.KEYWORD_TRIGGER, line: 17, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'event_name', line: 17, column: 10, },
+      { token: TOKENS.BRACE_CLOSE, line: 17, column: 21, },
+
+      { token: TOKENS.BRACE_OPEN, line: 18, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 18, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'a', line: 18, column: 6, },
+      { token: TOKENS.ASSIGN, line: 18, column: 8, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 18, column: 10, },
+      { token: TOKENS.COMMA, line: 18, column: 11, },
+      { token: TOKENS.KEYWORD_SET, line: 18, column: 13, },
+      { token: TOKENS.IDENTIFIER, value: 'b', line: 18, column: 17, },
+      { token: TOKENS.ASSIGN, line: 18, column: 19, },
+      { token: TOKENS.NUMBER_LITERAL, value: '2', line: 18, column: 21, },
+      { token: TOKENS.BRACE_CLOSE, line: 18, column: 23, },
+
+      { token: TOKENS.EOF, line: 20, column: 0 },
+    ]);
+  });
+
   it('returns line by line', () => {
     const tokens = tokenize(`normal line
     indented line
