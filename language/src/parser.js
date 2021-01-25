@@ -1,5 +1,27 @@
 import { TOKENS, tokenize, getTokenFriendlyHint } from './lexer.js';
 
+import {
+  DocumentNode,
+  ContentNode,
+  BlockNode,
+  LineNode,
+  OptionsNode,
+  OptionNode,
+  DivertNode,
+  VariationsNode,
+  VariableNode,
+  NumberLiteralNode,
+  BooleanLiteralNode,
+  StringLiteralNode,
+  NullTokenNode,
+  ConditionalContentNode,
+  ActionContentNode,
+  ExpressionNode,
+  AssignmentsNode,
+  AssignmentNode,
+  EventsNode,
+  EventNode,
+} from './nodes.js';
 
 export default function parse(doc) {
   const variationsModes = ['sequence', 'once', 'cycle', 'shuffle', 'shuffle sequence', 'shuffle once', 'shuffle cycle' ];
@@ -684,92 +706,4 @@ export default function parse(doc) {
     consume([ TOKENS.EOF ]);
   }
   return result;
-}
-
-
-const DocumentNode = (content = [], blocks = []) => {
-  return { type: 'document', content, blocks};
-};
-
-const ContentNode = (content) => {
-  return { type: 'content', content };
-};
-
-const BlockNode = (blockName, content = []) => {
-  return { type: 'block', name: blockName, content };
-}
-
-const LineNode = (value, speaker, id, tags) => {
-  return { type: 'line', value, speaker, id, tags };
-};
-
-const OptionsNode = (content = [], name, id, speaker, tags) => {
-  return { type: 'options', name, content, id, speaker, tags };
-}
-
-const OptionNode = (content = [], mode, name, id, speaker, tags) => {
-  return { type: 'option', name, mode, content, id, speaker, tags };
-}
-
-const DivertNode = (target) => {
-  if (target === 'END') {
-    target = '<end>';
-  }
-  return { type: 'divert', target };
-}
-
-const VariationsNode = (mode, content = []) => {
-  return { type: 'variations', mode, content };
-}
-
-const VariableNode = (name) => {
-  return { type: 'variable', name };
-}
-
-const NumberLiteralNode = (value) => {
-  return LiteralNode('number', Number(value));
-}
-
-const BooleanLiteralNode = (value) => {
-  return LiteralNode('boolean', value === 'true');
-}
-
-const StringLiteralNode = (value) => {
-  return LiteralNode('string', value);
-}
-
-const LiteralNode = (name, value) => {
-  return { type: 'literal', name, value };
-}
-
-const NullTokenNode = () => {
-  return { type: 'null' };
-}
-
-const ConditionalContentNode = (conditions, content) => {
-  return { type: 'conditional_content', conditions, content };
-}
-
-const ActionContentNode = (action, content) => {
-  return { type: 'action_content', action, content };
-}
-
-const ExpressionNode = (name, elements) => {
-  return { type: 'expression', name, elements };
-}
-
-const AssignmentsNode = (assignments) => {
-  return { type: 'assignments', assignments };
-}
-
-const AssignmentNode = (variable, operation, value) => {
-  return { type: 'assignment', variable, operation, value };
-}
-
-const EventsNode = (events) => {
-  return { type: 'events', events };
-}
-
-const EventNode = (name) => {
-  return { type: 'event', name };
 }
