@@ -75,8 +75,7 @@ describe('parse: logic', () => {
       expect(result).toEqual(expected);
     });
 
-
-    it('multiple logicla checks: "and" and "or"', () => {
+    it('multiple logical checks: "and" and "or"', () => {
       const result = parse(`{ first_time and second_time or third_time } npc: what do you want to talk about? `);
 
       const expected = createDocPayload([
@@ -380,10 +379,113 @@ describe('parse: logic', () => {
       expect(result).toEqual(expected);
     });
 
-    it.todo('conditional divert');
-    it.todo('conditional option');
-    it.todo('condition after line');
-    it.todo('conditional indented block');
+    it('condition after line', () => {
+      const result = parse(`This is conditional { when some_var }`);
+      const expected = createDocPayload([
+        {
+          type: "conditional_content",
+          conditions: { type: "variable", name: "some_var" },
+          content: { type: "line", value: "This is conditional", }
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+    it('conditional divert', () => {
+      const result = parse(`{ some_var } -> some_block`);
+      const expected = createDocPayload([
+        {
+          type: "conditional_content",
+          conditions: { type: "variable", name: "some_var" },
+          content: { type: "divert", target: "some_block", }
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+    it('conditional option', () => {
+      const result = parse(`
+{ some_var } * option 1
+* option 2 { when some_var }
+{ some_other_var } * option 3
+`);
+      const expected = createDocPayload([{
+        type: 'options',
+        content: [
+          {
+            type: "conditional_content",
+            conditions: { type: "variable", name: "some_var" },
+            content: {
+              type: 'option',
+              name: 'option 1',
+              mode: 'once',
+              content: {
+                type: 'content',
+                content: [
+                  { type: 'line', value: 'option 1' },
+                ],
+              },
+            },
+          },
+          {
+            type: "conditional_content",
+            conditions: { type: "variable", name: "some_var" },
+            content: {
+              type: 'option',
+              name: 'option 2',
+              mode: 'once',
+              content: {
+                type: 'content',
+                content: [
+                  { type: 'line', value: 'option 2' },
+                ],
+              },
+            },
+          },
+          {
+            type: "conditional_content",
+            conditions: { type: "variable", name: "some_other_var" },
+            content: {
+              type: 'option',
+              name: 'option 3',
+              mode: 'once',
+              content: {
+                type: 'content',
+                content: [
+                  { type: 'line', value: 'option 3' },
+                ],
+              },
+            },
+          },
+        ],
+          }
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+    it('conditional indented block', () => {
+      const result = parse(`
+{ some_var }
+      This is conditional
+      This is second conditional
+      This is third conditional
+`);
+      const expected = createDocPayload([
+        {
+          type: "conditional_content",
+          conditions: { type: "variable", name: "some_var" },
+          content: {
+            type: 'content',
+            content: [
+              { type: "line", value: "This is conditional", },
+              { type: "line", value: "This is second conditional", },
+              { type: "line", value: "This is third conditional", }
+            ]
+          }
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
   });
 
   describe('assignments', () => {
@@ -593,8 +695,117 @@ describe('parse: logic', () => {
       expect(result).toEqual(expected);
     });
 
-    it.todo('assignment afterline');
-    it.todo('standalone assignment block');
+    it('assignment after line', () => {
+      const result = parse(`let's go { set a = 2 }`);
+      const expected = createDocPayload([{
+        type: 'action_content',
+        action: {
+          type: 'assignments',
+          assignments: [
+            {
+              type: 'assignment',
+              variable: { type: 'variable', name: 'a', },
+              operation: 'assign',
+              value: { type: 'literal', name: 'number', value: 2, },
+            },
+          ],
+        },
+        content: { type: 'line', value: 'let\'s go', },
+      }]);
+      expect(result).toEqual(expected);
+    });
+
+    it('standalone assignment', () => {
+      const result = parse(`
+{ set a = 2 }
+{ set b = 3 }`);
+
+      const expected = createDocPayload([
+        {
+          type: 'assignments',
+          assignments: [
+            {
+              type: 'assignment',
+              variable: { type: 'variable', name: 'a', },
+              operation: 'assign',
+              value: { type: 'literal', name: 'number', value: 2, },
+            },
+          ],
+        },
+        {
+          type: 'assignments',
+          assignments: [
+            {
+              type: 'assignment',
+              variable: { type: 'variable', name: 'b', },
+              operation: 'assign',
+              value: { type: 'literal', name: 'number', value: 3, },
+            },
+          ],
+        }
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+    it('options assignment', () => {
+      const result = parse(`
+{ set a = 2 } * option 1
+* option 2 { set b = 3 }
+{ set c = 4 } * option 3
+`);
+      const expected = createDocPayload([{
+        type: 'options',
+        content: [
+          {
+            type: "action_content",
+            action: {
+              type: 'assignments',
+              assignments: [{ type: 'assignment', variable: { type: 'variable', name: 'a', }, operation: 'assign', value: { type: 'literal', name: 'number', value: 2, }, }, ],
+            },
+            content: { type: 'option', name: 'option 1', mode: 'once',
+              content: {
+                type: 'content',
+                content: [
+                  { type: 'line', value: 'option 1' },
+                ],
+              },
+            },
+          },
+          {
+            type: "action_content",
+            action: {
+              type: 'assignments',
+              assignments: [{ type: 'assignment', variable: { type: 'variable', name: 'b', }, operation: 'assign', value: { type: 'literal', name: 'number', value: 3, }, }, ],
+            },
+            content: { type: 'option', name: 'option 2', mode: 'once',
+              content: {
+                type: 'content',
+                content: [
+                  { type: 'line', value: 'option 2' },
+                ],
+              },
+            },
+          },
+          {
+            type: "action_content",
+            action: {
+              type: 'assignments',
+              assignments: [{ type: 'assignment', variable: { type: 'variable', name: 'c', }, operation: 'assign', value: { type: 'literal', name: 'number', value: 4, }, }, ],
+            },
+            content: { type: 'option', name: 'option 3', mode: 'once',
+              content: {
+                type: 'content',
+                content: [
+                  { type: 'line', value: 'option 3' },
+                ],
+              },
+            },
+          },
+        ],
+        }
+      ]);
+      expect(result).toEqual(expected);
+    });
   });
 
   describe('events', () => {
@@ -633,8 +844,92 @@ describe('parse: logic', () => {
       expect(result).toEqual(expected);
     } );
 
-    it.todo('standalone trigger event');
-    it.todo('trigger event after line');
+    it('standalone trigger event', () => {
+      const result = parse(`{ trigger some_event }`);
+      const expected = createDocPayload([{
+        type: 'events',
+        events: [
+          { type: 'event', name: 'some_event' },
+        ],
+      }]);
+      expect(result).toEqual(expected);
+    });
+
+    it('trigger event after line', () => {
+      const result = parse(`trigger { trigger some_event }`);
+      const expected = createDocPayload([{
+        type: 'action_content',
+        action: {
+          type: 'events',
+          events: [{ type: 'event', name: 'some_event' }],
+        },
+        content: {
+          type: 'line',
+          value: 'trigger',
+        },
+      }]);
+      expect(result).toEqual(expected);
+    });
+
+    it('options trigger', () => {
+      const result = parse(`
+{ trigger a } * option 1
+* option 2 { trigger b }
+{ trigger c } * option 3
+`);
+      const expected = createDocPayload([{
+        type: 'options',
+        content: [
+          {
+            type: "action_content",
+            action: {
+              type: 'events',
+              events: [{ type: 'event', name: 'a' }],
+            },
+            content: { type: 'option', name: 'option 1', mode: 'once',
+              content: {
+                type: 'content',
+                content: [
+                  { type: 'line', value: 'option 1' },
+                ],
+              },
+            },
+          },
+          {
+            type: "action_content",
+            action: {
+              type: 'events',
+              events: [{ type: 'event', name: 'b' }],
+            },
+            content: { type: 'option', name: 'option 2', mode: 'once',
+              content: {
+                type: 'content',
+                content: [
+                  { type: 'line', value: 'option 2' },
+                ],
+              },
+            },
+          },
+          {
+            type: "action_content",
+            action: {
+              type: 'events',
+              events: [{ type: 'event', name: 'c' }],
+            },
+            content: { type: 'option', name: 'option 3', mode: 'once',
+              content: {
+                type: 'content',
+                content: [
+                  { type: 'line', value: 'option 3' },
+                ],
+              },
+            },
+          },
+        ],
+        }
+      ]);
+      expect(result).toEqual(expected);
+    });
   });
 
   it('empty block', () => {
@@ -645,6 +940,4 @@ describe('parse: logic', () => {
     }]);
     expect(result).toEqual(expected);
   });
-
-  it.todo('multiple logic blocks in the same line');
 });

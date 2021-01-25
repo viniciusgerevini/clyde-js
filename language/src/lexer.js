@@ -41,6 +41,7 @@ export const TOKENS = {
   IDENTIFIER: 'identifier',
   KEYWORD_SET: 'set',
   KEYWORD_TRIGGER: 'trigger',
+  KEYWORD_WHEN: 'when',
   ASSIGN: '=',
   ASSIGN_SUM: '+=',
   ASSIGN_SUB: '-=',
@@ -49,6 +50,7 @@ export const TOKENS = {
   ASSIGN_POW: '^=',
   ASSIGN_MOD: '%=',
   COMMA: ',',
+  LINE_BREAK: 'line break',
 }
 
 const MODES = {
@@ -394,7 +396,12 @@ export function tokenize(input) {
     column += 1;
     position += 1;
     stackMode(MODES.LOGIC);
-    return Token(TOKENS.BRACE_OPEN, line, initialColumn);
+    const token = Token(TOKENS.BRACE_OPEN, line, initialColumn);
+    const linebreak = getLeadingLineBreak();
+    if (linebreak) {
+      return [ linebreak, token ];
+    }
+    return token;
   };
 
   const handleLogicBlockStop = () => {
@@ -402,12 +409,17 @@ export function tokenize(input) {
     column += 1;
     position += 1;
     popMode();
-    return Token(TOKENS.BRACE_CLOSE, line, initialColumn);
+    const token = Token(TOKENS.BRACE_CLOSE, line, initialColumn);
+    const linebreak = getFollowingLineBreak();
+    if (linebreak) {
+      return [ token, linebreak ];
+    }
+    return token;
   };
 
   const keywords = [
     'is', 'isnt', 'or', 'and', 'not', 'true', 'false', 'null',
-    'set', 'trigger'
+    'set', 'trigger', 'when'
   ];
 
   const handleLogicIdentifier = () => {
@@ -448,6 +460,8 @@ export function tokenize(input) {
         return Token(TOKENS.KEYWORD_SET, line, initialColumn);
       case 'trigger':
         return Token(TOKENS.KEYWORD_TRIGGER, line, initialColumn);
+      case 'when':
+        return Token(TOKENS.KEYWORD_WHEN, line, initialColumn);
     }
 
   };
@@ -607,6 +621,30 @@ export function tokenize(input) {
 
     if (input[position].match(/[A-Za-z]/)) {
       return handleLogicIdentifier();
+    }
+  };
+
+  const getFollowingLineBreak = () => {
+    let lookupPosition = position;
+    let lookupColumn = column;
+    while (input[lookupPosition] === ' ') {
+      lookupPosition += 1;
+      lookupColumn += 1;
+    }
+
+    if (input[lookupPosition] === '\n') {
+      return Token(TOKENS.LINE_BREAK, line, lookupColumn);
+    }
+  };
+
+  const getLeadingLineBreak = () => {
+    let lookupPosition = position - 2;
+    while (input[lookupPosition] === ' ') {
+      lookupPosition -= 1;
+    }
+
+    if (input[lookupPosition] === '\n') {
+      return Token(TOKENS.LINE_BREAK, line, 0);
     }
   };
 
