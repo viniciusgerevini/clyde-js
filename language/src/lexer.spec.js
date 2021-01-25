@@ -408,7 +408,7 @@ hello
 { variable && variable2 }
 { variable || variable2 }
 { variable <= variable2 }
-{ variable => variable2 }
+{ variable >= variable2 }
 { variable < variable2 }
 { variable > variable2 }
 { variable > variable2 < variable3 }
@@ -555,7 +555,29 @@ hello
     ]);
   });
 
-  it('variables: conditions', () => {
+  it('variables: indent', () => {
+    const tokens = tokenize(`
+ { a }
+{ a }
+
+`).getAll();
+    expect(tokens).toEqual([
+      { token: TOKENS.INDENT, line: 1, column: 0, },
+      { token: TOKENS.BRACE_OPEN, line: 1, column: 1, },
+      { token: TOKENS.IDENTIFIER, value: 'a', line: 1, column: 3, },
+      { token: TOKENS.BRACE_CLOSE, line: 1, column: 5, },
+
+      { token: TOKENS.DEDENT, line: 2, column: 0, },
+
+      { token: TOKENS.BRACE_OPEN, line: 2, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: 'a', line: 2, column: 2, },
+      { token: TOKENS.BRACE_CLOSE, line: 2, column: 4, },
+
+      { token: TOKENS.EOF, line: 4, column: 0 },
+    ]);
+  });
+
+  it('variables: assignements', () => {
 
     const tokens = tokenize(`
 { set variable = 1 }
@@ -596,7 +618,7 @@ hello
       { token: TOKENS.BRACE_OPEN, line: 3, column: 0, },
       { token: TOKENS.KEYWORD_SET, line: 3, column: 2, },
       { token: TOKENS.IDENTIFIER, value: 'variable', line: 3, column: 6, },
-      { token: TOKENS.ASSIGN_ADD, line: 3, column: 15, },
+      { token: TOKENS.ASSIGN_SUM, line: 3, column: 15, },
       { token: TOKENS.NUMBER_LITERAL, value: '1', line: 3, column: 18, },
       { token: TOKENS.BRACE_CLOSE, line: 3, column: 20, },
 
@@ -709,9 +731,31 @@ hello
       { token: TOKENS.NUMBER_LITERAL, value: '2', line: 18, column: 21, },
       { token: TOKENS.BRACE_CLOSE, line: 18, column: 23, },
 
-      { token: TOKENS.EOF, line: 20, column: 0 },
+
+      { token: TOKENS.BRACE_OPEN, line: 19, column: 0, },
+      { token: TOKENS.KEYWORD_WHEN, line: 19, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'a', line: 19, column: 7, },
+      { token: TOKENS.BRACE_CLOSE, line: 19, column: 9, },
+
+      { token: TOKENS.EOF, line: 21, column: 0 },
     ]);
   });
+
+  it('variables: assignement after line', () => {
+
+    const tokens = tokenize(`this line { set variable = 1 }`).getAll();
+    expect(tokens).toEqual([
+      { token: TOKENS.TEXT, value: 'this line', line: 0, column: 0, },
+      { token: TOKENS.BRACE_OPEN, line: 0, column: 10, },
+      { token: TOKENS.KEYWORD_SET, line: 0, column: 12, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 0, column: 16, },
+      { token: TOKENS.ASSIGN, line: 0, column: 25, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 0, column: 27, },
+      { token: TOKENS.BRACE_CLOSE, line: 0, column: 29, },
+      { token: TOKENS.EOF, line: 0, column: 30, },
+    ]);
+  });
+
 
   it('returns line by line', () => {
     const tokens = tokenize(`normal line
@@ -733,5 +777,10 @@ now another dedent`);
   it('parse token friendly hint', () => {
     expect(getTokenFriendlyHint(TOKENS.LINE_ID)).toEqual('$id');
     expect(getTokenFriendlyHint('some_unkown_token')).toEqual('some_unkown_token');
+  });
+
+  it('does not fail when leaving mode', () => {
+    const tokens = tokenize('))');
+    expect(() => tokens.getAll()).not.toThrow();
   });
 });

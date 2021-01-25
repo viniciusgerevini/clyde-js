@@ -89,8 +89,6 @@ const tokenFriendlyHint = {
   [TOKENS.LE]: '<=',
   [TOKENS.GREATER]: '>',
   [TOKENS.LESS]: '<',
-  [TOKENS.PLUSEQUAL]: '+=',
-  [TOKENS.MINUSEQUAL]: '-=',
 }
 
 export function getTokenFriendlyHint(token) {
@@ -202,7 +200,7 @@ export function tokenize(input) {
     while (position < input.length) {
       const currentChar = input[position];
 
-      if (['\n', '$', '#' ].includes(currentChar) || (isCurrentMode(MODES.OPTION) && currentChar === ']')) {
+      if (['\n', '$', '#', '{' ].includes(currentChar) || (isCurrentMode(MODES.OPTION) && currentChar === ']')) {
         break;
       }
 
@@ -422,7 +420,7 @@ export function tokenize(input) {
       column += 1;
     }
 
-    if (keywords.includes(values)) {
+    if (keywords.includes(values.toLowerCase())) {
       return handleLogicDescriptiveOperator(values, initialColumn);
     }
 
@@ -531,7 +529,7 @@ export function tokenize(input) {
       return handleLogicOperator(TOKENS.LE, 2);
     }
 
-    if (checkSequence(input, position, '=>')) {
+    if (checkSequence(input, position, '>=')) {
       return handleLogicOperator(TOKENS.GE, 2);
     }
 
@@ -552,7 +550,7 @@ export function tokenize(input) {
     }
 
     if (checkSequence(input, position, '+=')) {
-      return createSimpleToken(TOKENS.ASSIGN_ADD, 2);
+      return createSimpleToken(TOKENS.ASSIGN_SUM, 2);
     }
 
     if (checkSequence(input, position, '*=')) {
@@ -622,21 +620,21 @@ export function tokenize(input) {
       return handleLineBreaks();
     }
 
+    if (!isCurrentMode(MODES.LOGIC) && ((column === 0 && input[position].match(/[\t ]/)) || (column === 0 && indent.length > 1))) {
+      return handleIndent();
+    }
+
     if (!isCurrentMode(MODES.QSTRING) && input[position] === '{') {
       return handleLogicBlockStart();
     }
 
     if(isCurrentMode(MODES.LOGIC)) {
       const response = handleLogicBlock();
+
       if (response)  {
         return response;
       }
     }
-
-    if ((column === 0 && input[position].match(/[\t ]/)) || (column === 0 && indent.length > 1)) {
-      return handleIndent();
-    }
-
 
     if (input[position] === '"') {
       return handleQuote();

@@ -1,0 +1,650 @@
+import parse from './parser';
+
+describe('parse: logic', () => {
+  const createDocPayload = (content = [], blocks = []) => {
+    return {
+      type: 'document',
+      content: [{
+        type: "content",
+        content
+      }],
+      blocks
+    };
+  };
+
+  describe('conditions', () => {
+    it('single var', () => {
+      const result = parse(`{ some_var } This is conditional`);
+      const expected = createDocPayload([
+        {
+          type: "conditional_content",
+          conditions: { type: "variable", name: "some_var" },
+          content: { type: "line", value: "This is conditional", }
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+    it('condition with multiline dialogue', () => {
+      const result = parse(`{ another_var } This is conditional
+    multiline`);
+
+      const expected = createDocPayload([{
+        type: "conditional_content",
+        conditions: { type: "variable", name: "another_var" },
+        content: { type: "line", value: "This is conditional multiline", }
+      }]);
+      expect(result).toEqual(expected);
+    });
+
+    it('"not" operator', () => {
+      const result = parse(`{ not some_var } This is conditional`);
+
+      const expected = createDocPayload([
+                {
+                  type: "conditional_content",
+                  conditions: {
+                    type: "expression",
+                    name: "not",
+                    elements: [{ type: "variable", name: "some_var" }]
+                  },
+                  content: { type: "line", value: "This is conditional", }
+                }
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+
+    it('"and" operator', () => {
+      const result = parse(`{ first_time && second_time } npc: what do you want to talk about? `);
+
+      const expected = createDocPayload([
+        {
+          type: 'conditional_content',
+          conditions: {
+            type: 'expression',
+            name: 'and',
+            elements: [
+              { type: 'variable', name: 'first_time', },
+              { type: 'variable', name: 'second_time', },
+            ],
+          },
+          content: { type: 'line', value: 'what do you want to talk about?', speaker: 'npc', },
+        }
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+
+    it('multiple logicla checks: "and" and "or"', () => {
+      const result = parse(`{ first_time and second_time or third_time } npc: what do you want to talk about? `);
+
+      const expected = createDocPayload([
+        {
+          type: 'conditional_content',
+          conditions: {
+            type: 'expression',
+            name: 'or',
+            elements: [
+              {
+                type: 'expression',
+                name: 'and',
+                elements: [
+                  { type: 'variable', name: 'first_time', },
+                  { type: 'variable', name: 'second_time', },
+                ],
+              },
+              { type: 'variable', name: 'third_time', },
+            ],
+          },
+          content: { type: 'line', value: 'what do you want to talk about?', speaker: 'npc', },
+        }
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+    it('multiple equality check', () => {
+      const result = parse(`{ first_time == second_time or third_time != fourth_time } equality`);
+
+      const expected = createDocPayload([
+        {
+          type: 'conditional_content',
+          conditions: {
+            type: 'expression',
+            name: 'or',
+            elements: [
+              {
+                type: 'expression',
+                name: 'equal',
+                elements: [
+                  { type: 'variable', name: 'first_time', },
+                  { type: 'variable', name: 'second_time', },
+                ],
+              },
+              {
+                type: 'expression',
+                name: 'not_equal',
+                elements: [
+                  { type: 'variable', name: 'third_time', },
+                  { type: 'variable', name: 'fourth_time', },
+                ],
+              },
+            ],
+          },
+          content: { type: 'line', value: 'equality', },
+        }
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+
+    it('multiple alias equality check', () => {
+      const result = parse(`{ first_time is second_time or third_time isnt fourth_time } alias equality`);
+
+      const expected = createDocPayload([
+        {
+          type: 'conditional_content',
+          conditions: {
+            type: 'expression',
+            name: 'or',
+            elements: [
+              {
+                type: 'expression',
+                name: 'equal',
+                elements: [
+                  { type: 'variable', name: 'first_time', },
+                  { type: 'variable', name: 'second_time', },
+                ],
+              },
+              {
+                type: 'expression',
+                name: 'not_equal',
+                elements: [
+                  { type: 'variable', name: 'third_time', },
+                  { type: 'variable', name: 'fourth_time', },
+                ],
+              },
+            ],
+          },
+          content: { type: 'line', value: 'alias equality', },
+        }
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+
+    it('less or greater', () => {
+      const result = parse(`{ first_time < second_time or third_time > fourth_time } comparison`);
+
+      const expected = createDocPayload([
+        {
+          type: 'conditional_content',
+          conditions: {
+            type: 'expression',
+            name: 'or',
+            elements: [
+              {
+                type: 'expression',
+                name: 'less_than',
+                elements: [
+                  { type: 'variable', name: 'first_time', },
+                  { type: 'variable', name: 'second_time', },
+                ],
+              },
+              {
+                type: 'expression',
+                name: 'greater_than',
+                elements: [
+                  { type: 'variable', name: 'third_time', },
+                  { type: 'variable', name: 'fourth_time', },
+                ],
+              },
+            ],
+          },
+          content: { type: 'line', value: 'comparison', },
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+    it('less or equal and greater or equal', () => {
+      const result = parse(`{ first_time <= second_time and third_time >= fourth_time } second comparison`);
+
+      const expected = createDocPayload([
+        {
+          type: 'conditional_content',
+          conditions: {
+            type: 'expression',
+            name: 'and',
+            elements: [
+              {
+                type: 'expression',
+                name: 'less_or_equal',
+                elements: [
+                  { type: 'variable', name: 'first_time', },
+                  { type: 'variable', name: 'second_time', },
+                ],
+              },
+              {
+                type: 'expression',
+                name: 'greater_or_equal',
+                elements: [
+                  { type: 'variable', name: 'third_time', },
+                  { type: 'variable', name: 'fourth_time', },
+                ],
+              },
+            ],
+          },
+          content: { type: 'line', value: 'second comparison', },
+        }
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+
+    it('complex precendence case', () => {
+      const result = parse(`{ first_time > x + y - z * d / e % b } test`);
+
+      const expected = createDocPayload([
+        {
+          type: 'conditional_content',
+          conditions: {
+            type: 'expression',
+            name: 'greater_than',
+            elements: [
+              { type: 'variable', name: 'first_time', },
+              {
+                type: 'expression',
+                name: 'sub',
+                elements: [
+                  {
+                    type: 'expression',
+                    name: 'add',
+                    elements: [
+                      { type: 'variable', name: 'x', },
+                      { type: 'variable', name: 'y', },
+                    ],
+                  },
+                  {
+                    type: 'expression',
+                    name: 'mod',
+                    elements: [
+                      {
+                        type: 'expression',
+                        name: 'div',
+                        elements: [
+                          {
+                            type: 'expression',
+                            name: 'mult',
+                            elements: [
+                              { type: 'variable', name: 'z', },
+                              { type: 'variable', name: 'd', },
+                            ],
+                          },
+                          { type: 'variable', name: 'e', },
+                        ],
+                      },
+                      { type: 'variable', name: 'b', },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          content: { type: 'line', value: 'test', },
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+
+    it('number literal', () => {
+      const result = parse(`{ first_time > 0 } hey`);
+
+      const expected = createDocPayload([
+        {
+          type: 'conditional_content',
+          conditions: {
+            type: 'expression',
+            name: 'greater_than',
+            elements: [
+              { type: 'variable', name: 'first_time', },
+              { type: 'literal', name: 'number', value: 0, },
+            ],
+          },
+          content: { type: 'line', value: 'hey', },
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+
+    it('null token', () => {
+      const result = parse(`{ first_time != null } ho`);
+
+      const expected = createDocPayload([
+        {
+          type: 'conditional_content',
+          conditions: {
+            type: 'expression',
+            name: 'not_equal',
+            elements: [
+              { type: 'variable', name: 'first_time', },
+              { type: 'null', },
+            ],
+          },
+          content: { type: 'line', value: 'ho', },
+        }
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+
+    it('boolean literal', () => {
+      const result = parse(`{ first_time is false } let's go`);
+
+      const expected = createDocPayload([
+        {
+          type: 'conditional_content',
+          conditions: {
+            type: 'expression',
+            name: 'equal',
+            elements: [
+              { type: 'variable', name: 'first_time', },
+              { type: 'literal', name: 'boolean', value: false, },
+            ],
+          },
+          content: { type: 'line', value: 'let\'s go', },
+        }
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+    it('string literal', () => {
+      const result = parse(`{ first_time is "hello darkness >= my old friend" } let's go`);
+
+      const expected = createDocPayload([
+        {
+          type: 'conditional_content',
+          conditions: {
+            type: 'expression',
+            name: 'equal',
+            elements: [
+              { type: 'variable', name: 'first_time', },
+              { type: 'literal', name: 'string', value: 'hello darkness >= my old friend', },
+            ],
+          },
+          content: { type: 'line', value: 'let\'s go', },
+        }
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+    it.todo('conditional divert');
+    it.todo('conditional option');
+    it.todo('condition after line');
+    it.todo('conditional indented block');
+  });
+
+  describe('assignments', () => {
+    const assignments = [
+      [ '=', 'assign'],
+      [ '+=', 'assign_sum'],
+      [ '-=', 'assign_sub'],
+      [ '*=', 'assign_mult'],
+      [ '/=', 'assign_div'],
+      [ '%=', 'assign_mod'],
+      [ '^=', 'assign_pow'],
+    ];
+
+    test.each(assignments)('set variable with %p', (token, nodeName) => {
+      const result = parse(`{ set a ${token} 2 } let's go`);
+      const expected = createDocPayload([{
+        type: 'action_content',
+        action: {
+          type: 'assignments',
+          assignments: [
+            {
+              type: 'assignment',
+              variable: { type: 'variable', name: 'a', },
+              operation: nodeName,
+              value: { type: 'literal', name: 'number', value: 2, },
+            },
+          ],
+        },
+        content: { type: 'line', value: 'let\'s go', },
+      }]);
+      expect(result).toEqual(expected);
+    });
+
+    it('assignment with expression', () => {
+      const result = parse('{ set a -= 4 ^ 2 } let\'s go');
+      const expected = createDocPayload([{
+        type: 'action_content',
+        action: {
+          type: 'assignments',
+          assignments: [
+            {
+              type: 'assignment',
+              variable: {
+                type: 'variable',
+                name: 'a',
+              },
+              operation: 'assign_sub',
+              value: {
+                type: 'expression',
+                name: 'pow',
+                elements: [
+                  {
+                    type: 'literal',
+                    name: 'number',
+                    value: 4,
+                  },
+                  {
+                    type: 'literal',
+                    name: 'number',
+                    value: 2,
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        content: { type: 'line', value: 'let\'s go', },
+      }]);
+      expect(result).toEqual(expected);
+    });
+
+    it('chaining assigments', () => {
+      const result = parse('{ set a = b = c = d = 3 } let\'s go');
+      const expected = createDocPayload([{
+        type: 'action_content',
+        action: {
+          type: 'assignments',
+          assignments: [
+            {
+              type: 'assignment',
+              variable: {
+                type: 'variable',
+                name: 'a',
+              },
+              operation: 'assign',
+              value: {
+                type: 'assignment',
+                variable: {
+                  type: 'variable',
+                  name: 'b',
+                },
+                operation: 'assign',
+                value: {
+                  type: 'assignment',
+                  variable: {
+                    type: 'variable',
+                    name: 'c',
+                  },
+                  operation: 'assign',
+                  value: {
+                    type: 'assignment',
+                    variable: {
+                      type: 'variable',
+                      name: 'd',
+                    },
+                    operation: 'assign',
+                    value: {
+                      type: 'literal',
+                      name: 'number',
+                      value: 3,
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+        content: { type: 'line', value: 'let\'s go', },
+      }]);
+      expect(result).toEqual(expected);
+    });
+
+  it('chaining assigment ending with variable', () => {
+      const result = parse('{ set a = b = c } let\'s go');
+      const expected = createDocPayload([{
+        type: 'action_content',
+        action: {
+          type: 'assignments',
+          assignments: [
+            {
+              type: 'assignment',
+              variable: {
+                type: 'variable',
+                name: 'a',
+              },
+              operation: 'assign',
+              value: {
+                type: 'assignment',
+                variable: {
+                  type: 'variable',
+                  name: 'b',
+                },
+                operation: 'assign',
+                value: {
+                  type: 'variable',
+                  name: 'c',
+                },
+              },
+            },
+          ],
+        },
+        content: { type: 'line', value: 'let\'s go', },
+      }]);
+      expect(result).toEqual(expected);
+    });
+
+    it('multiple assigments block', () => {
+      const result = parse('{ set a -= 4, b=1, c = "hello" } hey you');
+      const expected = createDocPayload([{
+        type: 'action_content',
+        action: {
+          type: 'assignments',
+          assignments: [
+            {
+              type: 'assignment',
+              variable: {
+                type: 'variable',
+                name: 'a',
+              },
+              operation: 'assign_sub',
+              value: {
+                type: 'literal',
+                name: 'number',
+                value: 4,
+              },
+            },
+            {
+              type: 'assignment',
+              variable: {
+                type: 'variable',
+                name: 'b',
+              },
+              operation: 'assign',
+              value: {
+                type: 'literal',
+                name: 'number',
+                value: 1,
+              },
+            },
+            {
+              type: 'assignment',
+              variable: {
+                type: 'variable',
+                name: 'c',
+              },
+              operation: 'assign',
+              value: {
+                type: 'literal',
+                name: 'string',
+                value: 'hello',
+              },
+            },
+          ],
+        },
+        content: { type: 'line', value: 'hey you' },
+      }]);
+      expect(result).toEqual(expected);
+    });
+
+    it.todo('assignment afterline');
+    it.todo('standalone assignment block');
+  });
+
+  describe('events', () => {
+    it('trigger event', () => {
+      const result = parse(`{ trigger some_event } trigger`);
+      const expected = createDocPayload([{
+        type: 'action_content',
+        action: {
+          type: 'events',
+          events: [{ type: 'event', name: 'some_event' }],
+        },
+        content: {
+          type: 'line',
+          value: 'trigger',
+        },
+      }]);
+      expect(result).toEqual(expected);
+    });
+
+    it('trigger multiple events in one block', () => {
+      const result = parse(`{ trigger some_event, another_event } trigger`);
+      const expected = createDocPayload([{
+        type: 'action_content',
+        action: {
+          type: 'events',
+          events: [
+            { type: 'event', name: 'some_event' },
+            { type: 'event', name: 'another_event' }
+        ],
+        },
+        content: {
+          type: 'line',
+          value: 'trigger',
+        },
+      }]);
+      expect(result).toEqual(expected);
+    } );
+
+    it.todo('standalone trigger event');
+    it.todo('trigger event after line');
+  });
+
+  it('empty block', () => {
+    const result = parse(`{} empty`);
+    const expected = createDocPayload([{
+      type: 'conditional_content',
+      content: { type: 'line', value: 'empty', },
+    }]);
+    expect(result).toEqual(expected);
+  });
+
+  it.todo('multiple logic blocks in the same line');
+});

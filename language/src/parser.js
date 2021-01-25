@@ -3,6 +3,33 @@ import { TOKENS, tokenize, getTokenFriendlyHint } from './lexer.js';
 
 export default function parse(doc) {
   const variationsModes = ['sequence', 'once', 'cycle', 'shuffle', 'shuffle sequence', 'shuffle once', 'shuffle cycle' ];
+  const operators = {
+    [TOKENS.AND]: { precedence: 1, associative: 'LEFT' },
+    [TOKENS.OR]: { precedence: 1, associative: 'LEFT' },
+    [TOKENS.EQUAL]: { precedence: 2, associative: 'LEFT' },
+    [TOKENS.NOT_EQUAL]: { precedence: 2, associative: 'LEFT' },
+    [TOKENS.GREATER]: { precedence: 2, associative: 'LEFT' },
+    [TOKENS.LESS]: { precedence: 2, associative: 'LEFT' },
+    [TOKENS.GE]: { precedence: 2, associative: 'LEFT' },
+    [TOKENS.LE]: { precedence: 2, associative: 'LEFT' },
+    [TOKENS.PLUS]: { precedence: 3, associative: 'LEFT' },
+    [TOKENS.MINUS]: { precedence: 3, associative: 'LEFT' },
+    [TOKENS.MOD]: { precedence: 4, associative: 'LEFT' },
+    [TOKENS.MULT]: { precedence: 5, associative: 'LEFT' },
+    [TOKENS.DIV]: { precedence: 5, associative: 'LEFT' },
+    [TOKENS.POWER]: { precedence: 7, associative: 'RIGHT' },
+  };
+
+  const assignmentOperators = {
+    [TOKENS.ASSIGN]: 'assign',
+    [TOKENS.ASSIGN_SUM]: 'assign_sum',
+    [TOKENS.ASSIGN_SUB]: 'assign_sub',
+    [TOKENS.ASSIGN_MULT]: 'assign_mult',
+    [TOKENS.ASSIGN_DIV]: 'assign_div',
+    [TOKENS.ASSIGN_POW]: 'assign_pow',
+    [TOKENS.ASSIGN_MOD]: 'assign_mod',
+  };
+
   const tokens = tokenize(doc);
   // const test = tokenize(doc);
   // console.log(test.getAll());
@@ -46,6 +73,7 @@ export default function parse(doc) {
       TOKENS.DIVERT,
       TOKENS.DIVERT_PARENT,
       TOKENS.BRACKET_OPEN,
+      TOKENS.BRACE_OPEN,
     ];
     const next = peek();
 
@@ -60,6 +88,7 @@ export default function parse(doc) {
       case TOKENS.DIVERT:
       case TOKENS.DIVERT_PARENT:
       case TOKENS.BRACKET_OPEN:
+      case TOKENS.BRACE_OPEN:
         const result =  DocumentNode([ContentNode(Lines())]);
         if (peek([TOKENS.BLOCK])) {
           result.blocks = Blocks();
@@ -95,6 +124,7 @@ export default function parse(doc) {
       TOKENS.DIVERT,
       TOKENS.DIVERT_PARENT,
       TOKENS.BRACKET_OPEN,
+      TOKENS.BRACE_OPEN,
     ];
     let lines;
     consume(acceptableNext);
@@ -114,6 +144,13 @@ export default function parse(doc) {
         break;
       case TOKENS.BRACKET_OPEN:
         lines = [Variations()];
+        break;
+      case TOKENS.BRACE_OPEN:
+        if (peek([TOKENS.KEYWORD_SET, TOKENS.KEYWORD_TRIGGER,])) {
+          lines = [LineWithAction()];
+        } else {
+          lines = [ConditionalLine()];
+        }
         break;
     }
 
@@ -175,8 +212,6 @@ export default function parse(doc) {
         return LineWithSpeaker();
       case TOKENS.TEXT:
         return TextLine();
-      // default:
-      //   wrongTokenError(currentToken, [TOKENS.SPEAKER, TOKENS.TEXT])
     }
   };
 
@@ -383,6 +418,169 @@ export default function parse(doc) {
     return variations;
   };
 
+  const LineWithAction = () => {
+    const token = peek([
+      TOKENS.KEYWORD_SET,
+      TOKENS.KEYWORD_TRIGGER,
+      // TOKENS.KEYWORD_WHEN
+    ]);
+
+    let expression;
+    switch(token.token) {
+      case TOKENS.KEYWORD_SET:
+        expression = Assignments();
+        break;
+      case TOKENS.KEYWORD_TRIGGER:
+        expression = Events();
+        break;
+    }
+
+    consume([TOKENS.BRACE_CLOSE]);
+    consume([TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.QUOTE,]);
+
+    return ActionContentNode(
+      expression,
+      Line()
+    );
+  };
+
+  const Assignments = () => {
+    consume([TOKENS.KEYWORD_SET]);
+    const assignments = [AssignmentExpression()];
+    while(peek([TOKENS.COMMA])) {
+      consume([TOKENS.COMMA]);
+      assignments.push(AssignmentExpression());
+    }
+    return AssignmentsNode(assignments);
+  };
+
+  const Events = () => {
+    consume([TOKENS.KEYWORD_TRIGGER]);
+    consume([TOKENS.IDENTIFIER]);
+    const events = [EventNode(currentToken.value)];
+
+    while(peek([TOKENS.COMMA])) {
+      consume([TOKENS.COMMA]);
+      consume([TOKENS.IDENTIFIER]);
+      events.push(EventNode(currentToken.value));
+    }
+
+    return EventsNode(events);
+  };
+
+  const ConditionalLine = () => {
+    const token = peek([
+      TOKENS.IDENTIFIER,
+      TOKENS.NOT,
+    ]);
+
+    let expression;
+    if (token) {
+      expression = Expression();
+    }
+
+    consume([TOKENS.BRACE_CLOSE]);
+    consume([TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.QUOTE,]);
+
+    return ConditionalContentNode(
+      expression,
+      Line()
+    );
+  };
+
+  const AssignmentExpression = () => {
+    consume([TOKENS.IDENTIFIER]);
+    const variable = VariableNode(currentToken.value);
+
+    if (peek([TOKENS.BRACE_CLOSE])) {
+      return variable;
+    }
+
+    consume(Object.keys(assignmentOperators));
+
+    if (peek([TOKENS.IDENTIFIER])) {
+      return AssignmentNode(variable, assignmentOperators[currentToken.token], AssignmentExpression());
+    }
+    return AssignmentNode(variable, assignmentOperators[currentToken.token], Expression());
+  };
+
+  const Expression = (minPrecedence = 1) => {
+    const operatorTokens = Object.keys(operators);
+
+    let lhs = Operand();
+
+    if (!peek(operatorTokens)) {
+      return lhs;
+    }
+
+    consume(operatorTokens);
+
+    while (true) {
+      if (!operatorTokens.includes(currentToken.token)) {
+        break;
+      }
+
+      const operator = currentToken.token;
+
+      const { precedence, associative } = operators[currentToken.token];
+
+      if (precedence < minPrecedence) {
+        break;
+      }
+
+      const nextMinPrecedence = associative === 'LEFT' ? precedence + 1 : precedence;
+      const rhs = Expression(nextMinPrecedence);
+      lhs = Operator(operator, lhs, rhs);
+    }
+    return lhs;
+  };
+
+  const Operand = () => {
+    consume([
+      TOKENS.IDENTIFIER,
+      TOKENS.NOT,
+      TOKENS.NUMBER_LITERAL,
+      TOKENS.STRING_LITERAL,
+      TOKENS.BOOLEAN_LITERAL,
+      TOKENS.NULL_TOKEN
+    ]);
+
+    switch(currentToken.token) {
+      case TOKENS.NOT:
+        return ExpressionNode('not', [Operand()]);
+      case TOKENS.IDENTIFIER:
+        return VariableNode(currentToken.value);
+      case TOKENS.NUMBER_LITERAL:
+        return NumberLiteralNode(currentToken.value);
+      case TOKENS.STRING_LITERAL:
+        return StringLiteralNode(currentToken.value);
+      case TOKENS.BOOLEAN_LITERAL:
+        return BooleanLiteralNode(currentToken.value);
+      case TOKENS.NULL_TOKEN:
+        return NullTokenNode();
+    }
+  };
+
+  const Operator = (operator, lhs, rhs) => {
+    const labels = {
+      [TOKENS.PLUS]: 'add',
+      [TOKENS.MINUS]: 'sub',
+      [TOKENS.MULT]: 'mult',
+      [TOKENS.DIV]: 'div',
+      [TOKENS.MOD]: 'mod',
+      [TOKENS.POWER]: 'pow',
+      [TOKENS.AND]: 'and',
+      [TOKENS.OR]: 'or',
+      [TOKENS.EQUAL]: 'equal',
+      [TOKENS.NOT_EQUAL]: 'not_equal',
+      [TOKENS.GREATER]: 'greater_than',
+      [TOKENS.LESS]: 'less_than',
+      [TOKENS.GE]: 'greater_or_equal',
+      [TOKENS.LE]: 'less_or_equal',
+    };
+    return ExpressionNode(labels[operator], [lhs, rhs]);
+  };
+
   const result = Document();
   if (peek()) {
     consume([ TOKENS.EOF ]);
@@ -422,6 +620,58 @@ const DivertNode = (target) => {
   return { type: 'divert', target };
 }
 
-function VariationsNode(mode, content = []) {
+const VariationsNode = (mode, content = []) => {
   return { type: 'variations', mode, content };
+}
+
+const VariableNode = (name) => {
+  return { type: 'variable', name };
+}
+
+const NumberLiteralNode = (value) => {
+  return LiteralNode('number', Number(value));
+}
+
+const BooleanLiteralNode = (value) => {
+  return LiteralNode('boolean', value === 'true');
+}
+
+const StringLiteralNode = (value) => {
+  return LiteralNode('string', value);
+}
+
+const LiteralNode = (name, value) => {
+  return { type: 'literal', name, value };
+}
+
+const NullTokenNode = () => {
+  return { type: 'null' };
+}
+
+const ConditionalContentNode = (conditions, content) => {
+  return { type: 'conditional_content', conditions, content };
+}
+
+const ActionContentNode = (action, content) => {
+  return { type: 'action_content', action, content };
+}
+
+const ExpressionNode = (name, elements) => {
+  return { type: 'expression', name, elements };
+}
+
+const AssignmentsNode = (assignments) => {
+  return { type: 'assignments', assignments };
+}
+
+const AssignmentNode = (variable, operation, value) => {
+  return { type: 'assignment', variable, operation, value };
+}
+
+const EventsNode = (events) => {
+  return { type: 'events', events };
+}
+
+const EventNode = (name) => {
+  return { type: 'event', name };
 }
