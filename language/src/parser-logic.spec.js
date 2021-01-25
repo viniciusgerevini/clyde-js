@@ -391,6 +391,19 @@ describe('parse: logic', () => {
       expect(result).toEqual(expected);
     });
 
+    it('condition after line without when', () => {
+      const result = parse(`This is conditional { some_var }`);
+      const expected = createDocPayload([
+        {
+          type: "conditional_content",
+          conditions: { type: "variable", name: "some_var" },
+          content: { type: "line", value: "This is conditional", }
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+
     it('conditional divert', () => {
       const result = parse(`{ some_var } -> some_block`);
       const expected = createDocPayload([
@@ -930,6 +943,95 @@ describe('parse: logic', () => {
       ]);
       expect(result).toEqual(expected);
     });
+  });
+
+  it('multiple logic blocks in the same line', () => {
+    const result = parse(`{ some_var } {set something = 1} { trigger event }`);
+    const expected = createDocPayload([{
+      type: "conditional_content",
+      conditions: { type: "variable", name: "some_var" },
+      content: {
+        type: 'action_content',
+        action: {
+          type: 'assignments',
+          assignments: [{
+            type: 'assignment',
+            variable: { type: 'variable', name: 'something' },
+            operation: 'assign',
+            value: { type: 'literal', name: 'number', value: 1 },
+          }],
+        },
+        content: {
+          type: 'events',
+          events: [{ type: 'event', name: 'event' } ],
+        },
+      },
+    }]);
+    expect(result).toEqual(expected);
+  });
+
+  it('multiple logic blocks in the same line before', () => {
+    const result = parse(`{ some_var } {set something = 1} { trigger event } hello`);
+    const expected = createDocPayload([{
+      type: "conditional_content",
+      conditions: { type: "variable", name: "some_var" },
+      content: {
+        type: 'action_content',
+        action: {
+          type: 'assignments',
+          assignments: [{
+            type: 'assignment',
+            variable: { type: 'variable', name: 'something' },
+            operation: 'assign',
+            value: { type: 'literal', name: 'number', value: 1 },
+          }],
+        },
+        content: {
+          type: 'action_content',
+          action: {
+            type: 'events',
+            events: [{ type: 'event', name: 'event' } ],
+          },
+          content: {
+            type: 'line',
+            value: 'hello',
+          },
+        },
+      },
+    }]);
+    expect(result).toEqual(expected);
+  });
+
+  it('multiple logic blocks in the same line after', () => {
+    const result = parse(`hello { when some_var } {set something = 1} { trigger event }`);
+    const expected = createDocPayload([{
+      type: "conditional_content",
+      conditions: { type: "variable", name: "some_var" },
+      content: {
+        type: 'action_content',
+        action: {
+          type: 'assignments',
+          assignments: [{
+            type: 'assignment',
+            variable: { type: 'variable', name: 'something' },
+            operation: 'assign',
+            value: { type: 'literal', name: 'number', value: 1 },
+          }],
+        },
+        content: {
+          type: 'action_content',
+          action: {
+            type: 'events',
+            events: [{ type: 'event', name: 'event' } ],
+          },
+          content: {
+            type: 'line',
+            value: 'hello',
+          },
+        },
+      },
+    }]);
+    expect(result).toEqual(expected);
   });
 
   it('empty block', () => {

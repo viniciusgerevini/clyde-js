@@ -23,35 +23,35 @@ import {
   EventNode,
 } from './nodes.js';
 
+const variationsModes = ['sequence', 'once', 'cycle', 'shuffle', 'shuffle sequence', 'shuffle once', 'shuffle cycle' ];
+const operators = {
+  [TOKENS.AND]: { precedence: 1, associative: 'LEFT' },
+  [TOKENS.OR]: { precedence: 1, associative: 'LEFT' },
+  [TOKENS.EQUAL]: { precedence: 2, associative: 'LEFT' },
+  [TOKENS.NOT_EQUAL]: { precedence: 2, associative: 'LEFT' },
+  [TOKENS.GREATER]: { precedence: 2, associative: 'LEFT' },
+  [TOKENS.LESS]: { precedence: 2, associative: 'LEFT' },
+  [TOKENS.GE]: { precedence: 2, associative: 'LEFT' },
+  [TOKENS.LE]: { precedence: 2, associative: 'LEFT' },
+  [TOKENS.PLUS]: { precedence: 3, associative: 'LEFT' },
+  [TOKENS.MINUS]: { precedence: 3, associative: 'LEFT' },
+  [TOKENS.MOD]: { precedence: 4, associative: 'LEFT' },
+  [TOKENS.MULT]: { precedence: 5, associative: 'LEFT' },
+  [TOKENS.DIV]: { precedence: 5, associative: 'LEFT' },
+  [TOKENS.POWER]: { precedence: 7, associative: 'RIGHT' },
+};
+
+const assignmentOperators = {
+  [TOKENS.ASSIGN]: 'assign',
+  [TOKENS.ASSIGN_SUM]: 'assign_sum',
+  [TOKENS.ASSIGN_SUB]: 'assign_sub',
+  [TOKENS.ASSIGN_MULT]: 'assign_mult',
+  [TOKENS.ASSIGN_DIV]: 'assign_div',
+  [TOKENS.ASSIGN_POW]: 'assign_pow',
+  [TOKENS.ASSIGN_MOD]: 'assign_mod',
+};
+
 export default function parse(doc) {
-  const variationsModes = ['sequence', 'once', 'cycle', 'shuffle', 'shuffle sequence', 'shuffle once', 'shuffle cycle' ];
-  const operators = {
-    [TOKENS.AND]: { precedence: 1, associative: 'LEFT' },
-    [TOKENS.OR]: { precedence: 1, associative: 'LEFT' },
-    [TOKENS.EQUAL]: { precedence: 2, associative: 'LEFT' },
-    [TOKENS.NOT_EQUAL]: { precedence: 2, associative: 'LEFT' },
-    [TOKENS.GREATER]: { precedence: 2, associative: 'LEFT' },
-    [TOKENS.LESS]: { precedence: 2, associative: 'LEFT' },
-    [TOKENS.GE]: { precedence: 2, associative: 'LEFT' },
-    [TOKENS.LE]: { precedence: 2, associative: 'LEFT' },
-    [TOKENS.PLUS]: { precedence: 3, associative: 'LEFT' },
-    [TOKENS.MINUS]: { precedence: 3, associative: 'LEFT' },
-    [TOKENS.MOD]: { precedence: 4, associative: 'LEFT' },
-    [TOKENS.MULT]: { precedence: 5, associative: 'LEFT' },
-    [TOKENS.DIV]: { precedence: 5, associative: 'LEFT' },
-    [TOKENS.POWER]: { precedence: 7, associative: 'RIGHT' },
-  };
-
-  const assignmentOperators = {
-    [TOKENS.ASSIGN]: 'assign',
-    [TOKENS.ASSIGN_SUM]: 'assign_sum',
-    [TOKENS.ASSIGN_SUB]: 'assign_sub',
-    [TOKENS.ASSIGN_MULT]: 'assign_mult',
-    [TOKENS.ASSIGN_DIV]: 'assign_div',
-    [TOKENS.ASSIGN_POW]: 'assign_pow',
-    [TOKENS.ASSIGN_MOD]: 'assign_mod',
-  };
-
   const tokens = tokenize(doc);
   // const test = tokenize(doc);
   // console.log(test.getAll());
@@ -151,11 +151,12 @@ export default function parse(doc) {
       TOKENS.LINE_BREAK,
     ];
     let lines;
-    consume(acceptableNext);
-    switch (currentToken.token) {
+    const tk = peek(acceptableNext);
+    switch (tk.token) {
       case TOKENS.SPEAKER:
       case TOKENS.TEXT:
       case TOKENS.QUOTE:
+        consume([ TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.QUOTE ]);
         const line = Line();
         if (peek(TOKENS.BRACE_OPEN)) {
           consume([TOKENS.BRACE_OPEN]);
@@ -173,11 +174,13 @@ export default function parse(doc) {
         lines = [Divert()];
         break;
       case TOKENS.BRACKET_OPEN:
+        consume([ TOKENS.BRACKET_OPEN ]);
         lines = [Variations()];
         break;
       case TOKENS.LINE_BREAK:
-        consume([TOKENS.BRACE_OPEN]);
+        consume([ TOKENS.LINE_BREAK ]);
       case TOKENS.BRACE_OPEN:
+        consume([TOKENS.BRACE_OPEN]);
         if (peek([TOKENS.KEYWORD_SET, TOKENS.KEYWORD_TRIGGER])) {
           lines = [LineWithAction()];
         } else {
@@ -227,7 +230,6 @@ export default function parse(doc) {
 
     if (peek([TOKENS.INDENT])) {
       consume([TOKENS.INDENT]);
-      consume([TOKENS.OPTION, TOKENS.STICKY_OPTION])
       const options = Options();
       options.id = line.id;
       options.name = line.value;
@@ -272,7 +274,6 @@ export default function parse(doc) {
       consume([TOKENS.INDENT]);
 
       if (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION])) {
-        consume([TOKENS.OPTION, TOKENS.STICKY_OPTION])
         const options = Options();
         options.id = line.id;
         options.name = line.value;
@@ -338,40 +339,17 @@ export default function parse(doc) {
     const options = OptionsNode(
       [firstElement || Option()]
     );
-    while (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION, TOKENS.LINE_BREAK])) {
-      consume([TOKENS.OPTION, TOKENS.STICKY_OPTION, TOKENS.LINE_BREAK]);
-      if (currentToken.token === TOKENS.LINE_BREAK) {
-        consume([TOKENS.BRACE_OPEN]);
 
-        if (peek([TOKENS.KEYWORD_SET])) {
-          const assignments = Assignments()
-          consume([TOKENS.BRACE_CLOSE]);
-          consume([TOKENS.OPTION, TOKENS.STICKY_OPTION]);
-          options.content.push(ActionContentNode(assignments, Option()));
-        } else if (peek([TOKENS.KEYWORD_TRIGGER])) {
-          const events = Events();
-          consume([TOKENS.BRACE_CLOSE]);
-          consume([TOKENS.OPTION, TOKENS.STICKY_OPTION]);
-          options.content.push(ActionContentNode(events, Option()));
-        } else {
-          const condition = Condition();
-          consume([TOKENS.OPTION, TOKENS.STICKY_OPTION]);
-          options.content.push(ConditionalContentNode(condition, Option()));
-        }
+    while (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION, TOKENS.LINE_BREAK])) {
+      if (peek([TOKENS.LINE_BREAK])) {
+        consume([TOKENS.LINE_BREAK]);
+        consume([TOKENS.BRACE_OPEN]);
+        options.content.push(LogicBlock(() => Option()));
       } else {
         const option = Option();
         if (peek([TOKENS.BRACE_OPEN])) {
           consume([TOKENS.BRACE_OPEN]);
-          if (peek([TOKENS.KEYWORD_SET])) {
-            options.content.push(ActionContentNode(Assignments(), option));
-            consume([TOKENS.BRACE_CLOSE]);
-          } else if (peek([TOKENS.KEYWORD_TRIGGER])) {
-            options.content.push(ActionContentNode(Events(), option));
-            consume([TOKENS.BRACE_CLOSE]);
-          } else {
-            consume([TOKENS.KEYWORD_WHEN]);
-            options.content.push(ConditionalContentNode(Condition(), option));
-          }
+          options.content.push(LogicBlock(() => option));
           consume([TOKENS.LINE_BREAK]);
         } else {
           options.content.push(option);
@@ -387,6 +365,7 @@ export default function parse(doc) {
   };
 
   const Option = () => {
+    consume([TOKENS.OPTION, TOKENS.STICKY_OPTION])
     const type = currentToken.token == TOKENS.OPTION ? 'once' : 'sticky';
     const acceptableNext = [TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.QUOTE, TOKENS.INDENT, TOKENS.SQR_BRACKET_OPEN];
     let lines = [];
@@ -438,6 +417,7 @@ export default function parse(doc) {
   }
 
   const Divert = () => {
+    consume([ TOKENS.DIVERT, TOKENS.DIVERT_PARENT ]);
     const divert = currentToken;
 
     switch (divert.token) {
@@ -491,28 +471,21 @@ export default function parse(doc) {
       TOKENS.KEYWORD_SET,
       TOKENS.KEYWORD_TRIGGER,
       TOKENS.KEYWORD_WHEN
-    ]) || {};
-
-    let expression;
-    switch(token.token) {
-      case TOKENS.KEYWORD_SET:
-        expression = Assignments();
-        break;
-      case TOKENS.KEYWORD_TRIGGER:
-        expression = Events();
-        break;
-      case TOKENS.KEYWORD_WHEN:
-        consume([TOKENS.KEYWORD_WHEN]);
-        return ConditionalLine(line);
-    }
-
-    consume([TOKENS.BRACE_CLOSE]);
+    ]);
+    const expression = LogicElement();
 
     if (line) {
-      return ActionContentNode(
-        expression,
-        line
-      );
+      let content = line;
+
+      if (peek([TOKENS.BRACE_OPEN])) {
+        consume([TOKENS.BRACE_OPEN]);
+        content = LineWithAction(line);
+      }
+
+      if (!token || token.token === TOKENS.KEYWORD_WHEN) {
+        return ConditionalContentNode(expression, content);
+      }
+      return ActionContentNode(expression, content);
     }
 
     if (peek([TOKENS.LINE_BREAK])) {
@@ -525,8 +498,12 @@ export default function parse(doc) {
     }
 
     if (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION])) {
-      consume([TOKENS.OPTION, TOKENS.STICKY_OPTION]);
       return Options(ActionContentNode(expression, Option()));
+    }
+
+    if (peek([TOKENS.BRACE_OPEN])) {
+      consume([TOKENS.BRACE_OPEN]);
+      return ActionContentNode(expression, LineWithAction());
     }
 
     consume([TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.QUOTE,]);
@@ -537,6 +514,47 @@ export default function parse(doc) {
     );
   };
 
+  const LogicElement = () => {
+    if (peek([TOKENS.KEYWORD_SET])) {
+      const assignments = Assignments()
+      return assignments
+    }
+
+    if (peek([TOKENS.KEYWORD_TRIGGER])) {
+      const events = Events();
+      return events;
+
+    }
+
+    if (peek([TOKENS.KEYWORD_WHEN])) {
+      consume([TOKENS.KEYWORD_WHEN]);
+    }
+
+    const condition = Condition();
+    return condition;
+  };
+
+  const LogicBlock = (content) => {
+    if (peek([TOKENS.KEYWORD_SET])) {
+      const assignments = Assignments()
+      return ActionContentNode(assignments, content());
+    }
+
+    if (peek([TOKENS.KEYWORD_TRIGGER])) {
+      const events = Events();
+      return ActionContentNode(events, content());
+
+    }
+
+    if (peek([TOKENS.KEYWORD_WHEN])) {
+      consume([TOKENS.KEYWORD_WHEN]);
+    }
+
+    const condition = Condition();
+    return ConditionalContentNode(condition, content());
+  };
+
+
   const Assignments = () => {
     consume([TOKENS.KEYWORD_SET]);
     const assignments = [AssignmentExpression()];
@@ -544,6 +562,7 @@ export default function parse(doc) {
       consume([TOKENS.COMMA]);
       assignments.push(AssignmentExpression());
     }
+    consume([TOKENS.BRACE_CLOSE]);
     return AssignmentsNode(assignments);
   };
 
@@ -558,32 +577,28 @@ export default function parse(doc) {
       events.push(EventNode(currentToken.value));
     }
 
+    consume([TOKENS.BRACE_CLOSE]);
+
     return EventsNode(events);
   };
 
-  const ConditionalLine = (line) => {
+  const ConditionalLine = () => {
     const expression = Condition();
-
-    if (line) {
-      return ConditionalContentNode(
-        expression,
-        line
-      );
-    }
 
     let content;
 
     if (peek([TOKENS.DIVERT, TOKENS.DIVERT_PARENT])) {
-      consume([TOKENS.DIVERT, TOKENS.DIVERT_PARENT]);
       content = Divert();
     } else if (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION])) {
-      consume([TOKENS.OPTION, TOKENS.STICKY_OPTION]);
       return Options(ConditionalContentNode(expression, Option()));
     } else if (peek([TOKENS.LINE_BREAK])) {
       consume([TOKENS.LINE_BREAK]);
       consume([TOKENS.INDENT]);
       content = ContentNode(Lines());
       consume([TOKENS.DEDENT, TOKENS.EOF]);
+    } else if (peek([TOKENS.BRACE_OPEN])) {
+      consume([TOKENS.BRACE_OPEN]);
+      content = LineWithAction();
     } else {
       consume([TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.QUOTE,]);
       content = Line();

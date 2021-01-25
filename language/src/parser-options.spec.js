@@ -5,7 +5,7 @@ describe('parse: options', () => {
   it('parse options', () => {
     const result = parse(`
 npc: what do you want to talk about?
-* Life
+* speaker: Life
   player: I want to talk about life!
   npc: Well! That's too complicated...
 * Everything else... #some_tag
@@ -24,11 +24,12 @@ npc: what do you want to talk about?
               {
                 type: 'option',
                 name: 'Life',
+                speaker: 'speaker',
                 mode: 'once',
                 content: {
                   type: 'content',
                   content: [
-                    { type: 'line', value: 'Life' },
+                    { type: 'line', value: 'Life', speaker: 'speaker' },
                     { type: 'line', value: 'I want to talk about life!', speaker: 'player', },
                     { type: 'line', value: 'Well! That\'s too complicated...', speaker: 'npc', },
                   ],
