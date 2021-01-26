@@ -1,11 +1,10 @@
-import { Parser } from 'clyde-parser';
+import { parse } from 'clyde-parser';
 import { Interpreter } from './interpreter';
 
 describe("Interpreter: blocks and diverts", () => {
   describe('blocks', () => {
     it('do not execute blocks by default', () => {
-      const parser = Parser();
-      const content = parser.parse('Hello!\nHi there.\n== some_block\nHello from the block!\n');
+      const content = parse('Hello!\nHi there.\n== some_block\nHello from the block!\n');
       const dialogue = Interpreter(content);
 
       expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hello!' });
@@ -14,8 +13,7 @@ describe("Interpreter: blocks and diverts", () => {
     });
 
     it('execute block by name', () => {
-      const parser = Parser();
-      const content = parser.parse('Hello!\nHi there.\n== some_block\nHello from the block!\n== some_other_block\nHello from the other block!\n');
+      const content = parse('Hello!\nHi there.\n== some_block\nHello from the block!\n== some_other_block\nHello from the other block!\n');
       const dialogue = Interpreter(content);
 
       dialogue.begin('some_block');
@@ -38,8 +36,7 @@ describe("Interpreter: blocks and diverts", () => {
 
   describe('diverts', () => {
     it('divert flow to named block', () => {
-      const parser = Parser();
-      const content = parser.parse(`
+      const content = parse(`
 Hello!
 Let's go to another block
 -> another_block
@@ -60,8 +57,7 @@ this is another block
     });
 
     it('divert back to parent', () => {
-      const parser = Parser();
-      const content = parser.parse(`
+      const content = parse(`
 Hello!
 Let's go to another block
 -> another_block
@@ -84,16 +80,14 @@ this is another block
     });
 
     it('divert from block to options list', () => {
-      const parser = Parser();
-      const content = parser.parse(`
+      const content = parse(`
 Hello!
->> question
-  * yes
+question
+  * [yes]
     -> yes_answer
     continue
-  * no
+  * [no]
     -> no_answer
-<<
 end
 
 == yes_answer
@@ -117,17 +111,15 @@ no a!
     });
 
     it('divert back to options', () => {
-      const parser = Parser();
-      const content = parser.parse(`
+      const content = parse(`
 Hello!
->> question
-  * yes
+question
+  * [yes]
     -> yes_answer
     continue
     <-
-  * no
+  * [no]
     -> no_answer
-<<
 end
 
 == yes_answer
@@ -151,8 +143,7 @@ no a!
     });
 
     it('end dialogue', () => {
-      const parser = Parser();
-      const content = parser.parse(`
+      const content = parse(`
 Hello!
 -> END
 this will never be seeing
@@ -167,8 +158,7 @@ this will never be seeing
     });
 
     it('does not fail when divert to parent in the root node', () => {
-      const parser = Parser();
-      const content = parser.parse(`
+      const content = parse(`
 Hello!
 <-
 `);

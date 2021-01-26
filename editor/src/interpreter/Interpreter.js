@@ -9,7 +9,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import { Interpreter as ClydeInterpreter } from 'clyde-interpreter';
-import { Parser } from 'clyde-parser';
+import { parse } from 'clyde-parser';
 
 import { InfoBubble, ErrorBubble } from './Bubbles';
 import InterpreterToolbar from './InterpreterToolbar';
@@ -71,8 +71,7 @@ export default function Interpreter(p) {
   };
 
   try {
-    const parser = Parser();
-    doc = parser.parse(`${content || ''}\n`);
+    doc = parse(`${content || ''}`);
 
     if (!dialogue || content !== lastContent) {
       setLastContent(content);
@@ -88,8 +87,7 @@ export default function Interpreter(p) {
     }
   } catch (e) {
     errorMessage = e.message;
-    const parser = Parser();
-    doc = parser.parse(`${lastContent || ''}\n`);
+    doc = parse(`${lastContent || ''}`);
   }
 
   return (

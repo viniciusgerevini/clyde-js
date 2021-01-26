@@ -76,12 +76,11 @@ describe('Interpreter component', () => {
     const chooseOptionStub = jest.fn();
 
     const content = `
->> what do you think?
-  * yes
+what do you think?
+  * [yes]
     nice!
-  * no
+  * [no]
     ok!
-<<
 `;
 
     const { rerender, getByText, getByLabelText } = render(
@@ -118,12 +117,11 @@ describe('Interpreter component', () => {
     });
 
     const content = `
->> speaker: what do you think?
-  * yes
+speaker: what do you think?
+  * [yes]
     nice!
-  * no
+  * [no]
     ok!
-<<
 `;
 
     const { rerender, getByText, getByLabelText } = render(
@@ -169,10 +167,10 @@ describe('Interpreter component', () => {
     const chooseOptionStub = jest.fn();
 
     const content = `
->> what do you think?
-  * yes
+what do you think?
+  * [yes]
     nice!
-  * no
+  * [no]
     ok!
 <<
 `;
@@ -215,7 +213,7 @@ describe('Interpreter component', () => {
   it('renders metadata', () => {
     const { getByLabelText } = render(
       <Interpreter
-        content={'Hello! $id: some_id |tag|\n'}
+        content={'Hello! $some_id #tag\n'}
         shouldShowExtraMetadata={true}
         timeline={[{ type: 'dialogue', text: 'Hello!', id: 'some_id', tags: ['tag']}]}/>
     );
@@ -557,10 +555,8 @@ hi
 first line
 second line
 third line
->>
-  * yes
-    nice!
-<<
+* [yes]
+  nice!
 `;
 
       const { getByLabelText } = render(
@@ -614,20 +610,19 @@ third line
 
       const content = `
 first line
->> hello
-  * hi
+hello
+  * [hi]
     hi!
-<<
+
 second line
->> hello
-  * hi
+hello
+  * [hi]
     hi!
-<<
+
 third line
->> hello
-  * hi
+hello
+  * [hi]
     hi!
-<<
 this is the end
 `;
 

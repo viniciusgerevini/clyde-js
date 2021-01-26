@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { Parser } = require('clyde-parser');
+const { parse } = require('clyde-parser');
 
 function buildCompilerArgsParser(yargs) {
   return yargs
@@ -100,22 +100,20 @@ function buildCompilerArgsParser(yargs) {
 
 function executeCompiler(argv, exitCallback) {
   try {
-    const parser = Parser();
-
     if (argv.batch) {
       argv.batch.forEach((input, i) => {
-        compileFile(input, argv.batchOutput[i], argv.d, parser);
+        compileFile(input, argv.batchOutput[i], argv.d);
       });
     } else if(argv.folderInput) {
       fs.readdirSync(argv.folderInput).forEach(file => {
         if ((file.match(/\.clyde$/) || []).length > 0) {
           const input = path.resolve(argv.folderInput, file);
           const output = path.resolve(argv.folderOutput, outputFilename(file));
-          compileFile(input, output, argv.d, parser);
+          compileFile(input, output, argv.d);
         }
       });
     } else {
-      compileFile(argv.input, argv.output, argv.d, parser);
+      compileFile(argv.input, argv.output, argv.d);
     }
     exitCallback();
   } catch (e) {
@@ -132,8 +130,8 @@ const outputFilename = (input) => {
   return output;
 }
 
-const compileFile = (path, output, isDryRun, parser) => {
-  const content = parser.parse(fs.readFileSync(path, 'utf8'));
+const compileFile = (path, output, isDryRun) => {
+  const content = parse(fs.readFileSync(path, 'utf8'));
   if (!isDryRun) {
     fs.writeFileSync(output, JSON.stringify(content));
   }

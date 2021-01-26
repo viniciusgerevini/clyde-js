@@ -570,6 +570,43 @@ describe('parse: logic', () => {
       expect(result).toEqual(expected);
     });
 
+    it('assignment with expression', () => {
+      const result = parse('multiply { set a = a * 2 }');
+      const expected = createDocPayload([{
+        type: 'action_content',
+        action: {
+          type: 'assignments',
+          assignments: [
+            {
+              type: 'assignment',
+              variable: {
+                type: 'variable',
+                name: 'a',
+              },
+              operation: 'assign',
+              value: {
+                type: 'expression',
+                name: 'mult',
+                elements: [
+                  {
+                    type: 'variable',
+                    name: 'a',
+                  },
+                  {
+                    type: 'literal',
+                    name: 'number',
+                    value: 2,
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        content: { type: 'line', value: 'multiply', },
+      }]);
+      expect(result).toEqual(expected);
+    });
+
     it('chaining assigments', () => {
       const result = parse('{ set a = b = c = d = 3 } let\'s go');
       const expected = createDocPayload([{

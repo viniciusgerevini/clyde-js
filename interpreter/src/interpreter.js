@@ -109,8 +109,6 @@ export function Interpreter(doc, data, dictionary = {}) {
     }
   };
 
-
-
   const variationHandlers = {
     'cycle': (variations) => {
       let current = mem.getInternalVariable(variations._index, -1);
@@ -158,6 +156,7 @@ export function Interpreter(doc, data, dictionary = {}) {
 
       const random = Math.floor(Math.random() * remainingOptions.length);
       const index = variations.content.indexOf(remainingOptions[random]);
+
       visitedItems.push(remainingOptions[random]._index);
 
       mem.setInternalVariable(LAST_VISITED_KEY, index);
@@ -200,7 +199,9 @@ export function Interpreter(doc, data, dictionary = {}) {
 
   const handleContentNode = (contentNode) => {
     if (stackHead().current !== contentNode) {
-      contentNode._index = generateIndex();
+      if (!contentNode._index) {
+        contentNode._index = generateIndex();
+      }
       stack.push({
         current: contentNode,
         contentIndex: -1
@@ -331,7 +332,13 @@ export function Interpreter(doc, data, dictionary = {}) {
       return handleNextNode(stackHead().current);
     }
 
-    return handleNextNode(variations.content[next], variations);
+    if (variations.content[next].content.length === 1 && variations.content[next].content[0].type === 'conditional_content') {
+      if (!logic.checkCondition(variations.content[next].content[0].conditions)) {
+        return handleVariations(variations);
+      }
+    }
+
+    return handleNextNode(variations.content[next]);
   };
 
 

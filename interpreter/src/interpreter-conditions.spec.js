@@ -1,10 +1,9 @@
-import { Parser } from 'clyde-parser';
+import { parse } from 'clyde-parser';
 import { Interpreter } from './interpreter';
 
 describe("Interpreter: conditions", () => {
   it('show only lines that meet the criteria', () => {
-    const parser = Parser();
-    const content = parser.parse(`
+    const content = parse(`
 Start with hp 100 {set hp = 100}
 { hp > 90 } you should see this line.
 Set hp 90. {set hp = 90}
@@ -41,20 +40,17 @@ I believe this is all
   });
 
   it('use condition on options', () => {
-    const parser = Parser();
-    const content = parser.parse(`
+    const content = parse(`
 {set choice_count = 0 }
->>
-  + always
-    forevaaa
-    <-
-  { choice_count < 1 } * one time
-    a { set choice_count += 1 }
-    <-
-  { choice_count < 2 } + twice
-    b { set choice_count += 1 }
-    <-
-<<
++ [always]
+  forevaaa
+  <-
+{ choice_count < 1 } * [one time]
+  a { set choice_count += 1 }
+  <-
+{ choice_count < 2 } + [twice]
+  b { set choice_count += 1 }
+  <-
 `
     );
     const dialogue = Interpreter(content);

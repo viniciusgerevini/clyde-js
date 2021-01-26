@@ -53,32 +53,69 @@ const assignmentOperators = {
 
 export default function parse(doc) {
   const tokens = tokenize(doc);
-  // const test = tokenize(doc);
-  // console.log(test.getAll());
+  // console.log(tokenize(doc).getAll());
+  // console.log(JSON.stringify(test.getAll()));
   let currentToken;
-  let lookahead = undefined;
+  let lookaheadTokens = [];
   let isMultilineEnabled = true;
 
   const wrongTokenError = (token, expected) => {
     throw new Error(`Unexpected token "${getTokenFriendlyHint(token.token)}" on line ${token.line+1} column ${token.column+1}. Expected ${expected.map(getTokenFriendlyHint).join(', ')} `);
   }
 
+  // const consume = (expected) => {
+  //   if (!lookaheadTokens.length) {
+  //     lookaheadTokens.push(tokens.next());
+  //   }
+  //   const lookahead = lookaheadTokens[0];
+  //
+  //   if (expected && (!lookahead || !expected.includes(lookahead.token))) {
+  //     wrongTokenError(lookahead || {}, expected);
+  //   }
+  //   currentToken = lookahead;
+  //   lookaheadTokens.shift();
+  //   return currentToken;
+  // };
+  //
+  // const peek = (expected, index = 1) => {
+  //   while (lookaheadTokens.length < index) {
+  //     lookaheadTokens.push(tokens.next());
+  //   }
+  //
+  //   const lookahead = lookaheadTokens[index - 1];
+  //
+  //   if (!expected || (lookahead && expected.includes(lookahead.token))) {
+  //     return lookahead;
+  //   }
+  // };
   const consume = (expected) => {
-    if (!lookahead) {
-      lookahead = tokens.next();
+    if (!lookaheadTokens.length) {
+      const token = tokens.next();
+      if (token) {
+        lookaheadTokens.push(token);
+      }
     }
+
+    const lookahead = lookaheadTokens.shift();
+
     if (expected && (!lookahead || !expected.includes(lookahead.token))) {
       wrongTokenError(lookahead || {}, expected);
     }
+
     currentToken = lookahead;
-    lookahead = undefined;
     return currentToken;
   };
 
-  const peek = (expected) => {
-    if (!lookahead) {
-      lookahead = tokens.next();
+  const peek = (expected, offset = 0) => {
+    while (lookaheadTokens.length < (offset + 1)) {
+      const token = tokens.next();
+      if (token) {
+        lookaheadTokens.push(token);
+      } else {
+        break;
+      }
     }
+    const lookahead = lookaheadTokens[offset];
 
     if (!expected || (lookahead && expected.includes(lookahead.token))) {
       return lookahead;
@@ -599,9 +636,11 @@ export default function parse(doc) {
       return variable;
     }
 
-    consume(Object.keys(assignmentOperators));
+    const operators = Object.keys(assignmentOperators);
 
-    if (peek([TOKENS.IDENTIFIER])) {
+    consume(operators);
+
+    if (peek([TOKENS.IDENTIFIER]) && peek([...operators, TOKENS.BRACE_CLOSE], 1)) {
       return AssignmentNode(variable, assignmentOperators[currentToken.token], AssignmentExpression());
     }
     return AssignmentNode(variable, assignmentOperators[currentToken.token], Expression());

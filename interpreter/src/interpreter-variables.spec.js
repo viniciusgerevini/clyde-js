@@ -1,10 +1,9 @@
-import { Parser } from 'clyde-parser';
+import { parse } from 'clyde-parser';
 import { Interpreter } from './interpreter';
 
 describe("Interpreter: variables", () => {
   it('set variables', () => {
-    const parser = Parser();
-    const content = parser.parse('lets set a variable {set something="the"}\nthis is %something% variable\n');
+    const content = parse('lets set a variable {set something="the"}\nthis is %something% variable\n');
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent().text).toEqual('lets set a variable');
@@ -12,8 +11,7 @@ describe("Interpreter: variables", () => {
   });
 
   it('set variables with right type', () => {
-    const parser = Parser();
-    const content = parser.parse('a {set a="s", b=true, c=123}\nresults %a% %b% %c%\n');
+    const content = parse('a {set a="s", b=true, c=123}\nresults %a% %b% %c%\n');
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent().text).toEqual('a');
@@ -24,8 +22,7 @@ describe("Interpreter: variables", () => {
   });
 
   it('assign variables to other variables', () => {
-    const parser = Parser();
-    const content = parser.parse('a {set a="value of a", b=a}\n%b%\n');
+    const content = parse('a {set a="value of a", b=a}\n%b%\n');
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent().text).toEqual('a');
@@ -33,8 +30,7 @@ describe("Interpreter: variables", () => {
   });
 
   it('make complex assignements', () => {
-    const parser = Parser();
-    const content = parser.parse('a {set a=1, a += 5, b = c = a, b -=1}\na %a% b %b% c %c%\n');
+    const content = parse('a {set a=1, a += 5, b = c = a, b -= 1 }\na %a% b %b% c %c%\n');
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent().text).toEqual('a');
@@ -42,8 +38,7 @@ describe("Interpreter: variables", () => {
   });
 
   it('perform operations', () => {
-    const parser = Parser();
-    const content = parser.parse(`
+    const content = parse(`
 start {set a = 100}
 multiply {set b = a * 2 }
 divide {set c = a / 2 }
@@ -51,6 +46,12 @@ subtract {set d = a - 10 }
 add {set e = b + c }
 power {set e = a ^ 2 }
 mod {set e = 100 % 2 }
+sum assignment { set a += 50 }
+sub assignment { set a -= 50 }
+mult assignment { set a *= 2 }
+div assignment { set a /= 2 }
+pow assignment { set a ^= 2 }
+mod assignment { set a %= 2 }
 `
     );
     const dialogue = Interpreter(content);
@@ -69,11 +70,22 @@ mod {set e = 100 % 2 }
     expect(dialogue.getVariable('e')).toBe(10000);
     expect(dialogue.getContent().text).toEqual('mod');
     expect(dialogue.getVariable('e')).toBe(0);
+    expect(dialogue.getContent().text).toEqual('sum assignment');
+    expect(dialogue.getVariable('a')).toBe(150);
+    expect(dialogue.getContent().text).toEqual('sub assignment');
+    expect(dialogue.getVariable('a')).toBe(100);
+    expect(dialogue.getContent().text).toEqual('mult assignment');
+    expect(dialogue.getVariable('a')).toBe(200);
+    expect(dialogue.getContent().text).toEqual('div assignment');
+    expect(dialogue.getVariable('a')).toBe(100);
+    expect(dialogue.getContent().text).toEqual('pow assignment');
+    expect(dialogue.getVariable('a')).toBe(10000);
+    expect(dialogue.getContent().text).toEqual('mod assignment');
+    expect(dialogue.getVariable('a')).toBe(0);
   });
 
   it('set variables externally', () => {
-    const parser = Parser();
-    const content = parser.parse('vars %id% %name%\nvars %id% %name%\n');
+    const content = parse('vars %id% %name%\nvars %id% %name%\n');
     const dialogue = Interpreter(content);
 
     dialogue.setVariable('id', 'some_id');
@@ -87,8 +99,7 @@ mod {set e = 100 % 2 }
   });
 
   it('prints undefined variables as ""', () => {
-    const parser = Parser();
-    const content = parser.parse('var %id% here\n');
+    const content = parse('var %id% here');
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'var  here' });

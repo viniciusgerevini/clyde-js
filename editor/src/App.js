@@ -9,7 +9,7 @@ import MainPanelsContainer from './screens/MainPanelsContainer';
 import { loadState, saveState } from './storage/local-storage';
 
 const load = () => {
-  const data = loadState();
+  const data = loadState() || {};
 
   return {
     editor: data.editor,

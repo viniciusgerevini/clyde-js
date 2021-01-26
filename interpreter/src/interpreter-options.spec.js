@@ -1,11 +1,10 @@
-import { Parser } from 'clyde-parser';
+import { parse } from 'clyde-parser';
 import { Interpreter } from './interpreter';
 
 describe("Interpreter: options", () => {
 
   it('continue flow after selecting an option', () => {
-    const parser = Parser();
-    const content = parser.parse('\nHey hey\n>> speaker: hello\n  * a\n   aa\n   ab\n  * b\n   ba\n   bb\n<<\nend\n');
+    const content = parse('\nHey hey\nspeaker: hello\n  * [a]\n   aa\n   ab\n  * [b]\n   ba\n   bb\nend\n');
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hey hey' });
@@ -17,8 +16,7 @@ describe("Interpreter: options", () => {
   });
 
   it('handle sticky and normal options', () => {
-    const parser = Parser();
-    const content = parser.parse('>> speaker: hello |name_tag|\n  * a\n   aa\n   ab\n  * b $id:abc |option_tag|\n   ba\n   bb\n  + c\n   ca\n   cb\n<<\n');
+    const content = parse('speaker: hello #name_tag\n  * [a]\n   aa\n   ab\n  * [b $abc #option_tag]\n   ba\n   bb\n  + [c]\n   ca\n   cb\n');
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ label: 'a' },{ label: 'b', id: 'abc', tags: [ 'option_tag' ] }, { label: 'c' } ] });
@@ -45,8 +43,7 @@ describe("Interpreter: options", () => {
   });
 
   it('expose special variable OPTIONS_COUNT', () => {
-    const parser = Parser();
-    const content = parser.parse('>> speaker: hello\n  * a\n   a %OPTIONS_COUNT%\n  * b\n   b %OPTIONS_COUNT%\n  * c %OPTIONS_COUNT% left\n   c %OPTIONS_COUNT%\n<<\n');
+    const content = parse('speaker: hello\n  * [a]\n   a %OPTIONS_COUNT%\n  * [b]\n   b %OPTIONS_COUNT%\n  * [c %OPTIONS_COUNT% left]\n   c %OPTIONS_COUNT%\n');
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }, { label: 'c 3 left' } ] });
@@ -73,19 +70,17 @@ describe("Interpreter: options", () => {
   });
 
   it('use special variable OPTIONS_COUNT as condition', () => {
-    const parser = Parser();
-    const content = parser.parse(`
->> hello %OPTIONS_COUNT%
-      * Yes
-        yep
-        <-
-      * No
-        nope
-        <-
-      { OPTIONS_COUNT > 1 } + What?
-        wat
-        <-
-<<
+    const content = parse(`
+hello %OPTIONS_COUNT%
+    * [Yes]
+      yep
+      <-
+    * [No]
+      nope
+      <-
+    { OPTIONS_COUNT > 1 } + [What?]
+      wat
+      <-
 `);
     const dialogue = Interpreter(content);
 
@@ -103,8 +98,7 @@ describe("Interpreter: options", () => {
   });
 
   it('fails when trying to select option when in wrong state', () => {
-    const parser = Parser();
-    const content = parser.parse('Hi!\n');
+    const content = parse('Hi!\n');
     const dialogue = Interpreter(content);
     expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hi!' });
 
@@ -112,8 +106,7 @@ describe("Interpreter: options", () => {
   });
 
   it('fails when selecting wrong index', () => {
-    const parser = Parser();
-    const content = parser.parse('>> hello $id: 123\n * a\n  aa\n * b\n  ba\n<<\n');
+    const content = parse('hello $123\n * [a]\n  aa\n * [b]\n  ba\n');
     const dialogue = Interpreter(content);
     expect(dialogue.getContent()).toEqual({ id: '123', type: 'options', name: 'hello', options: [{ label: 'a' }, { label: 'b' } ] });
     expect(() => dialogue.choose(66)).toThrow(/Index 66 not available./);
@@ -121,38 +114,37 @@ describe("Interpreter: options", () => {
 
 
   it('complex conditional state', () =>{
-    const parser = Parser();
-    const content = parser.parse(`
+    const content = parse(`
 { set europeTopicsTalked = 0 }
->> Vincent: What do you want to know?
-  * Is hash legal there?
+Vincent: What do you want to know?
+  * [Is hash legal there?]
     Jules: is hash legal there?
     Vincent: yes, but is ain't a hundred percent legal.
              I mean you can't walk into a restaurant, roll a joint,
              and start puffin' away. You're only supposed to smoke in
              your home or certain designated places.
     Jules: Those are hash bars?
-    Vincent: Yeah, it breaks down like this: it's legal to buy it,
+    Vincent: "Yeah, it breaks down like this: it's legal to buy it,
              it's legal to own it and, if you're the proprietor of a
              hash bar, it's legal to sell it. It's legal to carry it,
              which doesn't really matter ' cause - get a load of this -
              if the cops stop you, it's illegal for this to search you.
-             Searching you is a right that the cops in Amsterdam don't have.
+             Searching you is a right that the cops in Amsterdam don't have."
     Jules: That did it, man - I'm f**n' goin', that's all there is to it.
     <-
-  { europeTopicsTalked < 4 } + Something about Europe.
+  { europeTopicsTalked < 4 } + [Something about Europe.]
     Vincent: You know what the funniest thing about Europe is?
     Jules: what?
     Vincent: It's the little differences. A lotta the same sh*t we got here, they
              they got there, but there they're a little different.
-    >> Jules: Examples?
-      * You can buy a beer in a movie theatre.
+    Jules: Examples?
+      * [You can buy a beer in a movie theatre.]
         Vincent: Well, in Amsterdam, you can buy beer in a
                  movie theatre. And I don't mean in a paper
                  cup either. They give you a glass of beer,
         { set europeTopicsTalked += 1}
         <-
-      * You know what they call a Quarter Pounder with Cheese in Paris?
+      * [You know what they call a Quarter Pounder with Cheese in Paris?]
         Vincent: You know what they call a Quarter Pounder with Cheese in Paris?
         Jules: They don't call it a Quarter Pounder with Cheese?
         Vincent: No, they got the metric system there, they wouldn't know what
@@ -164,11 +156,11 @@ describe("Interpreter: options", () => {
         { set quarterPounderTalkCompleted = true }
         { set europeTopicsTalked += 1}
         <-
-      { quarterPounderTalkCompleted } * What do they call a Whopper?
+      { quarterPounderTalkCompleted } * [What do they call a Whopper?]
         Jules: What do they call a Whopper?
         Vincent: I dunno, I didn't go into a Burger King.
         { set europeTopicsTalked += 1}
-      * What they put on the french fries instead of ketchup.
+      * [What they put on the french fries instead of ketchup.]
         Vincent: You know what they put on french fries in Holland
                  instead of ketchup?
         Jules: What?
@@ -179,18 +171,16 @@ describe("Interpreter: options", () => {
         Jules: Uuccch!
         { set europeTopicsTalked += 1}
         <-
-      { OPTIONS_COUNT > 1 } + I'm suddenly not interested anymore.
+      { OPTIONS_COUNT > 1 } + [I'm suddenly not interested anymore.]
         Jules: We talk about this another time.
-    <<
     { set europeTalkCompleted = true }
     <-
-  { OPTIONS_COUNT > 1 } + Nah, maybe another time
-    [
-      Vincent: Alright!
-      Vincent: No problem!
-      Vincent: See yah!
-    ]
-<<
+  { OPTIONS_COUNT > 1 } + [Nah, maybe another time]
+        (
+          - Vincent: Alright!
+          - Vincent: No problem!
+          - Vincent: See yah!
+        )
 Jules: Let's get to work!
 `
     );
