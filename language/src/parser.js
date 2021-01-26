@@ -104,7 +104,6 @@ export default function parse(doc) {
         return DocumentNode();
       case TOKENS.SPEAKER:
       case TOKENS.TEXT:
-      case TOKENS.QUOTE:
       case TOKENS.OPTION:
       case TOKENS.STICKY_OPTION:
       case TOKENS.DIVERT:
@@ -141,7 +140,6 @@ export default function parse(doc) {
     const acceptableNext = [
       TOKENS.SPEAKER,
       TOKENS.TEXT,
-      TOKENS.QUOTE,
       TOKENS.OPTION,
       TOKENS.STICKY_OPTION,
       TOKENS.DIVERT,
@@ -155,8 +153,7 @@ export default function parse(doc) {
     switch (tk.token) {
       case TOKENS.SPEAKER:
       case TOKENS.TEXT:
-      case TOKENS.QUOTE:
-        consume([ TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.QUOTE ]);
+        consume([ TOKENS.SPEAKER, TOKENS.TEXT ]);
         const line = Line();
         if (peek(TOKENS.BRACE_OPEN)) {
           consume([TOKENS.BRACE_OPEN]);
@@ -197,47 +194,7 @@ export default function parse(doc) {
   }
 
   const Line = () => {
-    switch (currentToken.token) {
-      case TOKENS.SPEAKER:
-      case TOKENS.TEXT:
-        return DialogueLine();
-      case TOKENS.QUOTE:
-        return LineInQuotes();
-    }
-  };
-
-  const LineInQuotes = () => {
-    const acceptableNext = [TOKENS.TEXT, TOKENS.QUOTE];
-    let line;
-    consume(acceptableNext);
-
-    switch (currentToken.token) {
-      case TOKENS.TEXT:
-        line= LineNode(currentToken.value);
-        consume([TOKENS.QUOTE]);
-      case TOKENS.QUOTE:
-        const value = line.value;
-        const next = peek([TOKENS.LINE_ID, TOKENS.TAG]);
-        if (next) {
-          consume([TOKENS.LINE_ID, TOKENS.TAG]);
-          line = LineWithMetadata();
-          line.value = value;
-        } else {
-          line = LineNode(value);
-        }
-        break;
-    }
-
-    if (peek([TOKENS.INDENT])) {
-      consume([TOKENS.INDENT]);
-      const options = Options();
-      options.id = line.id;
-      options.name = line.value;
-      options.tags = line.tags;
-      line = options;
-    }
-
-    return line;
+    return DialogueLine();
   };
 
   const DialogueLine = () => {
@@ -367,7 +324,7 @@ export default function parse(doc) {
   const Option = () => {
     consume([TOKENS.OPTION, TOKENS.STICKY_OPTION])
     const type = currentToken.token == TOKENS.OPTION ? 'once' : 'sticky';
-    const acceptableNext = [TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.QUOTE, TOKENS.INDENT, TOKENS.SQR_BRACKET_OPEN];
+    const acceptableNext = [TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.INDENT, TOKENS.SQR_BRACKET_OPEN];
     let lines = [];
     let mainItem;
     let useFirstLineAsDisplayOnly = false;
@@ -382,7 +339,6 @@ export default function parse(doc) {
     switch (currentToken.token) {
       case TOKENS.SPEAKER:
       case TOKENS.TEXT:
-      case TOKENS.QUOTE:
         isMultilineEnabled = false;
         mainItem = Line();
         isMultilineEnabled = true;
@@ -482,6 +438,10 @@ export default function parse(doc) {
         content = LineWithAction(line);
       }
 
+      if (peek([TOKENS.LINE_BREAK])) {
+        consume([TOKENS.LINE_BREAK]);
+      }
+
       if (!token || token.token === TOKENS.KEYWORD_WHEN) {
         return ConditionalContentNode(expression, content);
       }
@@ -506,7 +466,7 @@ export default function parse(doc) {
       return ActionContentNode(expression, LineWithAction());
     }
 
-    consume([TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.QUOTE,]);
+    consume([TOKENS.SPEAKER, TOKENS.TEXT]);
 
     return ActionContentNode(
       expression,
@@ -600,8 +560,12 @@ export default function parse(doc) {
       consume([TOKENS.BRACE_OPEN]);
       content = LineWithAction();
     } else {
-      consume([TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.QUOTE,]);
+      consume([TOKENS.SPEAKER, TOKENS.TEXT]);
       content = Line();
+      if (peek([TOKENS.BRACE_OPEN])) {
+        consume([TOKENS.BRACE_OPEN]);
+        content = LineWithAction(content);
+      }
     }
 
     return ConditionalContentNode(

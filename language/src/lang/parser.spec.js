@@ -19,8 +19,10 @@ describe('Check compilation results', () => {
   };
 
   const getExpectedResult = (sourceFileName) => {
-    return getFile(`${RESULTS_FOLDER}${sourceFileName.replace(/\.clyde$/, '.json')}`);
+    return getFile(resultFilePath(sourceFileName));
   };
+
+  const resultFilePath = (sourceFileName) => `${RESULTS_FOLDER}${sourceFileName.replace(/\.clyde$/, '.json')}`;
 
   test.each(getSourceFiles())('check: %s', (sourceFileName) => {
     const newParser = [
@@ -30,9 +32,11 @@ describe('Check compilation results', () => {
       'diverts.clyde',
       'tab_indentation.clyde',
       'variations.clyde',
+      'logic.clyde',
+      'variables.clyde',
     ];
+
     const source = getSourceFile(sourceFileName);
-    const expectedResult = getExpectedResult(sourceFileName);
 
     let result;
 
@@ -42,6 +46,15 @@ describe('Check compilation results', () => {
       const parser = Parser();
       result = parser.parse(source);
     }
+
+    if (process.env.SNAPSHOT_OVERWRITE) {
+      if (sourceFileName === process.env.SNAPSHOT_OVERWRITE) {
+        console.log(`Overwriting result file for ${process.env.SNAPSHOT_OVERWRITE}`);
+        fs.writeFileSync(resultFilePath(process.env.SNAPSHOT_OVERWRITE), JSON.stringify(result));
+      }
+    }
+
+    const expectedResult = getExpectedResult(sourceFileName);
 
     expect(JSON.parse(JSON.stringify(result))).toEqual(JSON.parse(expectedResult));
   });

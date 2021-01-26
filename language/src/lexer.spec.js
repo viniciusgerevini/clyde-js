@@ -32,14 +32,12 @@ describe('Lexer', () => {
   it('quotted text', () => {
     const tokens = tokenize('"this is a line with: special# characters $.\\" Enjoy"').getAll();
     expect(tokens).toEqual([
-      { token: TOKENS.QUOTE, line: 0, column: 0, },
       {
         token: TOKENS.TEXT,
         value: 'this is a line with: special# characters $." Enjoy',
         line: 0,
         column: 1,
       },
-      { token: TOKENS.QUOTE, line: 0, column: 52, },
       { token: TOKENS.EOF, line: 0, column: 53, },
     ]);
   });
@@ -81,9 +79,7 @@ this is another line 4
     expect(tokens).toEqual([
       { token: TOKENS.TEXT, value: 'this is a line', line: 2, column: 0, },
       { token: TOKENS.TEXT, value: 'this is another line 2', line: 4, column: 0 },
-      { token: TOKENS.QUOTE, line: 5, column: 0 },
       { token: TOKENS.TEXT, value: 'this is another line 3', line: 5, column: 1 },
-      { token: TOKENS.QUOTE, line: 5, column: 23 },
       { token: TOKENS.TEXT, value: 'this is another line 4', line: 6, column: 0 },
       { token: TOKENS.EOF, line: 8, column: 0 },
     ]);
@@ -139,9 +135,7 @@ he he
     hello
 `).getAll();
     expect(tokens).toEqual([
-      { token: TOKENS.QUOTE, line: 1, column: 0, },
       { token: TOKENS.TEXT, value: 'indented line', line: 1, column: 1, },
-      { token: TOKENS.QUOTE, line: 1, column: 14, },
       { token: TOKENS.INDENT, line: 2, column: 0 },
       { token: TOKENS.OPTION, line: 2, column: 2 },
       { token: TOKENS.TEXT, value: 'indented line', line: 2, column: 4 },
@@ -149,9 +143,7 @@ he he
       { token: TOKENS.TEXT, value: 'hello', line: 3, column: 4 },
       { token: TOKENS.DEDENT, line: 5, column: 2 },
       { token: TOKENS.DEDENT, line: 5, column: 0 },
-      { token: TOKENS.QUOTE, line: 5, column: 0, },
       { token: TOKENS.TEXT, value: 'indented line', line: 5, column: 1, },
-      { token: TOKENS.QUOTE, line: 5, column: 14, },
       { token: TOKENS.INDENT, line: 6, column: 0 },
       { token: TOKENS.OPTION, line: 6, column: 2 },
       { token: TOKENS.TEXT, value: 'indented line', line: 6, column: 4 },
@@ -382,9 +374,7 @@ hello
       { token: TOKENS.INDENT, line: 15, column: 2 },
       { token: TOKENS.MINUS, line: 15, column: 4, },
 
-      { token: TOKENS.QUOTE, line: 15, column: 6, },
       { token: TOKENS.TEXT, value: 'another one', line: 15, column: 7 },
-      { token: TOKENS.QUOTE, line: 15, column: 18, },
 
       { token: TOKENS.DEDENT, line: 16, column: 2 },
       { token: TOKENS.BRACKET_CLOSE, line: 16, column: 2, },

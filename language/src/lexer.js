@@ -8,7 +8,7 @@ export const TOKENS = {
   SQR_BRACKET_CLOSE: 'SQR_BRACKET_CLOSE',
   BRACKET_OPEN: 'BRACKET_OPEN',
   BRACKET_CLOSE: 'BRACKET_CLOSE',
-  QUOTE: '"',
+  // QUOTE: '"',
   EOF: 'EOF',
   SPEAKER: 'SPEAKER',
   LINE_ID: 'LINE_ID',
@@ -71,7 +71,7 @@ const tokenFriendlyHint = {
   [TOKENS.SQR_BRACKET_CLOSE]: ']',
   [TOKENS.BRACKET_OPEN]: '(',
   [TOKENS.BRACKET_CLOSE]: ')',
-  [TOKENS.QUOTE]: '"',
+  // [TOKENS.QUOTE]: '"',
   [TOKENS.EOF]: 'EOF',
   [TOKENS.SPEAKER]: '<speaker name>:',
   [TOKENS.LINE_ID]: '$id',
@@ -255,7 +255,6 @@ export function tokenize(input) {
 
   // handle quote
   const handleQuote = () => {
-    const initialColumn = column;
     column += 1;
     position += 1;
     if (isCurrentMode(MODES.QSTRING)) {
@@ -263,7 +262,6 @@ export function tokenize(input) {
     } else {
       stackMode(MODES.QSTRING);
     }
-    return Token(TOKENS.QUOTE, line, initialColumn);
   };
 
   // handle options
