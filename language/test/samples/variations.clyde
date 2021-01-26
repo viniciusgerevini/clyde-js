@@ -20,9 +20,13 @@
 )
 
 
-( cycle
+( shuffle cycle
   - multiline example
     do you think it works?
   - yep
 )
 
+(
+  - -> one
+  - -> two
+)
