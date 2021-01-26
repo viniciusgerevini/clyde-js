@@ -1,11 +1,10 @@
-import { Parser } from 'clyde-parser';
+import { parse } from 'clyde-parser';
 import { Interpreter } from './interpreter';
 
 describe("Interpreter", () => {
   describe('lines', () => {
     it('get lines', () => {
-      const parser = Parser();
-      const content = parser.parse('Hello!\nHi there.\nHey.|tag|\n');
+      const content = parse('Hello!\nHi there.\nHey.#tag\n');
       const dialogue = Interpreter(content);
 
       expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hello!' });
@@ -14,8 +13,7 @@ describe("Interpreter", () => {
     });
 
     it('get lines with details', () => {
-      const parser = Parser();
-      const content = parser.parse('speaker1: Hello! $id: 123\nspeaker2: Hi there. $id: abc\n');
+      const content = parse('speaker1: Hello! $123\nspeaker2: Hi there. $abc\n');
       const dialogue = Interpreter(content);
 
       expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hello!', speaker: 'speaker1', id: '123'});
@@ -25,8 +23,7 @@ describe("Interpreter", () => {
 
   describe('Events', () => {
     it('trigger event on variable changed', (done) => {
-      const parser = Parser();
-      const content = parser.parse('Hi!{ set something = 123 }\n');
+      const content = parse('Hi!{ set something = 123 }\n');
       const dialogue = Interpreter(content);
 
       dialogue.on(dialogue.events.VARIABLE_CHANGED, (data) => {
@@ -38,8 +35,7 @@ describe("Interpreter", () => {
     });
 
     it('remove listener', (done) => {
-      const parser = Parser();
-      const content = parser.parse('Hi!{ set something = 123 }\n');
+      const content = parse('Hi!{ set something = 123 }\n');
       const dialogue = Interpreter(content);
 
       const callback = dialogue.on(dialogue.events.VARIABLE_CHANGED, () => {
@@ -54,8 +50,7 @@ describe("Interpreter", () => {
     });
 
     it('trigger dialogue event', (done) => {
-      const parser = Parser();
-      const content = parser.parse('Hi!{ trigger some_event }\n');
+      const content = parse('Hi!{ trigger some_event }\n');
       const dialogue = Interpreter(content);
 
       dialogue.on(dialogue.events.EVENT_TRIGGERED, (data) => {
@@ -67,8 +62,7 @@ describe("Interpreter", () => {
     });
 
     it('trigger standalone dialog event', (done) => {
-      const parser = Parser();
-      const content = parser.parse('{ trigger some_event }\n');
+      const content = parse('{ trigger some_event }\n');
       const dialogue = Interpreter(content);
 
       dialogue.on(dialogue.events.EVENT_TRIGGERED, (data) => {
@@ -82,14 +76,11 @@ describe("Interpreter", () => {
 
   describe('persistence', () => {
     it('get all data and start new instance with right state', () =>{
-      const parser = Parser();
-      const content = parser.parse(`
->>
-  * a
-    Hi!{ set someVar = 1 }
-  * b
-    hello %someVar%
-<<
+      const content = parse(`
+* [a]
+  Hi!{ set someVar = 1 }
+* [b]
+  hello %someVar%
 `);
       const dialogue = Interpreter(content);
 
@@ -105,14 +96,11 @@ describe("Interpreter", () => {
     });
 
     it('get all data and load in another instance', () =>{
-      const parser = Parser();
-      const content = parser.parse(`
->>
-  * a
-    set as 1!{ set someVar = 1 }
-  * b
-    set as 2!{ set someVar = 2 }
-<<
+      const content = parse(`
+* [a]
+  set as 1!{ set someVar = 1 }
+* [b]
+  set as 2!{ set someVar = 2 }
 result is %someVar%
 `);
       const dialogue = Interpreter(content);
@@ -131,8 +119,7 @@ result is %someVar%
     });
 
     it('clear all data', () =>{
-      const parser = Parser();
-      const content = parser.parse(`
+      const content = parse(`
 Hi!{ set someVar = 1 }
 hello %someVar%
 `);
@@ -146,8 +133,7 @@ hello %someVar%
 
   describe('End of dialogue', () => {
     it('get undefined when not more lines left', () => {
-      const parser = Parser();
-      const content = parser.parse('Hi!\n');
+      const content = parse('Hi!\n');
       const dialogue = Interpreter(content);
       expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hi!' });
       expect(dialogue.getContent()).toBe(undefined);
@@ -164,18 +150,16 @@ hello %someVar%
         mno: 'replaced 3',
       };
 
-      const parser = Parser();
-      const content = parser.parse(`
+      const content = parse(`
 This will not be replaced
-This should be replaced $id: abc
-This will not be replaced either $id: def
->> replace $id: ghi
-  * replace $id: jkl
+This should be replaced $abc
+This will not be replaced either $def
+replace $ghi
+  * [replace $jkl]
     <-
-<<
-[
-  replace $id: mno
-]
+(
+  -replace $mno
+)
 `);
       const dialogue = Interpreter(content, undefined, dictionary);
       expect(dialogue.getContent().text).toEqual('This will not be replaced');
@@ -191,8 +175,7 @@ This will not be replaced either $id: def
       const dictionaryES  = { abc: 'Hola' };
       const dictionaryPT  = { abc: 'Olá' };
 
-      const parser = Parser();
-      const content = parser.parse(`Hello $id: abc\n`);
+      const content = parse(`Hello $abc\n`);
       const dialogue = Interpreter(content, undefined);
       expect(dialogue.getContent().text).toEqual('Hello');
       dialogue.begin();
@@ -210,8 +193,7 @@ This will not be replaced either $id: def
 
   describe('Unknowns', () => {
     it('fails when unkown node type detected', () => {
-      const parser = Parser();
-      const content = parser.parse('Hi!\n');
+      const content = parse('Hi!\n');
       content.type = 'SomeUnkownNode';
       const dialogue = Interpreter(content);
 

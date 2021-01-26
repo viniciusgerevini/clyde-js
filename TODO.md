@@ -2,7 +2,8 @@
 
 - [ ] language
     - [x] parent divert in block does not work
-    - [ ] divert to uunkown block fails
+    - [x] new parser
+    - [ ]  inline block: `* [ hey ] -> some_block`
 - [ ] editor interface
     - [x] main structure
     - [x] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
@@ -21,6 +22,7 @@
     - [x] interpreter only view
     - [ ] tabs? multi files open
     - [ ] add file change notification in interpreter timeline?
+    - [ ] divert to uunkown block fails
 - [ ] editor
     - [x] show invisibles
     - [ ] vim mode/ emacs mode

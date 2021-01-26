@@ -35,15 +35,16 @@ export function Interpreter(doc, data, dictionary = {}) {
     'line': node => handleLineNode(node),
     'action_content': node => handleActionContent(node),
     'conditional_content': (node, fallback) => handleConditionalContent(node, fallback),
-    'alternatives': node => handleAlternatives(node),
+    'alternatives': node => handleAlternatives(node), // TODO to be removed
+    'variations': node => handleVariations(node),
     'block': node => handleBlockNode(node),
     'divert': node => handleDivert(node),
     'assignments': node => handleAssignementNode(node),
-    'event': node => handleEventNode(node),
+    'events': node => handleEventNode(node),
     'error': node => { throw new Error(`Unkown node type "${node.type}"`) },
   };
 
-  const alternativeHandlers = {
+  const alternativeHandlers = { // TODO to be removed
     'cycle': (alternatives) => {
       let current = mem.getInternalVariable(alternatives._index, -1);
       if (current < alternatives.content.content.length - 1) {
@@ -105,6 +106,73 @@ export function Interpreter(doc, data, dictionary = {}) {
     },
     'shuffle cycle': (alternatives) => {
       return alternativeHandlers['shuffle'](alternatives, 'cycle');
+    }
+  };
+
+
+
+  const variationHandlers = {
+    'cycle': (variations) => {
+      let current = mem.getInternalVariable(variations._index, -1);
+      if (current < variations.content.length - 1) {
+        current += 1;
+      } else {
+        current = 0
+      }
+      mem.setInternalVariable(variations._index, current);
+      return current;
+    },
+    'once': (variations) => {
+      const current = mem.getInternalVariable(variations._index, -1);
+      const index = current + 1;
+      if (index <= variations.content.length - 1) {
+        mem.setInternalVariable(variations._index, index);
+        return index;
+      }
+      return -1;
+    },
+    'sequence': (variations) => {
+      let current = mem.getInternalVariable(variations._index, -1);
+      if (current < variations.content.length - 1) {
+        current += 1;
+        mem.setInternalVariable(variations._index, current);
+      }
+      return current;
+    },
+    'shuffle': (variations, mode = 'sequence' ) => {
+      const SHUFFLE_VISITED_KEY = `${variations._index}_shuffle_visited`;
+      const LAST_VISITED_KEY = `${variations._index}_last_index`;
+      let visitedItems = mem.getInternalVariable(SHUFFLE_VISITED_KEY, []);
+      const remainingOptions = variations.content.filter(a => !visitedItems.includes(a._index));
+
+      if (remainingOptions.length === 0) {
+        if (mode === 'once') {
+          return -1;
+        }
+        if (mode === 'cycle') {
+          mem.setInternalVariable(SHUFFLE_VISITED_KEY, []);
+          return variationHandlers['shuffle'](variations, mode);
+        }
+        return mem.getInternalVariable(LAST_VISITED_KEY, -1);
+      }
+
+      const random = Math.floor(Math.random() * remainingOptions.length);
+      const index = variations.content.indexOf(remainingOptions[random]);
+      visitedItems.push(remainingOptions[random]._index);
+
+      mem.setInternalVariable(LAST_VISITED_KEY, index);
+      mem.setInternalVariable(SHUFFLE_VISITED_KEY, visitedItems);
+
+      return index;
+    },
+    'shuffle sequence': (variations) => {
+      return variationHandlers['shuffle'](variations, 'sequence');
+    },
+    'shuffle once': (variations) => {
+      return variationHandlers['shuffle'](variations, 'once');
+    },
+    'shuffle cycle': (variations) => {
+      return variationHandlers['shuffle'](variations, 'cycle');
     }
   };
 
@@ -185,8 +253,12 @@ export function Interpreter(doc, data, dictionary = {}) {
     return handleNextNode(stackHead().current);
   };
 
-  const handleEventNode = (event) => {
-    listeners.triggerEvent(listeners.events.EVENT_TRIGGERED, { name: event.name });
+  const handleEventNode = (events) => {
+    events.events.forEach(event => {
+      listeners.triggerEvent(
+        listeners.events.EVENT_TRIGGERED,
+        { name: event.name });
+    });
     return handleNextNode(stackHead().current);
   };
 
@@ -245,6 +317,24 @@ export function Interpreter(doc, data, dictionary = {}) {
     return handleNextNode(alternatives.content.content[next], alternatives);
   };
 
+  const handleVariations = (variations) => {
+    if (!variations._index) {
+      variations._index = generateIndex();
+      variations.content.forEach((c, index) => {
+        c._index = generateIndex() * 100 + index;
+      });
+    }
+
+    const next = variationHandlers[variations.mode](variations);
+
+    if (next === -1) {
+      return handleNextNode(stackHead().current);
+    }
+
+    return handleNextNode(variations.content[next], variations);
+  };
+
+
   const handleLineNode = (lineNode) => {
     if (!lineNode._index) {
       lineNode._index = generateIndex();
@@ -259,8 +349,12 @@ export function Interpreter(doc, data, dictionary = {}) {
   }
 
   const handleActionContent = (actionNode) => {
-    if (actionNode.action.type === 'event') {
-      listeners.triggerEvent(listeners.events.EVENT_TRIGGERED, { name: actionNode.action.name });
+    if (actionNode.action.type === 'events') {
+      actionNode.action.events.forEach(event => {
+        listeners.triggerEvent(
+          listeners.events.EVENT_TRIGGERED,
+          { name: event.name });
+      });
     } else {
       actionNode.action.assignments.forEach(logic.handleAssignement)
     }

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import readline from 'readline';
 import yargs from 'yargs';
-import { Parser } from 'clyde-parser';
+import { parse } from 'clyde-parser';
 import { Interpreter } from 'clyde-interpreter';
 
 export async function execute(args, exitCallback = process.exit, commandName) {
@@ -199,7 +199,6 @@ const printDebugInfo = (events) => {
 };
 
 function getContent(filename) {
-  const parser = Parser();
   const extension = filename.split('.').pop();
   const file = fs.readFileSync(filename, 'utf8');
 
@@ -208,7 +207,7 @@ function getContent(filename) {
   }
 
   if (extension === 'clyde') {
-    return parser.parse(file);
+    return parse(file);
   }
 }
 
