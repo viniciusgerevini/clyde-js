@@ -25,27 +25,8 @@ describe('Check compilation results', () => {
   const resultFilePath = (sourceFileName) => `${RESULTS_FOLDER}${sourceFileName.replace(/\.clyde$/, '.json')}`;
 
   test.each(getSourceFiles())('check: %s', (sourceFileName) => {
-    const newParser = [
-      'simple_lines.clyde',
-      'options.clyde',
-      'blocks.clyde',
-      'diverts.clyde',
-      'tab_indentation.clyde',
-      'variations.clyde',
-      'logic.clyde',
-      'variables.clyde',
-    ];
-
     const source = getSourceFile(sourceFileName);
-
-    let result;
-
-    if (newParser.includes(sourceFileName)) {
-      result = parse(source);
-    } else {
-      const parser = Parser();
-      result = parser.parse(source);
-    }
+    const result = parse(source);
 
     if (process.env.SNAPSHOT_OVERWRITE) {
       if (sourceFileName === process.env.SNAPSHOT_OVERWRITE) {

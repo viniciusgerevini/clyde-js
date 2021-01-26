@@ -410,7 +410,11 @@ export default function parse(doc) {
 
       variations.content.push(ContentNode(Lines()));
       if (startsNextLine) {
-        consume([TOKENS.DEDENT]);
+        const lastVariation = variations.content[variations.content.length - 1].content;
+        const lastContent = lastVariation[lastVariation.length - 1];
+        if (lastContent.type !== 'options') {
+          consume([TOKENS.DEDENT]);
+        }
       }
 
       if (peek([TOKENS.DEDENT])) {
