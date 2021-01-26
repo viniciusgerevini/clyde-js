@@ -63,37 +63,9 @@ export default function parse(doc) {
     throw new Error(`Unexpected token "${getTokenFriendlyHint(token.token)}" on line ${token.line+1} column ${token.column+1}. Expected ${expected.map(getTokenFriendlyHint).join(', ')} `);
   }
 
-  // const consume = (expected) => {
-  //   if (!lookaheadTokens.length) {
-  //     lookaheadTokens.push(tokens.next());
-  //   }
-  //   const lookahead = lookaheadTokens[0];
-  //
-  //   if (expected && (!lookahead || !expected.includes(lookahead.token))) {
-  //     wrongTokenError(lookahead || {}, expected);
-  //   }
-  //   currentToken = lookahead;
-  //   lookaheadTokens.shift();
-  //   return currentToken;
-  // };
-  //
-  // const peek = (expected, index = 1) => {
-  //   while (lookaheadTokens.length < index) {
-  //     lookaheadTokens.push(tokens.next());
-  //   }
-  //
-  //   const lookahead = lookaheadTokens[index - 1];
-  //
-  //   if (!expected || (lookahead && expected.includes(lookahead.token))) {
-  //     return lookahead;
-  //   }
-  // };
   const consume = (expected) => {
     if (!lookaheadTokens.length) {
-      const token = tokens.next();
-      if (token) {
-        lookaheadTokens.push(token);
-      }
+      lookaheadTokens.push(tokens.next());
     }
 
     const lookahead = lookaheadTokens.shift();

@@ -5,10 +5,8 @@ export const LogicInterpreter = (mem) => {
     'equal': cond => getNodeValue(cond.elements[0]) === getNodeValue(cond.elements[1]),
     'not_equal': cond => getNodeValue(cond.elements[0]) !== getNodeValue(cond.elements[1]),
     'greater_than': cond => getNodeValue(cond.elements[0]) > getNodeValue(cond.elements[1]),
-    'greater_or_equal_than': cond => getNodeValue(cond.elements[0]) >= getNodeValue(cond.elements[1]), // TODO remove
     'greater_or_equal': cond => getNodeValue(cond.elements[0]) >= getNodeValue(cond.elements[1]),
     'less_than': cond => getNodeValue(cond.elements[0]) < getNodeValue(cond.elements[1]),
-    'less_or_equal_than': cond => getNodeValue(cond.elements[0]) <= getNodeValue(cond.elements[1]), // TODO remove
     'less_or_equal': cond => getNodeValue(cond.elements[0]) <= getNodeValue(cond.elements[1]),
     'and': cond => checkCondition(cond.elements[0]) && checkCondition(cond.elements[1]),
     'or': cond => checkCondition(cond.elements[0]) || checkCondition(cond.elements[1]),
@@ -17,7 +15,6 @@ export const LogicInterpreter = (mem) => {
     'div': cond => getNodeValue(cond.elements[0]) / getNodeValue(cond.elements[1]),
     'sub': cond => getNodeValue(cond.elements[0]) - getNodeValue(cond.elements[1]),
     'add': cond => getNodeValue(cond.elements[0]) + getNodeValue(cond.elements[1]),
-    'power': cond => getNodeValue(cond.elements[0]) ** getNodeValue(cond.elements[1]), // TODO remove
     'pow': cond => getNodeValue(cond.elements[0]) ** getNodeValue(cond.elements[1]),
     'mod': cond => getNodeValue(cond.elements[0]) % getNodeValue(cond.elements[1]),
     'error': cond => { throw new Error(`Unknown expression "${cond.name}"`) }
@@ -31,8 +28,6 @@ export const LogicInterpreter = (mem) => {
 
   const operationHandlers = {
     'assign': (name, value) => mem.setVariable(name, value),
-    'add_assign': (name, value) => mem.setVariable(name, mem.getVariable(name) + value), // TODO remove
-    'sub_assign': (name, value) => mem.setVariable(name, mem.getVariable(name) - value), // TODO remove
     'assign_sum': (name, value) => mem.setVariable(name, mem.getVariable(name) + value),
     'assign_sub': (name, value) => mem.setVariable(name, mem.getVariable(name) - value),
     'assign_mult': (name, value) => mem.setVariable(name, mem.getVariable(name) * value),

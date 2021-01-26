@@ -35,78 +35,12 @@ export function Interpreter(doc, data, dictionary = {}) {
     'line': node => handleLineNode(node),
     'action_content': node => handleActionContent(node),
     'conditional_content': (node, fallback) => handleConditionalContent(node, fallback),
-    'alternatives': node => handleAlternatives(node), // TODO to be removed
     'variations': node => handleVariations(node),
     'block': node => handleBlockNode(node),
     'divert': node => handleDivert(node),
     'assignments': node => handleAssignementNode(node),
     'events': node => handleEventNode(node),
     'error': node => { throw new Error(`Unkown node type "${node.type}"`) },
-  };
-
-  const alternativeHandlers = { // TODO to be removed
-    'cycle': (alternatives) => {
-      let current = mem.getInternalVariable(alternatives._index, -1);
-      if (current < alternatives.content.content.length - 1) {
-        current += 1;
-      } else {
-        current = 0
-      }
-      mem.setInternalVariable(alternatives._index, current);
-      return current;
-    },
-    'once': (alternatives) => {
-      const current = mem.getInternalVariable(alternatives._index, -1);
-      const index = current + 1;
-      if (index <= alternatives.content.content.length - 1) {
-        mem.setInternalVariable(alternatives._index, index);
-        return index;
-      }
-      return -1;
-    },
-    'sequence': (alternatives) => {
-      let current = mem.getInternalVariable(alternatives._index, -1);
-      if (current < alternatives.content.content.length - 1) {
-        current += 1;
-        mem.setInternalVariable(alternatives._index, current);
-      }
-      return current;
-    },
-    'shuffle': (alternatives, mode = 'sequence' ) => {
-      const SHUFFLE_VISITED_KEY = `${alternatives._index}_shuffle_visited`;
-      const LAST_VISITED_KEY = `${alternatives._index}_last_index`;
-      let visitedItems = mem.getInternalVariable(SHUFFLE_VISITED_KEY, []);
-      const remainingOptions = alternatives.content.content.filter(a => !visitedItems.includes(a._index));
-
-      if (remainingOptions.length === 0) {
-        if (mode === 'once') {
-          return -1;
-        }
-        if (mode === 'cycle') {
-          mem.setInternalVariable(SHUFFLE_VISITED_KEY, []);
-          return alternativeHandlers['shuffle'](alternatives, mode);
-        }
-        return mem.getInternalVariable(LAST_VISITED_KEY, -1);
-      }
-
-      const random = Math.floor(Math.random() * remainingOptions.length);
-      const index = alternatives.content.content.indexOf(remainingOptions[random]);
-      visitedItems.push(remainingOptions[random]._index);
-
-      mem.setInternalVariable(LAST_VISITED_KEY, index);
-      mem.setInternalVariable(SHUFFLE_VISITED_KEY, visitedItems);
-
-      return index;
-    },
-    'shuffle sequence': (alternatives) => {
-      return alternativeHandlers['shuffle'](alternatives, 'sequence');
-    },
-    'shuffle once': (alternatives) => {
-      return alternativeHandlers['shuffle'](alternatives, 'once');
-    },
-    'shuffle cycle': (alternatives) => {
-      return alternativeHandlers['shuffle'](alternatives, 'cycle');
-    }
   };
 
   const variationHandlers = {
@@ -299,23 +233,6 @@ export function Interpreter(doc, data, dictionary = {}) {
     stack.pop();
     stack.pop();
     return handleNextNode(stackHead().current);
-  };
-
-  const handleAlternatives = (alternatives) => {
-    if (!alternatives._index) {
-      alternatives._index = generateIndex();
-      alternatives.content.content.forEach((c, index) => {
-        c._index = generateIndex() * 100 + index;
-      });
-    }
-
-    const next = alternativeHandlers[alternatives.mode](alternatives);
-
-    if (next === -1) {
-      return handleNextNode(stackHead().current);
-    }
-
-    return handleNextNode(alternatives.content.content[next], alternatives);
   };
 
   const handleVariations = (variations) => {
