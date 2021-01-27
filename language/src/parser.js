@@ -108,6 +108,10 @@ export default function parse(doc) {
     ];
     const next = peek();
 
+    if (!next) {
+      return DocumentNode([], []);
+    }
+
     switch (next.token) {
       case TOKENS.EOF:
         return DocumentNode();
@@ -159,6 +163,11 @@ export default function parse(doc) {
     ];
     let lines;
     const tk = peek(acceptableNext);
+
+    if (!tk) {
+      return [];
+    }
+
     switch (tk.token) {
       case TOKENS.SPEAKER:
       case TOKENS.TEXT:
@@ -301,25 +310,17 @@ export default function parse(doc) {
     return LineNode(undefined, undefined, undefined, [value]);
   };
 
-  const Options = (firstElement) => {
-    const options = OptionsNode(
-      [firstElement || Option()]
-    );
+  const Options = () => {
+    const options = OptionsNode([]);
 
-    while (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION, TOKENS.LINE_BREAK])) {
-      if (peek([TOKENS.LINE_BREAK])) {
-        consume([TOKENS.LINE_BREAK]);
+    while (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION])) {
+      const option = Option();
+      if (peek([TOKENS.BRACE_OPEN])) {
         consume([TOKENS.BRACE_OPEN]);
-        options.content.push(LogicBlock(() => Option()));
+        options.content.push(LogicBlock(() => option));
+        consume([TOKENS.LINE_BREAK]);
       } else {
-        const option = Option();
-        if (peek([TOKENS.BRACE_OPEN])) {
-          consume([TOKENS.BRACE_OPEN]);
-          options.content.push(LogicBlock(() => option));
-          consume([TOKENS.LINE_BREAK]);
-        } else {
-          options.content.push(option);
-        }
+        options.content.push(option);
       }
     }
 
@@ -333,12 +334,18 @@ export default function parse(doc) {
   const Option = () => {
     consume([TOKENS.OPTION, TOKENS.STICKY_OPTION])
     const type = currentToken.token == TOKENS.OPTION ? 'once' : 'sticky';
-    const acceptableNext = [TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.INDENT, TOKENS.SQR_BRACKET_OPEN];
+    const acceptableNext = [TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.INDENT, TOKENS.SQR_BRACKET_OPEN, TOKENS.BRACE_OPEN];
     let lines = [];
     let mainItem;
     let useFirstLineAsDisplayOnly = false;
+    let wrapper;
 
     consume(acceptableNext);
+
+    if (currentToken.token === TOKENS.BRACE_OPEN) {
+      wrapper = LogicBlock(() => {});
+      consume(acceptableNext);
+    }
 
     if (currentToken.token === TOKENS.SQR_BRACKET_OPEN) {
       useFirstLineAsDisplayOnly = true;
@@ -371,7 +378,7 @@ export default function parse(doc) {
       consume([TOKENS.DEDENT, TOKENS.EOF])
     }
 
-    return OptionNode(
+    const node = OptionNode(
       ContentNode(lines),
       type,
       mainItem.value,
@@ -379,6 +386,13 @@ export default function parse(doc) {
       mainItem.speaker,
       mainItem.tags,
     );
+
+    if (wrapper) {
+      wrapper.content = node;
+      return wrapper;
+    }
+
+    return node;
   }
 
   const Divert = () => {
@@ -470,10 +484,6 @@ export default function parse(doc) {
       return  expression;
     }
 
-    if (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION])) {
-      return Options(ActionContentNode(expression, Option()));
-    }
-
     if (peek([TOKENS.BRACE_OPEN])) {
       consume([TOKENS.BRACE_OPEN]);
       return ActionContentNode(expression, LineWithAction());
@@ -562,8 +572,6 @@ export default function parse(doc) {
 
     if (peek([TOKENS.DIVERT, TOKENS.DIVERT_PARENT])) {
       content = Divert();
-    } else if (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION])) {
-      return Options(ConditionalContentNode(expression, Option()));
     } else if (peek([TOKENS.LINE_BREAK])) {
       consume([TOKENS.LINE_BREAK]);
       consume([TOKENS.INDENT]);

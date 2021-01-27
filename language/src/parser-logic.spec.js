@@ -418,9 +418,9 @@ describe('parse: logic', () => {
 
     it('conditional option', () => {
       const result = parse(`
-{ some_var } * option 1
+* { some_var } option 1
 * option 2 { when some_var }
-{ some_other_var } * option 3
+* { some_other_var } option 3
 `);
       const expected = createDocPayload([{
         type: 'options',
@@ -799,9 +799,9 @@ describe('parse: logic', () => {
 
     it('options assignment', () => {
       const result = parse(`
-{ set a = 2 } * option 1
+* { set a = 2 } option 1
 * option 2 { set b = 3 }
-{ set c = 4 } * option 3
+* { set c = 4 } option 3
 `);
       const expected = createDocPayload([{
         type: 'options',
@@ -923,9 +923,9 @@ describe('parse: logic', () => {
 
     it('options trigger', () => {
       const result = parse(`
-{ trigger a } * option 1
+* { trigger a } option 1
 * option 2 { trigger b }
-{ trigger c } * option 3
+* { trigger c } option 3
 `);
       const expected = createDocPayload([{
         type: 'options',

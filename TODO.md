@@ -3,7 +3,14 @@
 - [ ] language
     - [x] parent divert in block does not work
     - [x] new parser
-    - [ ]  inline block: `* [ hey ] -> some_block`
+    - [ ] inline block: `* [ hey ] -> some_block`
+    - [ ] escape in normal text ( i.e. `\:`)
+    - [ ] double quotes with empty string showing undefined message
+    - [ ] check this scenarios
+`
+-- option does not appear
+* { set yes = true } yes
+`
 - [ ] editor interface
     - [x] main structure
     - [x] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
@@ -21,8 +28,9 @@
     - [ ] watch mode
     - [x] interpreter only view
     - [ ] tabs? multi files open
-    - [ ] add file change notification in interpreter timeline?
+    - [ ] add file change notification in interpreter timeline
     - [ ] divert to uunkown block fails
+    - [ ] select first block when not default lines defined
 - [ ] editor
     - [x] show invisibles
     - [ ] vim mode/ emacs mode

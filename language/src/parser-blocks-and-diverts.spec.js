@@ -118,4 +118,22 @@ line 4
     };
     expect(result).toEqual(expected);
   });
+
+
+  it('parse empty block', () => {
+    const result = parse(`
+== first block
+`);
+    const expected = {
+      type: 'document',
+      content: [],
+      blocks: [
+        { type: 'block', name: 'first block', content: {
+          type: 'content',
+          content: []
+        }},
+      ]
+    };
+    expect(result).toEqual(expected);
+  });
 });

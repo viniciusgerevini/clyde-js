@@ -328,4 +328,106 @@ spk: second try
     };
     expect(result).toEqual(expected);
   });
+
+
+  it('ensures options ending worked', () => {
+    const result = parse(`
+* yes
+* no
+
+{ some_check } maybe
+`);
+    const expected = {
+      type: 'document',
+      content: [{
+        type: 'content',
+        content: [
+          {
+            type: 'options',
+            content: [
+              {
+                type: 'option',
+                name: 'yes',
+                mode: 'once',
+                content: {
+                  type: 'content',
+                  content: [
+                    { type: 'line', value: 'yes' },
+                  ],
+                },
+              },
+              {
+                type: 'option',
+                name: 'no',
+                mode: 'once',
+                content: {
+                  type: 'content',
+                  content: [
+                    { type: 'line', value: 'no' },
+                  ],
+                },
+              },
+            ],
+          },
+          {
+            type: "conditional_content",
+            conditions: { type: "variable", name: "some_check" },
+            content: { type: "line", value: "maybe", }
+          },
+        ],
+      },
+      ],
+      blocks: [],
+    };
+    expect(result).toEqual(expected);
+  });
+
+  it('ensures option item ending worked', () => {
+    const result = parse(`
+* yes { set yes = true }
+* [no]
+  no
+`);
+    const expected = {
+      type: 'document',
+      content: [{
+        type: 'content',
+        content: [
+          {
+            type: 'options',
+            content: [
+              {
+                type: "action_content",
+                action: {
+                  type: 'assignments',
+                  assignments: [
+                    {
+                      type: 'assignment',
+                      variable: { type: 'variable', name: 'yes', },
+                      operation: 'assign',
+                      value: { type: 'literal', name: 'boolean', value: true, },
+                    },
+                  ],
+                },
+                content: {
+                  type: 'option',
+                  name: 'yes',
+                  mode: 'once',
+                  content: { type: 'content', content: [{ type: 'line', value: 'yes' }]},
+                },
+              },
+              {
+                type: 'option',
+                name: 'no',
+                mode: 'once',
+                content: { type: 'content', content: [ { type: 'line', value: 'no' }, ]},
+              },
+            ],
+          },
+        ],
+      }],
+      blocks: [],
+    };
+    expect(result).toEqual(expected);
+  });
 });
