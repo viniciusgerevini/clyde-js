@@ -95,4 +95,8 @@ Just talking."
     };
     expect(result).toEqual(expected);
   });
+
+  it('throws error when empty string in quotes', () => {
+    expect(() => parse(`speaker: ""`)).toThrow(/Unexpected token "EOF" on line 1 column 12. Expected text /);
+  });
 });

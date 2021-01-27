@@ -42,6 +42,19 @@ describe('Lexer', () => {
     ]);
   });
 
+  it('escape characters in regular text', () => {
+    const tokens = tokenize('this is a line with\\: special\\# characters \\$.\\" Enjoy').getAll();
+    expect(tokens).toEqual([
+      {
+        token: TOKENS.TEXT,
+        value: 'this is a line with: special# characters $." Enjoy',
+        line: 0,
+        column: 0,
+      },
+      { token: TOKENS.EOF, line: 0, column: 54, },
+    ]);
+  });
+
   it('ignores comments', () => {
     const tokens = tokenize(`-- this is a comment
 -- this is another comment

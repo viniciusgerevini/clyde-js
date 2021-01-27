@@ -71,7 +71,7 @@ export default function parse(doc) {
     const lookahead = lookaheadTokens.shift();
 
     if (expected && (!lookahead || !expected.includes(lookahead.token))) {
-      wrongTokenError(lookahead || {}, expected);
+      wrongTokenError(lookahead, expected);
     }
 
     currentToken = lookahead;
@@ -107,10 +107,6 @@ export default function parse(doc) {
       TOKENS.BRACE_OPEN,
     ];
     const next = peek();
-
-    if (!next) {
-      return DocumentNode([], []);
-    }
 
     switch (next.token) {
       case TOKENS.EOF:

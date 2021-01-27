@@ -206,6 +206,13 @@ export function tokenize(input) {
         break;
       }
 
+      if (currentChar === '\\' && input[position + 1] !== 'n') {
+        value.push(input[position + 1]);
+        position += 2;
+        column += 2;
+        continue;
+      }
+
       if (currentChar === ':') {
         position += 1;
         column += 1;
@@ -754,11 +761,6 @@ export function tokenize(input) {
         return pendingTokens.shift();
       }
 
-      if (position === length) {
-        position += 1;
-        return Token(TOKENS.EOF, line, column);
-      }
-
       while (position < length) {
         const token = getNextToken(input, position, line, column, indent);
         if (token) {
@@ -769,6 +771,11 @@ export function tokenize(input) {
             return token;
           }
         }
+      }
+
+      if (position === length) {
+        position += 1;
+        return Token(TOKENS.EOF, line, column);
       }
     }
   }

@@ -12,8 +12,8 @@ next:
     - [x] parent divert in block does not work
     - [x] new parser
     - [ ] inline block: `* [ hey ] -> some_block`
-    - [ ] escape in normal text ( i.e. `\:`)
-    - [ ] double quotes with empty string showing undefined message
+    - [x] escape in normal text ( i.e. `\:`)
+    - [x] double quotes with empty string showing undefined message
     - [x] check this scenarios
 - [ ] editor interface
     - [x] main structure
