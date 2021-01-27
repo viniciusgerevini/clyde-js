@@ -18,7 +18,7 @@ export default function setupClydeMode(ace) {
     const ClydeMode = function ClydeMode() {
       this.$id = "ace/mode/clyde"
       this.HighlightRules = HighlightRules;
-      this.lineCommentStart = '#';
+      this.lineCommentStart = '--';
 
       this.getNextLineIndent = function(state, line, tab) {
         let indent = this.$getIndent(line);
@@ -30,7 +30,7 @@ export default function setupClydeMode(ace) {
         }
 
         if (state === "start") {
-          const match = line.match(/^\s*(>>|\[|\*|\+)/) || line.match(/\}\s*[*+]/);
+          const match = line.match(/^\s*(\(|\*|\+)/);
           if (match) {
             indent += tab;
           }
@@ -88,7 +88,7 @@ function ClydeHighlightRules() {
   const assignmentOperators = [
     { // operators
       token : 'keyword.operator',
-      regex : /(\+=|-=)/,
+      regex : /(\+=|-=|\*=|\/=|%=|\^=)/,
     },
     { // operators
       token : 'keyword.operator',
@@ -97,12 +97,6 @@ function ClydeHighlightRules() {
   ];
 
   const logicBlockEnd = [
-    { // assignment block end
-      token : ['keyword', 'keyword.control'],
-      regex : /(\})(\s*[*|+])/,
-      next: 'start'
-    },
-
     { // assignment block end
       token : 'keyword',
       regex : /(\})/,
@@ -129,47 +123,37 @@ function ClydeHighlightRules() {
     "start" : [
       {
         token : 'comment',
-        regex : /^\s*#.*$/
+        regex : /^\s*--.*$/
       },
 
       { // Block definition
         token : ["keyword", "text", "variable"],
-        regex : "^(==)(\\s*)([a-zA-Z_][a-zA-Z0-9_]+)$"
+        regex : /^(==)(\s*)([a-zA-Z0-9_ ]+)$/
       },
 
       { // Divert to end
         token : ["text", "keyword", "text", "support.constant"],
-        regex : "^(\\s*)(\\->)(\\s*)(END)$"
+        regex : /^(\s*)(->)(\s*)(END)$/
       },
 
       { // Divert
         token : ["text", "keyword", "text", "variable"],
-        regex : "^(\\s*)(\\->)(\\s*)([a-zA-Z_][a-zA-Z0-9_]+)$"
+        regex : /^(\s*)(->)(\s*)([a-zA-Z0-9_ ]+)$/
       },
 
       { // Divert to parent
         token : ["text", "keyword"],
-        regex : "^(\\s*)(<\\-)$"
+        regex : /^(\s*)(<-)$/
       },
 
-      { // Options start
-        token : ["text", "keyword", "text"],
-        regex : "^(\\s*)(>>)(\\s*)"
-      },
-
-      { // Options end
-        token : ["text", "keyword"],
-        regex : "^(\\s*)(<<)$"
-      },
-
-      { // Alternatives start
+      { // Variations start
         token : ["text", "keyword", "text", "support.constant"],
-        regex : "^(\\s*)(\\[)(\\s*)((?:shuffle|once|sequence|shuffle once|shuffle sequence)*)$"
+        regex : /^(\s*)(\()(\s*)((?:shuffle|once|sequence|shuffle once|shuffle sequence)*)$/
       },
 
-      { // Alternatives end
+      { // Variations end
         token : ["text", "keyword"],
-        regex : /^(\s*)(\])$/
+        regex : /^(\s*)(\))$/
       },
 
       { // option
@@ -183,18 +167,18 @@ function ClydeHighlightRules() {
         next: 'logicBlock'
       },
 
-      { // tag block start
-        token : 'keyword',
-        regex : /\|/,
-        next: 'tagBlock'
+      { // tag block
+        token : 'constant.string',
+        regex : /#[a-zA-Z0-9_]+/
+      },
+
+      { // Line
+        token : ['variable', 'text', 'variable'],
+        regex: /((?:\s*[a-zA-Z0-9_]+:)?\s*)(".*")((?:\$[a-zA-Z0-9_]+)?)/,
       },
       { // Line
         token : ['variable', 'text', 'variable'],
-        regex: /((?:\s*[a-zA-Z0-9_]+:)?\s*)(".*")((?:\$id:\s*[a-zA-Z0-9_]+)?)/,
-      },
-      { // Line
-        token : ['variable', 'text', 'variable'],
-        regex: /((?:\s*[a-zA-Z0-9_]+:)?\s*)([^\r\n#${|]+)((?:\$id:\s*[a-zA-Z0-9_]+)?)/,
+        regex: /((?:\s*[a-zA-Z0-9_]+:)?\s*)([^\r\n#${]+)((?:\$[a-zA-Z0-9_]+)?)/,
       }
     ],
     logicBlock: [
@@ -207,6 +191,10 @@ function ClydeHighlightRules() {
         token : 'keyword.control',
         regex : /(trigger)/,
         next: 'eventBlock'
+      },
+      { // event block start
+        token : 'keyword.control',
+        regex : /(when)/,
       },
       ...logicBlockConstants,
       ...logicalOperators,
@@ -225,17 +213,6 @@ function ClydeHighlightRules() {
     eventBlock: [
       ...identifiers,
       ...logicBlockEnd
-    ],
-    tagBlock: [
-      {
-        token : 'constant.string',
-        regex : /[a-zA-Z_][a-zA-Z0-9_]+/
-      },
-      { // block end
-        token : 'keyword',
-        regex : /\|/,
-        next: 'start'
-      },
     ],
   };
 
