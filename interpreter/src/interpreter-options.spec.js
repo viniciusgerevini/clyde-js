@@ -227,5 +227,23 @@ hey
     expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'hey' });
   });
 
+  it('allows lines after block', () => {
+    const content = parse(`
+Hey hey
+speaker: hello
+      * a { set something = true }
+        hey you
+      * b
+hey
+`);
+    const dialogue = Interpreter(content);
+
+    expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hey hey' });
+    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }] });
+    dialogue.choose(0);
+    expect(dialogue.getContent().text).toEqual('a');
+    expect(dialogue.getContent().text).toEqual('hey you');
+    expect(dialogue.getContent().text).toEqual('hey');
+  });
 });
 

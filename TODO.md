@@ -1,18 +1,20 @@
 # TODO
 
+next:
+- generate ids for file (it will probably require reverse parsing first)
+    - how to keep linebreaks in multiline phrases? maybe iterate over editor lines
+- reverse parsing
+    - option to break dialogue lines in multiline after n characters
+- can i create a bundle to use with pkg?
+- desktop editor
+
 - [ ] language
     - [x] parent divert in block does not work
     - [x] new parser
     - [ ] inline block: `* [ hey ] -> some_block`
     - [ ] escape in normal text ( i.e. `\:`)
     - [ ] double quotes with empty string showing undefined message
-    - [ ] check this scenarios
-`
-* test 2 {when a}
-  -> END
-+ nothing
-Unexpected token "INDENT" on line 6 column 1. Expected EOF
-`
+    - [x] check this scenarios
 - [ ] editor interface
     - [x] main structure
     - [x] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample

@@ -314,14 +314,7 @@ export default function parse(doc) {
     const options = OptionsNode([]);
 
     while (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION])) {
-      const option = Option();
-      if (peek([TOKENS.BRACE_OPEN])) {
-        consume([TOKENS.BRACE_OPEN]);
-        options.content.push(LogicBlock(() => option));
-        consume([TOKENS.LINE_BREAK]);
-      } else {
-        options.content.push(option);
-      }
+      options.content.push(Option());
     }
 
     if (peek([ TOKENS.DEDENT ])) {
@@ -366,6 +359,16 @@ export default function parse(doc) {
 
     }
 
+    if (peek([TOKENS.BRACE_OPEN])) {
+      consume([TOKENS.BRACE_OPEN]);
+      if (wrapper) {
+        wrapper.content = LogicBlock(() => {});
+      } else {
+        wrapper = LogicBlock(() => {});
+      }
+      consume([TOKENS.LINE_BREAK]);
+    }
+
     if (currentToken.token === TOKENS.INDENT || peek([TOKENS.INDENT])) {
       if (currentToken.token !== TOKENS.INDENT) {
         consume([TOKENS.INDENT])
@@ -388,7 +391,11 @@ export default function parse(doc) {
     );
 
     if (wrapper) {
-      wrapper.content = node;
+      if (wrapper.content) {
+        wrapper.content.content = node;
+      } else {
+        wrapper.content = node;
+      }
       return wrapper;
     }
 

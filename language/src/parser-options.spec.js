@@ -430,4 +430,76 @@ spk: second try
     };
     expect(result).toEqual(expected);
   });
+
+  it('options with blocks both sides', () => {
+    const result = parse(`
+* { what } yes { set yes = true }
+* {set no = true} [no] { when something }
+  no
+`);
+    const expected = {
+      type: 'document',
+      content: [{
+        type: 'content',
+        content: [
+          {
+            type: 'options',
+            content: [
+              {
+               type: "conditional_content",
+               conditions: { type: "variable", name: "what" },
+               content: {
+                  type: "action_content",
+                  action: {
+                    type: 'assignments',
+                    assignments: [
+                      {
+                        type: 'assignment',
+                        variable: { type: 'variable', name: 'yes', },
+                        operation: 'assign',
+                        value: { type: 'literal', name: 'boolean', value: true, },
+                      },
+                    ],
+                  },
+                  content: {
+                    type: 'option',
+                    name: 'yes',
+                    mode: 'once',
+                    content: { type: 'content', content: [{ type: 'line', value: 'yes' }]},
+                  },
+                },
+             },
+
+              {
+                type: "action_content",
+                action: {
+                  type: 'assignments',
+                  assignments: [
+                    {
+                      type: 'assignment',
+                      variable: { type: 'variable', name: 'no', },
+                      operation: 'assign',
+                      value: { type: 'literal', name: 'boolean', value: true, },
+                    },
+                  ],
+                },
+                content: {
+                  type: "conditional_content",
+                  conditions: { type: "variable", name: "something" },
+                  content: {
+                    type: 'option',
+                    name: 'no',
+                    mode: 'once',
+                    content: { type: 'content', content: [ { type: 'line', value: 'no' }, ]},
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      }],
+      blocks: [],
+    };
+    expect(result).toEqual(expected);
+  });
 });
