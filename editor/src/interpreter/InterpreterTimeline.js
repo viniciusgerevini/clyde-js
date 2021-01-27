@@ -53,7 +53,9 @@ export default function InterpreterTimeline(props) {
           singleBubblePresentation ?
             ( timeline.length ?  <DialogueEntry line={timeline[timeline.length - 1]} onSelection={choose} showMetadata={shouldShowExtraMetadata} /> : undefined )
           :
-            timeline.map((line, key) => {
+            timeline
+              .filter((line, key) => !(line && line.text === '<DIALOGUE_CHANGED>' && line.text === timeline[key - 1]?.text))
+              .map((line, key) => {
                 return <DialogueEntry line={line} key={key} onSelection={choose} showMetadata={shouldShowExtraMetadata}/>
             })
         }

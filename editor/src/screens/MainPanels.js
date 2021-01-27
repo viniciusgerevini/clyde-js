@@ -142,7 +142,13 @@ export default function MainPanels(props) {
          defaultSizes={[50, 50]}
          style={{height: 'calc(100% - 40px)'}}
          aria-label="Main panels">
-        { isEditorEnabled ? <Editor defaultValue={editorDefaultValue} setDocumentContent={setDocumentContent} preferences={editorPreferences}/> : undefined }
+        { isEditorEnabled ?
+          <Editor
+              defaultValue={editorDefaultValue}
+              setDocumentContent={setDocumentContent}
+              notifyChange={addDialogueLine}
+              preferences={editorPreferences}
+           /> : undefined }
         { isInterpreterEnabled ?
            <Interpreter
              content={editorDefaultValue}

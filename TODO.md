@@ -32,7 +32,7 @@ next:
     - [ ] watch mode
     - [x] interpreter only view
     - [ ] tabs? multi files open
-    - [ ] add file change notification in interpreter timeline
+    - [x] add file change notification in interpreter timeline
     - [ ] divert to uunkown block fails
     - [ ] select first block when not default lines defined
 - [ ] editor

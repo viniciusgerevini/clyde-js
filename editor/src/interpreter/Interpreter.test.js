@@ -211,19 +211,27 @@ what do you think?
   });
 
   it('renders metadata', () => {
-    const { getByLabelText } = render(
+    const { getByLabelText, queryAllByLabelText } = render(
       <Interpreter
         content={'Hello! $some_id #tag\n'}
         shouldShowExtraMetadata={true}
-        timeline={[{ type: 'dialogue', text: 'Hello!', id: 'some_id', tags: ['tag']}]}/>
+        timeline={[
+          { type: 'dialogue', text: 'Hello!', id: 'some_id', tags: ['tag']},
+          { type: 'dialogue', text: 'Hello!', id: 'some_other_id' },
+          { type: 'dialogue', text: 'Hello!', tags: ['some_other_tag']},
+        ]}/>
     );
 
-    const id = getByLabelText(/line id/i);
-    const tags = getByLabelText(/line tags/i);
+    const id = queryAllByLabelText(/line id/i);
+    const tags = queryAllByLabelText(/line tags/i);
 
-    expect(getByLabelText(/metadata/i)).toBeInTheDocument();
-    expect(id.innerHTML).toMatch(/.*id:.*some_id/);
-    expect(tags.innerHTML).toMatch(/.*tags:.*tag/);
+    expect(queryAllByLabelText(/metadata/i).length).toBe(3);
+    expect(id[0].innerHTML).toMatch(/.*id:.*some_id/);
+    expect(tags[0].innerHTML).toMatch(/.*tags:.*tag/);
+
+    expect(id[1].innerHTML).toMatch(/.*id:.*some_other_id/);
+
+    expect(tags[1].innerHTML).toMatch(/.*tags:.*some_other_tag/);
   });
 
   it('starts with selected block', () => {
@@ -670,6 +678,26 @@ this is the end
       expect(timeline[1]).toEqual({ type: 'dialogue', text: 'again 1' });
       expect(timeline[2]).toEqual({ type: 'INTERPRETER_INFO', text: 'Memory cleared' });
       expect(timeline[3]).toEqual({ type: 'dialogue', text: 'value ' });
+    });
+
+    it('shows only file changed message', () => {
+      const addDialogueLineStub = jest.fn();
+      const content = 'Hello!\n';
+      const timeline = [{ text: '<DIALOGUE_CHANGED>' }, { text: '<DIALOGUE_CHANGED>' }];
+      const { getByText } = render(
+        <Interpreter content={content} timeline={timeline} addDialogueLine={addDialogueLineStub}/>
+      );
+
+      expect(getByText('DIALOGUE CHANGED')).toBeInTheDocument();
+    });
+
+    it('does not break with wrong syntax', () => {
+      const addDialogueLineStub = jest.fn();
+      const content = '$id b:\n';
+      const timeline = [];
+      render(
+        <Interpreter content={content} timeline={timeline} addDialogueLine={addDialogueLineStub}/>
+      );
     });
   });
 });

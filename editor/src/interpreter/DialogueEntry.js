@@ -74,7 +74,7 @@ export default function DialogueEntry(props) {
     return <DialogueOptions {...line} onSelection={onSelection} showMetadata={showMetadata}/>
   }
 
-  return <InfoBubble>{line.text}</InfoBubble>
+  return <InfoBubble>{line.text === '<DIALOGUE_CHANGED>' ? 'DIALOGUE CHANGED' : line.text }</InfoBubble>
 }
 
 function DialogueLine(props) {

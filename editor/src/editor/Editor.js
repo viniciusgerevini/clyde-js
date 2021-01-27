@@ -31,7 +31,7 @@ const defaultConfig = {
   scrollPastEnd: false
 };
 
-export default function Editor({ defaultValue, setDocumentContent, preferences = defaultConfig, ...props}) {
+export default function Editor({ defaultValue, setDocumentContent, notifyChange, preferences = defaultConfig, ...props}) {
   const { ref, width = 500, height = 500 } = useResizeObserver();
 
   const onBeforeLoad = (editor) => {
@@ -40,6 +40,9 @@ export default function Editor({ defaultValue, setDocumentContent, preferences =
 
   const onChange = (value) => {
     setDocumentContent(value);
+    if (value !== defaultValue) {
+      notifyChange({ text: '<DIALOGUE_CHANGED>'});
+    }
   };
 
   return (
