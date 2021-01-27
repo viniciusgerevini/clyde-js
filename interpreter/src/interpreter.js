@@ -217,7 +217,7 @@ export function Interpreter(doc, data, dictionary = {}) {
       id: optionsNode.id,
       tags: optionsNode.tags,
       name: replaceVariables(translateText(optionsNode.name, optionsNode.id)),
-      options: options.map((t) => ({
+      options: options.map(t => t.type === 'action_content' ? t.content : t).map((t) => ({
         label: replaceVariables(translateText(t.name, t.id)),
         speaker: t.speaker,
         tags: t.tags,
@@ -273,6 +273,11 @@ export function Interpreter(doc, data, dictionary = {}) {
   }
 
   const handleActionContent = (actionNode) => {
+    handleAction(actionNode);
+    return handleNextNode(actionNode.content);
+  };
+
+  const handleAction = (actionNode) => {
     if (actionNode.action.type === 'events') {
       actionNode.action.events.forEach(event => {
         listeners.triggerEvent(
@@ -282,8 +287,7 @@ export function Interpreter(doc, data, dictionary = {}) {
     } else {
       actionNode.action.assignments.forEach(logic.handleAssignement)
     }
-    return handleNextNode(actionNode.content);
-  };
+  }
 
   const handleConditionalContent = (conditionalNode, fallbackNode = stackHead().current) => {
     if (logic.checkCondition(conditionalNode.conditions)) {
@@ -304,8 +308,16 @@ export function Interpreter(doc, data, dictionary = {}) {
       mem.setAsAccessed(content[contentIndex]._index);
       mem.setInternalVariable('OPTIONS_COUNT', getVisibleOptions(node.current).length);
       content[contentIndex].content._index = content[contentIndex]._index;
-      addToStack(content[contentIndex]);
-      addToStack(content[contentIndex].content);
+
+      if (content[contentIndex].type === 'action_content') {
+        handleAction(content[contentIndex]);
+        addToStack(content[contentIndex].content);
+        addToStack(content[contentIndex].content.content);
+      } else {
+        addToStack(content[contentIndex]);
+        addToStack(content[contentIndex].content);
+      }
+
     } else {
       throw new Error('Nothing to select.');
     }
@@ -325,6 +337,10 @@ export function Interpreter(doc, data, dictionary = {}) {
             return option.content;
           }
           return;
+        }
+        if (option.type === 'action_content') {
+          option.content._index = option._index;
+          option.mode = option.content.mode;
         }
         return option;
       })

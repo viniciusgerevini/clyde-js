@@ -78,7 +78,7 @@ hello %OPTIONS_COUNT%
     * [No]
       nope
       <-
-    { OPTIONS_COUNT > 1 } + [What?]
+    + { OPTIONS_COUNT > 1 } [What?]
       wat
       <-
 `);
@@ -132,7 +132,7 @@ Vincent: What do you want to know?
              Searching you is a right that the cops in Amsterdam don't have."
     Jules: That did it, man - I'm f**n' goin', that's all there is to it.
     <-
-  { europeTopicsTalked < 4 } + [Something about Europe.]
+  + { europeTopicsTalked < 4 } [Something about Europe.]
     Vincent: You know what the funniest thing about Europe is?
     Jules: what?
     Vincent: It's the little differences. A lotta the same sh*t we got here, they
@@ -156,7 +156,7 @@ Vincent: What do you want to know?
         { set quarterPounderTalkCompleted = true }
         { set europeTopicsTalked += 1}
         <-
-      { quarterPounderTalkCompleted } * [What do they call a Whopper?]
+      * { quarterPounderTalkCompleted } [What do they call a Whopper?]
         Jules: What do they call a Whopper?
         Vincent: I dunno, I didn't go into a Burger King.
         { set europeTopicsTalked += 1}
@@ -171,11 +171,11 @@ Vincent: What do you want to know?
         Jules: Uuccch!
         { set europeTopicsTalked += 1}
         <-
-      { OPTIONS_COUNT > 1 } + [I'm suddenly not interested anymore.]
+      + { OPTIONS_COUNT > 1 } [I'm suddenly not interested anymore.]
         Jules: We talk about this another time.
     { set europeTalkCompleted = true }
     <-
-  { OPTIONS_COUNT > 1 } + [Nah, maybe another time]
+  + { OPTIONS_COUNT > 1 } [Nah, maybe another time]
         (
           - Vincent: Alright!
           - Vincent: No problem!
@@ -207,5 +207,25 @@ Jules: Let's get to work!
     secondOptions.splice(0, 1);
     expect(dialogue.getContent()).toEqual({ type: 'options', speaker: 'Jules', name: 'Examples?', options: secondOptions });
   });
+
+  it('shows label for action content', () => {
+    const content = parse(`
+Hey hey
+speaker: hello
+      * a { set something = true }
+      * b { when not something }
+hey
+`);
+    const dialogue = Interpreter(content);
+
+    expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hey hey' });
+    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }] });
+    dialogue.choose(0);
+    expect(dialogue.getContent().text).toEqual('a');
+    dialogue.begin();
+    expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hey hey' });
+    expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'hey' });
+  });
+
 });
 

@@ -45,10 +45,10 @@ I believe this is all
 + [always]
   forevaaa
   <-
-{ choice_count < 1 } * [one time]
+* { choice_count < 1 } [one time]
   a { set choice_count += 1 }
   <-
-{ choice_count < 2 } + [twice]
++ { choice_count < 2 } [twice]
   b { set choice_count += 1 }
   <-
 `

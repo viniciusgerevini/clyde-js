@@ -8,8 +8,10 @@
     - [ ] double quotes with empty string showing undefined message
     - [ ] check this scenarios
 `
--- option does not appear
-* { set yes = true } yes
+* test 2 {when a}
+  -> END
++ nothing
+Unexpected token "INDENT" on line 6 column 1. Expected EOF
 `
 - [ ] editor interface
     - [x] main structure
