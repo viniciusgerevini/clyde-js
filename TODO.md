@@ -15,6 +15,7 @@ next:
     - [x] escape in normal text ( i.e. `\:`)
     - [x] double quotes with empty string showing undefined message
     - [x] check this scenarios
+    - [ ] variations short symbols (~ ! )
 - [ ] editor interface
     - [x] main structure
     - [x] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
@@ -35,6 +36,7 @@ next:
     - [x] add file change notification in interpreter timeline
     - [ ] divert to uunkown block fails
     - [ ] select first block when not default lines defined
+    - [ ] handle actionnode before condition node situation
 - [ ] editor
     - [x] show invisibles
     - [ ] vim mode/ emacs mode
