@@ -13,13 +13,13 @@
 
 { first_time > x + y - z * d / e % b } a
 
-{ first_time > 0 } hey
+{set xx = true } { first_time > 0 } hey
 { first_time != null } ho
 { first_time is false } let's go
 { first_time is "hello darkness >= my old friend" } let's go
 { set first_time = 2 }
 { set a = b = c = d = 3 }
-{ set a += "hello" }
+{ set a += b }
 { set a -= 4 ^ 2 }
 
 trigger {trigger some_event}
@@ -29,7 +29,9 @@ hey you { set a -= 4, b=1, c = "hello" }
 
 { first_time > 0 } "hey {you}" {set a = 4}
 
-* { hp < 40 } [Life]
+{ set hp = 5 }
+
+* { hp < 40 } [Life] { set s = false }
   player: I want to talk about life! {set x = true }
   npc: Well! That's too complicated...
 * [The universe]

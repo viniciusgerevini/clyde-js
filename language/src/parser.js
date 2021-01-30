@@ -456,7 +456,6 @@ export default function parse(doc) {
     const token = peek([
       TOKENS.KEYWORD_SET,
       TOKENS.KEYWORD_TRIGGER,
-      TOKENS.KEYWORD_WHEN
     ]);
     const expression = LogicElement();
 
@@ -489,15 +488,18 @@ export default function parse(doc) {
 
     if (peek([TOKENS.BRACE_OPEN])) {
       consume([TOKENS.BRACE_OPEN]);
+      if (!token) {
+        return ConditionalContentNode(expression, LineWithAction());
+      }
       return ActionContentNode(expression, LineWithAction());
     }
 
     consume([TOKENS.SPEAKER, TOKENS.TEXT]);
 
-    return ActionContentNode(
-      expression,
-      Line()
-    );
+    if (!token) {
+      return ConditionalContentNode(expression, Line());
+    }
+    return ActionContentNode(expression, Line());
   };
 
   const LogicElement = () => {

@@ -1103,6 +1103,38 @@ describe('parse: logic', () => {
     expect(result).toEqual(expected);
   });
 
+  it('multiple logic blocks with condition after', () => {
+    const result = parse(`{set something = 1} { some_var } { trigger event } hello`);
+    const expected = createDocPayload([{
+      type: 'action_content',
+      action: {
+        type: 'assignments',
+        assignments: [{
+          type: 'assignment',
+          variable: { type: 'variable', name: 'something' },
+          operation: 'assign',
+          value: { type: 'literal', name: 'number', value: 1 },
+        }],
+      },
+      content: {
+        type: "conditional_content",
+        conditions: { type: "variable", name: "some_var" },
+        content: {
+          type: 'action_content',
+          action: {
+            type: 'events',
+            events: [{ type: 'event', name: 'event' } ],
+          },
+          content: {
+            type: 'line',
+            value: 'hello',
+          },
+        },
+      },
+    }]);
+    expect(result).toEqual(expected);
+  });
+
   it('empty block', () => {
     const result = parse(`{} empty`);
     const expected = createDocPayload([{

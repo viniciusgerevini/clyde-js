@@ -4,13 +4,13 @@
 npc: what do you want to talk about?
 
 * [Life]
-  -> about_life
+  -> about_life <-
 * [The universe]
-  -> about_universe
+  -> about_universe <-
 * [Everything else...]
-  -> about_everything_else
+  -> about_everything_else <-
 * [Goodbye!]
-  -> goodbye
+  -> goodbye <-
 
 -> END
 
@@ -29,6 +29,7 @@ player: What about everything else?
 npc: I don't have time for this...
 <-
 
-== Goodbye
+== goodbye
 player: See you next time!
+<-
 
