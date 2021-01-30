@@ -264,7 +264,7 @@ export function Interpreter(doc, data, dictionary = {}) {
       lineNode._index = generateIndex();
     }
     return {
-      type: 'dialogue',
+      type: 'line',
       tags: lineNode.tags,
       id: lineNode.id,
       speaker: lineNode.speaker,

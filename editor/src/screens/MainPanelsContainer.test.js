@@ -169,7 +169,7 @@ describe('MainPanelsContainer', () => {
       const action = store.getActions()[0];
 
       expect(action.type).toEqual(addDialogueLine.toString());
-      expect(action.payload).toEqual({ type: 'dialogue', text: 'Hello from container!' });
+      expect(action.payload).toEqual({ type: 'line', text: 'Hello from container!' });
     });
 
     it('sets starting block', () => {

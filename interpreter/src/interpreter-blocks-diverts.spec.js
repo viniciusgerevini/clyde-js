@@ -7,8 +7,8 @@ describe("Interpreter: blocks and diverts", () => {
       const content = parse('Hello!\nHi there.\n== some_block\nHello from the block!\n');
       const dialogue = Interpreter(content);
 
-      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hello!' });
-      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hi there.' });
+      expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hello!' });
+      expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hi there.' });
       expect(dialogue.getContent()).toEqual(undefined);
     });
 
@@ -18,18 +18,18 @@ describe("Interpreter: blocks and diverts", () => {
 
       dialogue.begin('some_block');
 
-      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hello from the block!' });
+      expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hello from the block!' });
       expect(dialogue.getContent()).toEqual(undefined);
 
       dialogue.begin('some_other_block');
 
-      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hello from the other block!' });
+      expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hello from the other block!' });
       expect(dialogue.getContent()).toEqual(undefined);
 
       dialogue.begin();
 
-      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hello!' });
-      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hi there.' });
+      expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hello!' });
+      expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hi there.' });
       expect(dialogue.getContent()).toEqual(undefined);
     });
   });

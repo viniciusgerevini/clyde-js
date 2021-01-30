@@ -91,18 +91,18 @@ mod assignment { set a %= 2 }
     dialogue.setVariable('id', 'some_id');
     dialogue.setVariable('name', 'some name');
 
-    expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'vars some_id some name' });
+    expect(dialogue.getContent()).toEqual({ type: 'line', text: 'vars some_id some name' });
 
     dialogue.setVariable('id', 'some other id');
 
-    expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'vars some other id some name' });
+    expect(dialogue.getContent()).toEqual({ type: 'line', text: 'vars some other id some name' });
   });
 
   it('prints undefined variables as ""', () => {
     const content = parse('var %id% here');
     const dialogue = Interpreter(content);
 
-    expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'var  here' });
+    expect(dialogue.getContent()).toEqual({ type: 'line', text: 'var  here' });
   });
 });
 

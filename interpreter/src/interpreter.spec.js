@@ -7,17 +7,17 @@ describe("Interpreter", () => {
       const content = parse('Hello!\nHi there.\nHey.#tag\n');
       const dialogue = Interpreter(content);
 
-      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hello!' });
-      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hi there.' });
-      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hey.', tags: ['tag']});
+      expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hello!' });
+      expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hi there.' });
+      expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey.', tags: ['tag']});
     });
 
     it('get lines with details', () => {
       const content = parse('speaker1: Hello! $123\nspeaker2: Hi there. $abc\n');
       const dialogue = Interpreter(content);
 
-      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hello!', speaker: 'speaker1', id: '123'});
-      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hi there.', speaker: 'speaker2', id: 'abc' });
+      expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hello!', speaker: 'speaker1', id: '123'});
+      expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hi there.', speaker: 'speaker2', id: 'abc' });
     });
   });
 
@@ -135,7 +135,7 @@ hello %someVar%
     it('get undefined when not more lines left', () => {
       const content = parse('Hi!\n');
       const dialogue = Interpreter(content);
-      expect(dialogue.getContent()).toEqual({ type: 'dialogue', text: 'Hi!' });
+      expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hi!' });
       expect(dialogue.getContent()).toBe(undefined);
       expect(dialogue.getContent()).toBe(undefined);
     });

@@ -13,9 +13,9 @@ describe('Interpreter component', () => {
   it('renders all dialogue lines', () => {
     const content = 'Hello!\nHi\n';
     const timeline = [
-      { type: 'dialogue', speaker: 'test', text: 'Hello!' },
+      { type: 'line', speaker: 'test', text: 'Hello!' },
       { type: 'INTERPRETER_INFO', text: 'Memory cleared' },
-      { type: 'dialogue', text: 'Hi!' },
+      { type: 'line', text: 'Hi!' },
     ];
     const { getByText } = render(<Interpreter content={content} timeline={timeline}/>);
 
@@ -39,7 +39,7 @@ describe('Interpreter component', () => {
       <Interpreter content={content} timeline={timeline} addDialogueLine={addDialogueLineStub}/>
     );
     fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));
-    expect(addDialogueLineStub).toHaveBeenCalledWith({ type: 'dialogue', text: 'Hello!' });
+    expect(addDialogueLineStub).toHaveBeenCalledWith({ type: 'line', text: 'Hello!' });
   });
 
   it('shows end message when dialogue has ended', () => {
@@ -58,8 +58,8 @@ describe('Interpreter component', () => {
   it('shows only last message when single dialogue bubble mode', () => {
     const content = 'Hello!\nHi\n';
     const timeline = [
-      { type: 'dialogue', text: 'Hello!' },
-      { type: 'dialogue', text: 'Hi!' },
+      { type: 'line', text: 'Hello!' },
+      { type: 'line', text: 'Hi!' },
     ];
     const { getByText, queryByText } = render(<Interpreter content={content} timeline={timeline} singleBubblePresentation={true}/>);
 
@@ -216,9 +216,9 @@ what do you think?
         content={'Hello! $some_id #tag\n'}
         shouldShowExtraMetadata={true}
         timeline={[
-          { type: 'dialogue', text: 'Hello!', id: 'some_id', tags: ['tag']},
-          { type: 'dialogue', text: 'Hello!', id: 'some_other_id' },
-          { type: 'dialogue', text: 'Hello!', tags: ['some_other_tag']},
+          { type: 'line', text: 'Hello!', id: 'some_id', tags: ['tag']},
+          { type: 'line', text: 'Hello!', id: 'some_other_id' },
+          { type: 'line', text: 'Hello!', tags: ['some_other_tag']},
         ]}/>
     );
 
@@ -255,7 +255,7 @@ neither this one
 
     fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));
 
-    expect(addDialogueLineStub).toHaveBeenCalledWith({ type: 'dialogue', text: 'this one'});
+    expect(addDialogueLineStub).toHaveBeenCalledWith({ type: 'line', text: 'this one'});
     expect(setBlockStub).toHaveBeenCalledWith('block_one');
   });
 
@@ -314,8 +314,8 @@ neither this one
       const clearTimelineStub = jest.fn();
       const content = 'Hello!\nHi\n';
       const timeline = [
-        { type: 'dialogue', text: 'Hello!' },
-        { type: 'dialogue', text: 'Hi!' },
+        { type: 'line', text: 'Hello!' },
+        { type: 'line', text: 'Hi!' },
       ];
       const { getByLabelText } = render(
         <Interpreter
@@ -647,7 +647,7 @@ this is the end
       expect(addDialogueLineStub).toHaveBeenCalledTimes(11);
       expect(addDialogueLineStub).toHaveBeenLastCalledWith(undefined);
       expect(chooseOptionStub).toHaveBeenCalledTimes(3);
-      expect(timeline[timeline.length - 2]).toEqual({ type: 'dialogue', text: 'this is the end'});
+      expect(timeline[timeline.length - 2]).toEqual({ type: 'line', text: 'this is the end'});
     });
 
     it('cleans memory', () => {
@@ -674,10 +674,10 @@ this is the end
       fireEvent.click(getByLabelText(/Clear memory/i));
       fireEvent.click(getByLabelText(/Interpreter Dialogue Timeline/i));
 
-      expect(timeline[0]).toEqual({ type: 'dialogue', text: 'value ' });
-      expect(timeline[1]).toEqual({ type: 'dialogue', text: 'again 1' });
+      expect(timeline[0]).toEqual({ type: 'line', text: 'value ' });
+      expect(timeline[1]).toEqual({ type: 'line', text: 'again 1' });
       expect(timeline[2]).toEqual({ type: 'INTERPRETER_INFO', text: 'Memory cleared' });
-      expect(timeline[3]).toEqual({ type: 'dialogue', text: 'value ' });
+      expect(timeline[3]).toEqual({ type: 'line', text: 'value ' });
     });
 
     it('shows only file changed message', () => {
