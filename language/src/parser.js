@@ -169,7 +169,7 @@ export default function parse(doc) {
       case TOKENS.TEXT:
         consume([ TOKENS.SPEAKER, TOKENS.TEXT ]);
         const line = Line();
-        if (peek(TOKENS.BRACE_OPEN)) {
+        if (peek([TOKENS.BRACE_OPEN])) {
           consume([TOKENS.BRACE_OPEN]);
           lines = [LineWithAction(line)];
         } else {
