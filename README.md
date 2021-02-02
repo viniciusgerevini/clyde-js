@@ -21,7 +21,7 @@
 - [ ] online interpreter/editor
 - [ ] Godot client / example
 - [ ] C# client class
-- [ ] Godot importer (depends on CLI)
+- [x] Godot importer
 - [ ] Syntax file (VIM? VSCode?)
 
 ### Clean up

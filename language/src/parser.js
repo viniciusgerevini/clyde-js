@@ -332,7 +332,7 @@ export default function parse(doc) {
     consume(acceptableNext);
 
     if (currentToken.token === TOKENS.BRACE_OPEN) {
-      wrapper = LogicBlock(() => {});
+      wrapper = LogicBlock();
       consume(acceptableNext);
     }
 
@@ -358,9 +358,9 @@ export default function parse(doc) {
     if (peek([TOKENS.BRACE_OPEN])) {
       consume([TOKENS.BRACE_OPEN]);
       if (wrapper) {
-        wrapper.content = LogicBlock(() => {});
+        wrapper.content = LogicBlock();
       } else {
-        wrapper = LogicBlock(() => {});
+        wrapper = LogicBlock();
       }
       consume([TOKENS.LINE_BREAK]);
     }
@@ -522,15 +522,15 @@ export default function parse(doc) {
     return condition;
   };
 
-  const LogicBlock = (content) => {
+  const LogicBlock = () => {
     if (peek([TOKENS.KEYWORD_SET])) {
       const assignments = Assignments()
-      return ActionContentNode(assignments, content());
+      return ActionContentNode(assignments);
     }
 
     if (peek([TOKENS.KEYWORD_TRIGGER])) {
       const events = Events();
-      return ActionContentNode(events, content());
+      return ActionContentNode(events);
 
     }
 
@@ -539,7 +539,7 @@ export default function parse(doc) {
     }
 
     const condition = Condition();
-    return ConditionalContentNode(condition, content());
+    return ConditionalContentNode(condition);
   };
 
 

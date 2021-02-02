@@ -5,13 +5,11 @@ next:
     - how to keep linebreaks in multiline phrases? maybe iterate over editor lines
 - reverse parsing
     - option to break dialogue lines in multiline after n characters
-- can i create a bundle to use with pkg?
 - desktop editor
 
 - [ ] language
     - [x] parent divert in block does not work
     - [x] new parser
-    - [ ] inline block: `* [ hey ] -> some_block`
     - [x] escape in normal text ( i.e. `\:`)
     - [x] double quotes with empty string showing undefined message
     - [x] check this scenarios
@@ -53,6 +51,7 @@ next:
     - [ ] compile file
     - [ ] search
     - [ ] persist preferences
+    - [ ] download result file
 - [ ] translator
     - [ ] generate ids buttom
     - [ ] translation editor
@@ -75,4 +74,3 @@ next:
     - [ ] electron wrapper
     - [ ] start gui interpreter only `clyde -i file.clyde`
     - [ ] start gui editor: (load file in the editor)
-- [ ] portable CLI https://github.com/vercel/pkg
