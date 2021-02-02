@@ -13,10 +13,8 @@ You can play with the online editor [here]().
 - Simple API. While other dialogue solutions try to be full game engines, Clyde's goal is to handle dialogues only, providing a simple interface that can be used in different scenarios.
 - Localisation in mind.
 
-## Introduction
 
-
-### Interpreter's interface
+## Interpreter's interface
 
 Even though this document is focused on the language itself, I think it's a good idea to give a basic overview of the interpreter's interface for a easier understanding. I'll use the JavaScript implementation for reference.
 
@@ -49,8 +47,8 @@ dialogue.getVariable(name);
 // for translation before returning the value. Useful for localisation.
 dialogue.loadDictionary(dictionary);
 
-// Return all variables and internal variables. Useful for persisting the dialogue's internal data, such as
-// which options were already choosen and random variations states.
+// Return all variables and internal variables. Useful for persisting the dialogue's internal data,
+// such as options already choosen and random variations states.
 dialogue.getData();
 
 // Load internal data
@@ -81,7 +79,7 @@ The main methods used are `getContent()` and `choose(int)`.
 
 **Null / undefined**: This means the dialogue has reached an end.
 
-When in the `options` state, you can choose one of the options by passing its index to the dialogue object:
+When `options` are available, you can choose one of them by passing its index to the dialogue object. Option's index starts from 0:
 
 ```javascript
 dialogue.choose(0);
@@ -89,15 +87,15 @@ dialogue.choose(0);
 
 When in an options state, any call to `getContent()` will return the same options object, until a choice is made.
 
-Currently there are two interpreter implementations: a [JavaScript version](), and a [Godot's GDScript version](). Check the respective links for more details on how to use them. The interface is supposed to be close enough, but there are some differences due to how each engine handles events and localisation.
+Currently there are two interpreter implementations: a [JavaScript version](), and a [Godot's GDScript version](). Check the respective links for more details on how to use them. They expose similar interfaces, but there are some differences due to language standards and how each engine handles events and localisation.
 
 
-### Basics
+## Basics
 
 
-#### Comments
+### Comments
 
-To ignore a line you can use `--`. Comments are full line, meaning, you can have comments in the end of a line.
+To ignore a line you can use `--`.
 
 ```
 -- this line is ignored
@@ -107,13 +105,12 @@ output:
 
 ```javascript
 // get content
-
 { type: "line", text: "this line isn't" }
 ```
 
-#### Dialogue line
+### Dialogue line
 
-Each line will become a dialogue line:
+Each line becomes a dialogue line:
 
 ```
 This is a simple text!
@@ -129,9 +126,9 @@ Output:
 { type: 'line', text: 'This is another line.' }
 ```
 
-#### Grouping lines
+### Grouping lines
 
-If you wan't to group multiple lines in one call, you can use indentation. You can choose to use spaces or tabs (or even both, however I don't recommend that):
+If you wan't to group multiple lines in one call, you just need to indent the subsequent lines. You can choose to use spaces or tabs (or even both, however I don't recommend that):
 
 ```
 This is the first dialogue line.
@@ -148,9 +145,9 @@ Output:
 { type: 'line', text: 'But this is the second line.' }
 ```
 
-#### Speaker
+### Speaker
 
-Use `:` to set a line speaker. Anything from the begining of the line to ':' is used as speaker.
+Use `:` to set a line speaker. Anything from the begining of the line to `:`(colon) is used as speaker.
 
 ```
 Hagrid: Harry, yer a wizard.
@@ -166,9 +163,9 @@ Output:
 { type: 'line', speaker: 'Harry Potter', text: "I'm a what?" }
 ```
 
-#### Line ID
+### Line ID
 
-Use `$` to set a line id:
+Use `$` + `[A-Za-z0-9_]` to set a line id:
 
 ```
 Hagrid: Harry, yer a wizard. $line001
@@ -184,11 +181,11 @@ Output:
 { type: 'line', id: 'line_02', speaker: 'Harry Potter', text: "I'm a what?" }
 ```
 
-Ids are useful for localisation, where you can organise your translations in files with key values (json, csv) and use them to replace dialogue lines with their translated equivalents.
+IDs are useful for localisation, where you can organise your translations in files with key values (json, csv) and use them to replace dialogue lines with their translated equivalents.
 
-#### Tags
+### Tags
 
-Use `#` to set line tags:
+Use `#` + `[A-Za-z0-9_]` to set line tags:
 
 ```
 WHAT DID YOU DO! #yelling #scared
@@ -202,10 +199,9 @@ Output:
 
 Tags are useful metadata that can be used as you wish. Probably the most obvious usage would be changing dialogue bubble pictures to convey different emotions. (happy, sad, angry)
 
-#### Escaping characters
+### Escaping characters
 
-If you need to use in your dialogue one of the special characters mentioned before, you can scape them by using `\` or surrounding your text with quotes:
-Use `#` to set line tags:
+If you need to use special characters in your dialogue, you can scape them by using `\` or surrounding your text with quotes:
 
 ```
 It will cost you \$100.
@@ -257,7 +253,7 @@ Output:
 { type: 'line', text: 'continue'}
 ```
 
-#### It may contain dialogue blocks:
+### It may contain multilines:
 ```
 * I need to think about that
     some line
@@ -293,7 +289,7 @@ Output
 continue
 ```
 
-#### Nested options:
+### Nested options:
 
 Options can be nested:
 
@@ -347,7 +343,7 @@ Output
 { type: 'line', text: 'continue'}
 ```
 
-#### Display only text
+### Display only text
 
 As you may have noticed, everytime you choose an option, the option label is also returned as a line. You can set the first line as display only by using `[` and `]`
 
@@ -375,9 +371,9 @@ Output
 { type: 'line', text: 'nope'}
 ```
 
-#### Options list title
+### Options list title
 
-Depending on how you show your dialogue, some options may loose context. To prevent that, you can define titles for your option list by indenting its block.
+Depending on how you show your dialogue, your options list may lose its context. To prevent that, you can define titles for your option list by indenting its block.
 
 ```
 Do you like turtles?
@@ -403,9 +399,9 @@ Output
 { type: 'line', text: 'Yes'}
 ```
 
-#### Sticky options
+### Sticky options
 
-An option's default behaviour is to be removed from the list once used:
+The option's default behaviour is to be removed from the list once used:
 // sticky options
 
 
@@ -489,7 +485,7 @@ Output
 
 ### Blocks and Diverts
 
-Nesting content can get messy real quick. An alternative is to group your content in blocks `==`, and use diverts '->' to link them.
+Nesting content can get messy real quick. An alternative is to group your content in blocks `== BLOCK NAME`, and use diverts `-> BLOCK_NAME` to link them. `BLOCK_NAME` should be `[A-Za-z0-9_- ]`.
 
 ```
 What do you want to talk about?
@@ -535,7 +531,7 @@ npc: I don't have time for this...
 { type: 'line', speaker: 'npc', text: "That's too complex!" }
 ```
 
-#### Divert to parent
+### Divert to parent
 
 You can use `<-` to divert back to the parent block or parent option list.
 
@@ -610,7 +606,7 @@ npc: I don't have time for this...
 <-
 ```
 
-These diverts can be simplified by joining them to the previous divert:
+These diverts can be simplified by joining them into the previous divert:
 
 ```
 What do you want to talk about?
@@ -624,11 +620,9 @@ What do you want to talk about?
         I don't want to talk about anything.
 ```
 
-#### Ending a dialogue
+### Ending a dialogue
 
-By default, the dialogue ends when reaching a point with no next line.
-
-You can also end a dialogue earlier by using `-> END`.
+By default, the dialogue ends when it reaches a point with no next line available.  But you can also end a dialogue earlier by using `-> END`.
 
 ```
 Do you wish to continue?
@@ -644,7 +638,7 @@ As I was saying...
 The first option will continue to line `As I was saying...`. The second option will return to the options list so you can choose again. The third option will end the dialogue and ignore any subsequent line.
 
 
-### Variations
+## Variations
 
 In some cases you may have a dialogue that can be repeated multiple times. To make things more interesting, you can use variations `(` `)` to show a different message every time the dialogue is ran.
 
@@ -659,19 +653,17 @@ In some cases you may have a dialogue that can be repeated multiple times. To ma
 
 What are you doing here?
 
--- dialogue blocks
-
 (
    -
      I thought you were travelling!
      Far abroad.
    -
-     I though you were dead!
+     I thought you were dead!
      I know, how dark is that?.
 )
 ```
 
-There are a few different behaviours you can define for variations:
+There are a few different behaviours available for variations (`sequence`, `once`, `cycle`, `shuffle`):
 
 **sequence**(default): It will return each item once, and then it will stick to the last one.
 
@@ -692,7 +684,7 @@ For example, in the following block, the first time will return `Once`, second t
 **shuffle**: Randomize variations. Any of the previous options can be used in combination with shuffle. (`shuffle`, `shuffle sequence`, `shuffle once`, `shuffle cycle`).
 
 
-The following example will show each item in following random sequence. Once all items are shown, the sequence will be randomised again, and shown in a different order.
+The following example will show each item in following random sequence. Once all items are shown, the sequence will be randomised again, and return items in a different order.
 
 ```
 ( shuffle cycle
@@ -727,11 +719,11 @@ npc: How is the day today?
 something something
 ```
 
-### Logic, conditions, variables and events
+## Logic, conditions, variables and events
 
-Now that you know the basics, you can step up your branching game by using variables and conditions.
+Now that you know the basics, you can step up your branching game by using variables and conditions, inside logic blocks, defined by `{` and `}`.
 
-Logic blocks are defined by using `{` and `}`. There are three types of logic blocks: assignments, conditions, and triggers.
+Logic blocks may contain:
 
 
 **Logical operators:**: Equals `==` or `is`, Not equals: `!=` or `isnt`, Not: `!` or `not`, Greater, Less, etc: `>`, `<`, `>=`, `<=`.
@@ -742,8 +734,11 @@ Logic blocks are defined by using `{` and `}`. There are three types of logic bl
 
 **Literals**: Number (`100`, `1.5`), String (`"some text"`), Boolean (`true`, `false`), Null (`null`).
 
+**keywords**: `set`, `trigger`, `when`.
 
-#### Assignments
+There are three types of logic blocks: assignments, conditions, and triggers.
+
+### Assignments
 
 Besides setting external variables using the interpreter method, you can set variables internally with assignment blocks. Assignment blocks need to start with the `set` keyword. Here are some examples:
 
@@ -767,7 +762,7 @@ some text here { set is_happy = true, is_naughty = false, a = b, b = 2 }
 Regardless the position, the assignment will always be executed when the line is returned.
 
 
-#### Conditions
+### Conditions
 
 Conditions are used to control which lines should be shown. They do not require any special keyword, but you can optionally use `when` to explicitally show that the block is a condition. Examples:
 
@@ -810,7 +805,7 @@ some text here { something && a == b || b >= c && ! v }
 
 ```
 
-As you may have noticed, you can't mix assignments and conditions in the same block. Whowever, you can define multiple blocks in the same line, like this:
+As you may have noticed, you can't mix assignments and conditions in the same block. However, you can define multiple blocks in the same line, like this:
 
 ```
 say something { when not something } { set something = true }
@@ -833,7 +828,7 @@ say something { set something = true } { when something }
 
 ```
 
-#### triggers
+### triggers
 
 There may be cases where you'd want your game to be notified that something happened in your dialogue. There are two ways to achieve that: by triggering events or by observing variable changes.
 
@@ -864,22 +859,22 @@ dialogue.on(Clyde.VARIABLE_CHANGED, (name, value, previousValue) => {
 });
 ```
 
-#### Using variables in text
+### Using variables in text
 
-You can use values from variables in your text by referencing them with `%`.
+You can use values from variables in your text by referencing them with `%``%`.
 
 ```
 { set playerName = 'Vini' }
-Hello %playerName%! Long time no see.
+Hello, %playerName%! Long time no see.
 ```
 
-This should print `Hello Vini! Long time no see!`
+This should print `Hello, Vini! Long time no see!`
 
 This can be used with variables defined internally or externally.
 
-#### Special variables
+### Special variables
 
-##### OPTIONS_COUNT
+#### OPTIONS_COUNT
 
 `OPTIONS_COUNT` contains the number of options available in an option list.
 
@@ -899,5 +894,7 @@ In the example above, due to the conditional options, `OPTIONS_COUNT` is 2. If m
 
 ## Conclusion
 
-All examples in this readme can be run on the live [demo]().
+That's pretty much all features implemented. You can check the `/examples` folder for more examples.
+
+All examples in this page can be ran on the live [interpreter]().
 
