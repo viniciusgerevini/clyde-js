@@ -1,5 +1,5 @@
 {
-  "name": "clyde-interpreter-cli",
+  "name": "clyde-cli",
   "version": "0.1.0",
   "main": "./cjs/index.js",
   "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
@@ -11,7 +11,7 @@
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage"
   },
   "bin": {
-    "clyde-interpreter": "./src/cli.js"
+    "clyde": "./src/cli.js"
   },
   "dependencies": {
     "yargs": "^16.2.0"

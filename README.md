@@ -68,12 +68,9 @@ Besides that, you can use this editor also like a CLI tool, for compiling your f
 
 ###  Syntax highlighting
 
-I originally created the editor for the demo page, but I know no custom editor would be better than your editor of choice. With that in mind I created a couple of syntax highlighting plugins:
+I originally created the editor for the demo page, but I know no custom editor would be better than your editor of choice. With that in mind here are some syntax highlighting plugins:
 
-Vim/Neovim: [repo]().
-
-VSCode: [repo]().
-
+[Vim/Neovim](https://github.com/viniciusgerevini/clyde.vim) syntax highlighting.
 
 
 
