@@ -49,7 +49,7 @@ There are three Node libraries which can be used to play with this language:
 
 [clyde-interpreter](./interpreter): An interpreter that can be used by Node and web applications.
 
-[clyde-cli](./interpreter-cli): CLI tool for executing, parsing and debugging Clyde dialogues.
+[clyde-cli](./cli): CLI tool for executing, parsing and debugging Clyde dialogues.
 
 
 ### Clyde Godot plugin
