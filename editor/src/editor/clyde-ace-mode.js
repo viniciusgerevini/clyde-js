@@ -133,17 +133,17 @@ function ClydeHighlightRules() {
 
       { // Divert to end
         token : ["text", "keyword", "text", "support.constant"],
-        regex : /^(\s*)(->)(\s*)(END)$/
+        regex : /(\s*)(->)(\s*)(END)$/
       },
 
       { // Divert
         token : ["text", "keyword", "text", "variable"],
-        regex : /^(\s*)(->)(\s*)([a-zA-Z0-9_ ]+)$/
+        regex : /(\s*)(->)(\s*)([a-zA-Z0-9_ ]+)/
       },
 
       { // Divert to parent
-        token : ["text", "keyword"],
-        regex : /^(\s*)(<-)$/
+        token : ["text", "keyword", "text"],
+        regex : /(\s*)(<-)(\s*)/
       },
 
       { // Variations start
@@ -174,11 +174,11 @@ function ClydeHighlightRules() {
 
       { // Line
         token : ['variable', 'text', 'variable'],
-        regex: /((?:\s*[a-zA-Z0-9_]+:)?\s*)(".*")((?:\$[a-zA-Z0-9_]+)?)/,
+        regex: /((?:\s*[a-zA-Z0-9_] +:)?\s*)(".*")((?:\$[a-zA-Z0-9_]+)?)/,
       },
       { // Line
         token : ['variable', 'text', 'variable'],
-        regex: /((?:\s*[a-zA-Z0-9_]+:)?\s*)([^\r\n#${]+)((?:\$[a-zA-Z0-9_]+)?)/,
+        regex: /((?:\s*[a-zA-Z0-9_ ]+:)?\s*)([^\r\n#${]+)((?:\$[a-zA-Z0-9_]+)?)/,
       }
     ],
     logicBlock: [

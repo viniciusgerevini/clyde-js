@@ -14,7 +14,8 @@ export function createEmptyState() {
       lineWrap: false,
       useSoftTabs: true,
       showInvisibles: false,
-      scrollPastEnd: false
+      scrollPastEnd: false,
+      vimMode: false,
     }
   };
 }

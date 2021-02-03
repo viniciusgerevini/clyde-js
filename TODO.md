@@ -7,16 +7,13 @@ next:
     - option to break dialogue lines in multiline after n characters
 - desktop editor
 
-- [ ] language
+- [x] language
     - [x] parent divert in block does not work
     - [x] new parser
     - [x] escape in normal text ( i.e. `\:`)
     - [x] double quotes with empty string showing undefined message
     - [x] check this scenarios
-    - [ ] variations: all conditions not available causes infinite loop
-    - [ ] variable notifications, include previous value
-    - [ ] options_count using outdated resource
-    - [ ] returns previous value on variable event
+    - [x] returns previous value on variable event
 - [ ] editor interface
     - [x] main structure
     - [x] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
@@ -29,15 +26,14 @@ next:
     - [x] options menu: 'verbose, persistent, etc'
     - [x] scroll
     - [x] mouse support
-    - [ ] keyboard support
     - [x] dialog bubbles mode
-    - [ ] watch mode
     - [x] interpreter only view
-    - [ ] tabs? multi files open
     - [x] add file change notification in interpreter timeline
     - [ ] divert to uunkown block fails
     - [ ] select first block when not default lines defined
     - [ ] handle actionnode before condition node situation
+    - [ ] variations: all conditions not available causes infinite loop
+    - [ ] options_count using outdated resource
 - [ ] editor
     - [x] show invisibles
     - [ ] vim mode/ emacs mode
@@ -75,31 +71,27 @@ next:
     - [ ] autosave
     - [ ] new version notification
 - [ ]  desktop app
+    - [ ] tabs? multi files open
+    - [ ] watch mode
     - [ ] electron wrapper
     - [ ] start gui interpreter only `clyde -i file.clyde`
     - [ ] start gui editor: (load file in the editor)
+- [ ] CI
+    - [ ] run tests
+    - [ ] build script
+    - [ ] generate electron app on ci
+- [ ] Docs
+    - [x] usage docs
+    - [ ] examples
+    - [ ] README
+    - [ ] jsdoc
+    - [ ] d.ts file https://www.typescriptlang.org/docs/handbook/declaration-files/dts-from-js.html
+- [ ] Tooling
+    - [ ] Editor
+    - [x] interpreter: show lines
+    - [x] interpreter: interactive
+    - [ ] online interpreter/editor
+    - [x] Godot client / example
+    - [x] Godot importer
+    - [ ] Syntax file (VIM? VSCode?)
 
-### Docs
-- [ ] usage docs
-- [ ] examples
-- [ ] README
-- [ ] jsdoc
-- [ ] d.ts file https://www.typescriptlang.org/docs/handbook/declaration-files/dts-from-js.html
-
-
-### Tooling
-
-- [ ] Editor
-- [ ] CLI
-- [x] interpreter: show lines
-- [x] interpreter: interactive
-- [ ] online interpreter/editor
-- [ ] Godot client / example
-- [ ] C# client class
-- [x] Godot importer
-- [ ] Syntax file (VIM? VSCode?)
-
-### Clean up
-- run tests on CI
-- build script
-- generate electron app on ci

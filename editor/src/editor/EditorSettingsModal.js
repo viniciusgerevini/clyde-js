@@ -64,6 +64,13 @@ export default function EditorSettingsModal(props) {
     <label htmlFor="showInvisibles">Show invisibles</label>
     </Preference>
     <Preference>
+      <input type="checkBox"  name="vimMode"
+        onChange={update}
+        checked={preferences.vimMode}
+    />
+    <label htmlFor="vimMode">Enable vim mode</label>
+    </Preference>
+    <Preference>
       <input type="checkBox"  name="lineWrap"
         onChange={update}
         checked={preferences.lineWrap}

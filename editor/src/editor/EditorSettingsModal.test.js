@@ -10,7 +10,7 @@ describe('EditorSettingsModal component', () => {
     expect(getByText(/Editor preferences/i)).toBeInTheDocument();
   });
 
-  test.each([ 'highlightActiveLine', 'lineWrap', 'useSoftTabs', 'showInvisibles', 'scrollPastEnd' ])('update %s property', (property) => {
+  test.each([ 'highlightActiveLine', 'lineWrap', 'useSoftTabs', 'showInvisibles', 'scrollPastEnd', 'vimMode' ])('update %s property', (property) => {
     const updatePreferenceStub =jest.fn();
     const preferences = {};
     const { container } = render(<EditorSettingsModal preferences={preferences} updatePreference={updatePreferenceStub}/>);

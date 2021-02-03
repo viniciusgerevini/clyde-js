@@ -9,8 +9,7 @@ import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/theme-tomorrow_night_eighties";
 import "ace-builds/src-noconflict/theme-textmate";
 
-// import "ace-builds/src-noconflict/keybinding-vim";
-/* keyboardHandler='vim' */
+import "ace-builds/src-noconflict/keybinding-vim";
 
 import ClydeMode from './clyde-ace-mode';
 
@@ -60,6 +59,7 @@ export default function Editor({ defaultValue, setDocumentContent, notifyChange,
         fontSize={preferences.fontSize}
         tabSize={preferences.tabSize}
         debounceChangePeriod={1000}
+        keyboardHandler={preferences.vimMode ? 'vim' : undefined}
         highlightActiveLine={preferences.highlightActiveLine}
         setOptions={{
           showPrintMargin: false,
