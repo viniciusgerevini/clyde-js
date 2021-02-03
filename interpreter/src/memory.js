@@ -29,7 +29,7 @@ export function Memory(listeners, init) {
     },
 
     setVariable(id, value) {
-      listeners.triggerEvent(listeners.events.VARIABLE_CHANGED, { name: id, value });
+      listeners.triggerEvent(listeners.events.VARIABLE_CHANGED, { name: id, value, previousValue: mem.variables[id] });
       return mem.variables[id] = value;
     },
 

@@ -26,8 +26,10 @@ describe("Interpreter", () => {
       const content = parse('Hi!{ set something = 123 }\n');
       const dialogue = Interpreter(content);
 
+      dialogue.setVariable('something', 456);
+
       dialogue.on(dialogue.events.VARIABLE_CHANGED, (data) => {
-        expect(data).toEqual({ name:'something', value: 123 });
+        expect(data).toEqual({ name:'something', value: 123, previousValue: 456 });
         done();
       });
 
