@@ -13,7 +13,10 @@ next:
     - [x] escape in normal text ( i.e. `\:`)
     - [x] double quotes with empty string showing undefined message
     - [x] check this scenarios
-    - [ ] variations short symbols (~ ! )
+    - [ ] variations: all conditions not available causes infinite loop
+    - [ ] variable notifications, include previous value
+    - [ ] options_count using outdated resource
+    - [ ] returns previous value on variable event
 - [ ] editor interface
     - [x] main structure
     - [x] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample

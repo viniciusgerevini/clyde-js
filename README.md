@@ -1,33 +1,80 @@
 # Clyde
 
+Clyde is a language for writing game dialogues. It supports branching dialogues, translations and interfacing with your game through variables and events.
 
-## TODO
+It was heavily inspired by [Ink](https://github.com/inkle/ink), but it focus on dialogues instead of narratives.
 
-### Docs
-- [ ] usage docs
-- [ ] examples
-- [ ] README
-- [ ] jsdoc
-- [ ] d.ts file https://www.typescriptlang.org/docs/handbook/declaration-files/dts-from-js.html
+You can play with the online editor [here]().
+
+Here is a simple dialogue:
+```
+
+The Wolf:   Jimmie – lead the way, boys – get to work.
+Vincent:    A "please" would be nice.
+The Wolf:   Come again?
+Vincent:    I said a "please" would be nice.
+The Wolf:   Get it straight, Buster. I'm not here to
+            say "please."I'm here to tell you what to
+            do. And if self-preservation is an
+            instinct you possess, you better f****n'
+            do it and do it quick. I'm here to help.
+            If my help's not appreciated, lotsa luck
+            gentlemen.
+Jules:      It ain't that way, Mr. Wolf. Your help is
+            definitely appreciated.
+Vincent:    I don't mean any disrespect. I just don't
+            like people barkin' orders at me.
+The Wolf:   If I'm curt with you, it's because time is
+            a factor. I think fast, I talk fast, and I
+            need you guys to act fast if you want to
+            get out of this. So pretty please, with
+            sugar on top, clean the f****n' car.
+```
+This text would result in something like this:
+
+TODO add image link
+
+This is just a simple example. There are many features not included above, like branching, variations, tags and ids.
+
+You can read the complete language definition with examples on [LANGUAGE.md](./LANGUAGE.md).
+
+## Tools
+
+### Interpreters and parsers
+
+There are three Node libraries which can be used to play with the language:
+
+`clyde-parser`: Parses clyde strings to JSON, which can be read by interpreters. Check folder for more info [its folder]()
+
+`clyde-interpreter`: An interpreter that can be used by node and web applications. [More about it ]()
+
+`clyde-interpreter-cli`: A CLI command that can be used for parsing, testing and debugging dialogues. [More about it]()
 
 
-### Tooling
+### Godot plugin
 
-- [ ] Editor
-- [ ] CLI
-- [x] interpreter: show lines
-- [x] interpreter: interactive
-- [ ] interpreter: show diagram?
-- [ ] online interpreter/editor
-- [ ] Godot client / example
-- [ ] C# client class
-- [x] Godot importer
-- [ ] Syntax file (VIM? VSCode?)
+I've implemented a Godot plugin with importer and interpreter features. It was written completely in GDScript, so it does not require any external tool.
 
-### Clean up
-- run tests on CI
-- build script
-- generate electron app on ci
+Check this [repository]() for more information.
 
-### Extras Ideas
-- LSP
+
+### Standalone Editor and Interpreter
+
+There is a desktop version for the same editor/interpreter used in the [playground page]().
+
+The desktop version has a few extra features, such as saving direct to the disk and being able to watch files for changes. Check the [desktop folder]() for more information about features.
+
+Besides that, you can use this editor also like a CLI tool, for compiling your files.
+
+
+###  Syntax highlighting
+
+I originally created the editor for the demo page, but I know no custom editor would be better than your editor of choice. With that in mind I created a couple of syntax highlighting plugins:
+
+Vim/Neovim: [repo]().
+
+VSCode: [repo]().
+
+
+
+

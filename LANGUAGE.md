@@ -87,7 +87,7 @@ dialogue.choose(0);
 
 When in an options state, any call to `getContent()` will return the same options object, until a choice is made.
 
-Currently there are two interpreter implementations: a [JavaScript version](), and a [Godot's GDScript version](). Check the respective links for more details on how to use them. They expose similar interfaces, but there are some differences due to language standards and how each engine handles events and localisation.
+Currently there are two interpreter implementations: a [JavaScript version](), and a [Godot's GDScript version](https://github.com/viniciusgerevini/godot-clyde-dialogue). Check the respective links for more details on how to use them. They expose similar interfaces, but there are some differences due to language standards and how each engine handles events and localisation.
 
 
 ## Basics
@@ -343,7 +343,7 @@ Output
 { type: 'line', text: 'continue'}
 ```
 
-### Display only text
+### Display-only text
 
 As you may have noticed, everytime you choose an option, the option label is also returned as a line. You can set the first line as display only by using `[` and `]`
 
@@ -371,7 +371,7 @@ Output
 { type: 'line', text: 'nope'}
 ```
 
-### Options list title
+### Options list's title
 
 Depending on how you show your dialogue, your options list may lose its context. To prevent that, you can define titles for your option list by indenting its block.
 
@@ -401,9 +401,7 @@ Output
 
 ### Sticky options
 
-The option's default behaviour is to be removed from the list once used:
-// sticky options
-
+Option's default behaviour is to be removed from the list once used:
 
 ```
 * [ Option a ]
@@ -443,12 +441,10 @@ Output
 This is not always the desired behaviour. For that, you can use `+` for sticky options:
 
 ```
-* [ Option a ]
++ [ Option a ]
     A
 * [ Option b ]
     B
-+ [ None ]
-    Goodbye!
 
 ```
 
@@ -460,14 +456,13 @@ Output
     options: [
         { label: 'Option a' },
         { label: 'Option b' },
-        { label: 'None' }
     ]
 }
 
-// choose 2
+// choose 0
 
 // get content
-{ type: 'line', text: 'Goodbye'}
+{ type: 'line', text: 'A'}
 
 // restart dialogue
 
@@ -477,7 +472,6 @@ Output
     options: [
         { label: 'Option a' },
         { label: 'Option b' },
-        { label: 'None' }
     ]
 }
 
@@ -530,6 +524,8 @@ npc: I don't have time for this...
 // get content
 { type: 'line', speaker: 'npc', text: "That's too complex!" }
 ```
+
+Blocks also allow you to have multiple dialogues in the same file, and run them independently from each other.
 
 ### Divert to parent
 
@@ -640,7 +636,7 @@ The first option will continue to line `As I was saying...`. The second option w
 
 ## Variations
 
-In some cases you may have a dialogue that can be repeated multiple times. To make things more interesting, you can use variations `(` `)` to show a different message every time the dialogue is ran.
+In some cases you may have a dialogue that can be repeated multiple times. To make things more interesting, you can use variations `(` `)` to show a different message every time the dialogue is run.
 
 ```
 -- simple lines
@@ -684,7 +680,7 @@ For example, in the following block, the first time will return `Once`, second t
 **shuffle**: Randomize variations. Any of the previous options can be used in combination with shuffle. (`shuffle`, `shuffle sequence`, `shuffle once`, `shuffle cycle`).
 
 
-The following example will show each item in following random sequence. Once all items are shown, the sequence will be randomised again, and return items in a different order.
+The following example will show each item following a random sequence. Once all items are shown, the sequence will be randomised again, and it will return the items in a different order.
 
 ```
 ( shuffle cycle
@@ -707,7 +703,7 @@ npc: How is the day today?
         * no
    -
      npc2: Sunny
-     -> sunny days rumbling
+     -> sunny days rambling
    -
     ( shuffle
      - not to bad
@@ -715,13 +711,13 @@ npc: How is the day today?
     )
 )
 
-== sunny days rumbling
+== sunny days rambling
 something something
 ```
 
 ## Logic, conditions, variables and events
 
-Now that you know the basics, you can step up your branching game by using variables and conditions, inside logic blocks, defined by `{` and `}`.
+Now that you know the basics, you can step up your branching game by using variables and conditions with logic blocks, defined by `{` and `}`.
 
 Logic blocks may contain:
 
@@ -730,11 +726,11 @@ Logic blocks may contain:
 
 **Math operators**: sum `+`, subtract `-`,  multiply `*`, divide `/`,  power `^`,  modulo/remainder `%`.
 
-**Assignment operators**: assign `=`, sum `+=`, subtract `-=`, multiply `*=`, divide `/=`, modulo `%=` and power `^=`.
+**Assignment operators**: assign `=`, sum `+=`, subtract `-=`, multiply `*=`, divide `/=`, power `^=` and modulo `%=`.
 
 **Literals**: Number (`100`, `1.5`), String (`"some text"`), Boolean (`true`, `false`), Null (`null`).
 
-**keywords**: `set`, `trigger`, `when`.
+**Keywords**: `set`, `trigger`, `when`.
 
 There are three types of logic blocks: assignments, conditions, and triggers.
 
@@ -814,21 +810,21 @@ say something { when not something } { set something = true }
 Just be aware that order matters. i.e.
 
 ```
--- Condition is checked before assignment. This line wont appear.
+-- Condition is checked before assignment. This line won't be returned.
 say something { when something } { set something = true }
 
--- Condition is checked after assignment. This line will appear.
+-- Condition is checked after assignment. This line will be returned.
 say something { set something = true } { when something }
 
--- Condition is checked before assignment. This line wont appear.
+-- Condition is checked before assignment.  This line won't be returned.
 { when something }  say something { set something = true }
 
--- Condition is checked after assignment. This line will appear.
+-- Condition is checked after assignment. This line will be returned.
 { set something = true } say something { when something }
 
 ```
 
-### triggers
+### Triggers
 
 There may be cases where you'd want your game to be notified that something happened in your dialogue. There are two ways to achieve that: by triggering events or by observing variable changes.
 
@@ -861,7 +857,7 @@ dialogue.on(Clyde.VARIABLE_CHANGED, (name, value, previousValue) => {
 
 ### Using variables in text
 
-You can use values from variables in your text by referencing them with `%``%`.
+You can use values from variables in your text by referencing them with `%` `%`.
 
 ```
 { set playerName = 'Vini' }
@@ -896,5 +892,5 @@ In the example above, due to the conditional options, `OPTIONS_COUNT` is 2. If m
 
 That's pretty much all features implemented. You can check the `/examples` folder for more examples.
 
-All examples in this page can be ran on the live [interpreter]().
+All examples in this page are valid dialogues that can be run on the live [interpreter]().
 
