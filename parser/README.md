@@ -28,3 +28,15 @@ Harry: I'm a what?
     blocks: []
 }
 ```
+
+## Instalation
+
+```shell
+
+npm install clyde-parser
+
+# or
+
+yarn add clyde-parser
+
+```

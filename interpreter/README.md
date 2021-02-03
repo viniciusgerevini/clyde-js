@@ -42,3 +42,11 @@ dialogue.getContent()
 
 // response: { type: 'line', text: 'Yer a wizard', speaker: 'Hagrid }
 ```
+
+## Instalation
+
+```shell
+npm install clyde-interpreter
+# or
+yarn add clyde-interpreter
+```

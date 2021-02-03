@@ -43,27 +43,25 @@ You can read the complete language definition with examples on [LANGUAGE.md](./L
 
 ### Interpreters and parsers
 
-There are three Node libraries which can be used to play with the language:
+There are three Node libraries which can be used to play with this language:
 
-`clyde-parser`: Parses clyde strings to JSON, which can be read by interpreters. Check folder for more info [its folder]()
+[clyde-parser](./parser): Parses Clyde strings to JSON.
 
-`clyde-interpreter`: An interpreter that can be used by node and web applications. [More about it ]()
+[clyde-interpreter](./interpreter): An interpreter that can be used by Node and web applications.
 
-`clyde-interpreter-cli`: A CLI command that can be used for parsing, testing and debugging dialogues. [More about it]()
+[clyde-cli](./interpreter-cli): CLI tool for executing, parsing and debugging Clyde dialogues.
 
 
-### Godot plugin
+### Clyde Godot plugin
 
-I've implemented a Godot plugin with importer and interpreter features. It was written completely in GDScript, so it does not require any external tool.
-
-Check this [repository]() for more information.
+Godot plugin with importer and interpreter features. It was written completely in GDScript, so it does not require any external dependency. More information in its [repository](https://github.com/viniciusgerevini/godot-clyde-dialogue).
 
 
 ### Standalone Editor and Interpreter
 
 There is a desktop version for the same editor/interpreter used in the [playground page]().
 
-The desktop version has a few extra features, such as saving direct to the disk and being able to watch files for changes. Check the [desktop folder]() for more information about features.
+The desktop version has a few extra features, such as saving direct to the disk and being able to watch files for changes. Check the [desktop folder](./desktop) for more information about features.
 
 Besides that, you can use this editor also like a CLI tool, for compiling your files.
 

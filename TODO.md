@@ -55,6 +55,7 @@ next:
     - [ ] search
     - [ ] persist preferences
     - [ ] download result file
+    - [ ] fix syntax: speaker with spaces, -> diverts <-
 - [ ] translator
     - [ ] generate ids buttom
     - [ ] translation editor
