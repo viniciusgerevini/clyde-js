@@ -30,11 +30,12 @@ The Wolf:   If I'm curt with you, it's because time is
             get out of this. So pretty please, with
             sugar on top, clean the f****n' car.
 ```
-This text would result in something like this:
+This dialogue results in something like this:
 
-TODO add image link
+![Clyde interpreted dialogue sample](clyde_readme_sample.png "Clyde dialogue sample")
 
-This is just a simple example. There are many features not included above, like branching, variations, tags and ids.
+
+This is just a simple example. There are many features not included above like branching, variations, tags and ids.
 
 You can read the complete language definition with examples on [LANGUAGE.md](./LANGUAGE.md).
 
