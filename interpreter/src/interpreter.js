@@ -327,26 +327,35 @@ export function Interpreter(doc, data, dictionary = {}) {
 
   const getVisibleOptions = (options) => {
     return options.content
-      .map((option, index) => {
-        if (!option._index) {
-          option._index = generateIndex() * 100 + index;
-        }
-        if (option.type === 'conditional_content') {
-          option.content._index = option._index;
-          if (logic.checkCondition(option.conditions)) {
-            return option.content;
-          }
-          return;
-        }
-        if (option.type === 'action_content') {
-          option.content._index = option._index;
-          option.mode = option.content.mode;
-        }
-        return option;
-      })
+      .map(prepareOption)
       .filter((t) => {
         return t && !(t.mode === 'once' && mem.wasAlreadyAccessed(t._index));
       });
+  };
+
+  const prepareOption = (option, index) => {
+    if (!option._index) {
+      option._index = generateIndex() * 100 + index;
+    }
+
+    if (option.type === 'conditional_content') {
+      option.content._index = option._index;
+      if (logic.checkCondition(option.conditions)) {
+        return prepareOption(option.content, index)
+      }
+      return;
+    }
+
+    if (option.type === 'action_content') {
+      option.content._index = option._index;
+      option.mode = option.content.mode;
+      const content = prepareOption(option.content, index);
+      if (!content) {
+        return
+      }
+      return option;
+    }
+    return option;
   };
 
   const translateText = (text, id) => {

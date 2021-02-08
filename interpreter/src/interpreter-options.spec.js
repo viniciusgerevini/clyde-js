@@ -245,5 +245,27 @@ hey
     expect(dialogue.getContent().text).toEqual('hey you');
     expect(dialogue.getContent().text).toEqual('hey');
   });
+
+  it('validates condition when lines has condition and assignment', () => {
+    const content = parse(`
+Hey hey
+speaker: hello
+      * { not something } a { set something = true }
+      * b { when not something }
+      * { set something = 2 } c  { when a == 42 }
+hey
+`);
+    const dialogue = Interpreter(content);
+
+    expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
+    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }] });
+    dialogue.choose(0);
+    expect(dialogue.getContent().text).toEqual('a');
+    dialogue.start();
+    expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
+    expect(dialogue.getContent()).toEqual({ type: 'line', text: 'hey' });
+    expect(dialogue.getVariable('something')).toEqual(true);
+  });
+
 });
 
