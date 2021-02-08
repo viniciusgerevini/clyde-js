@@ -327,12 +327,15 @@ export default function parse(doc) {
     let lines = [];
     let mainItem;
     let useFirstLineAsDisplayOnly = false;
+    let root;
     let wrapper;
 
     consume(acceptableNext);
 
     if (currentToken.token === TOKENS.BRACE_OPEN) {
-      wrapper = LogicBlock();
+      const block = NestedLogicBlocks();
+      root = block.root;
+      wrapper = block.wrapper;
       consume(acceptableNext);
     }
 
@@ -357,11 +360,16 @@ export default function parse(doc) {
 
     if (peek([TOKENS.BRACE_OPEN])) {
       consume([TOKENS.BRACE_OPEN]);
-      if (wrapper) {
-        wrapper.content = LogicBlock();
+      const block = NestedLogicBlocks();
+
+      if (!root) {
+        root = block.root;
+        wrapper = block.wrapper;
       } else {
-        wrapper = LogicBlock();
+        wrapper.content = block.wrapper;
+        wrapper = block.wrapper;
       }
+
       consume([TOKENS.LINE_BREAK]);
     }
 
@@ -386,17 +394,33 @@ export default function parse(doc) {
       mainItem.tags,
     );
 
-    if (wrapper) {
-      if (wrapper.content) {
-        wrapper.content.content = node;
-      } else {
-        wrapper.content = node;
-      }
-      return wrapper;
+    if (root) {
+      wrapper.content = node;
+      return root;
     }
 
     return node;
   }
+
+  const NestedLogicBlocks = () => {
+    let root
+    let wrapper
+    while (currentToken.token === TOKENS.BRACE_OPEN) {
+      if (!root) {
+        root = LogicBlock();
+        wrapper = root;
+      } else {
+        let next = LogicBlock();
+        wrapper.content = next;
+        wrapper = next;
+      }
+      if (peek([TOKENS.BRACE_OPEN])) {
+        consume([TOKENS.BRACE_OPEN]);
+      }
+    }
+    return { root, wrapper };
+  };
+
 
   const Divert = () => {
     consume([ TOKENS.DIVERT, TOKENS.DIVERT_PARENT ]);
