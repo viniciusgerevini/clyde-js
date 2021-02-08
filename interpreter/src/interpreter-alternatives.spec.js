@@ -3,7 +3,7 @@ import { Interpreter } from './interpreter';
 
 describe("Interpreter: variations", () => {
   it('sequence: show variations in sequence and return the last one when all used', () => {
-    const content = parse(`(\n - Hello!\n - Hi!\n - Hey!\n)\nYep!\n`);
+    const content = parse(`(sequence\n - Hello!\n - Hi!\n - Hey!\n)\nYep!\n`);
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent().text).toEqual('Hello!');
@@ -109,7 +109,7 @@ describe("Interpreter: variations", () => {
   });
 
   it('works with conditional variations', () => {
-    const content = parse(`( \n - Hello!\n - { someVar } Hi!\n - Hey!\n)\nYep!\n`);
+    const content = parse(`( sequence\n - Hello!\n - { someVar } Hi!\n - Hey!\n)\nYep!\n`);
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent().text).toEqual('Hello!');

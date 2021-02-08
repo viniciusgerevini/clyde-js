@@ -15,7 +15,7 @@ describe('variations', () => {
       content: [{
         type: 'content',
         content: [
-          { type: 'variations', mode: 'sequence', content: [
+          { type: 'variations', mode: 'cycle', content: [
               { type: 'content', content: [ { type: 'line', value: 'yes' }, ], },
               { type: 'content', content: [ { type: 'line', value: 'no' }, ], },
           ],},
@@ -41,7 +41,7 @@ describe('variations', () => {
       content: [{
         type: 'content',
         content: [
-          { type: 'variations', mode: 'sequence', content: [
+          { type: 'variations', mode: 'cycle', content: [
               { type: 'content', content: [ { type: 'line', value: 'yes' }, ], },
               { type: 'content', content: [ { type: 'line', value: 'no' }, ], },
           ],},
@@ -70,11 +70,11 @@ describe('variations', () => {
       content: [{
         type: 'content',
         content: [
-          { type: 'variations', mode: 'sequence', content: [
+          { type: 'variations', mode: 'cycle', content: [
               { type: 'content', content: [ { type: 'line', value: 'yes' }, ], },
               { type: 'content', content: [ { type: 'line', value: 'no' }, ], },
               { type: 'content', content: [
-                { type: 'variations', mode: 'sequence', content: [
+                { type: 'variations', mode: 'cycle', content: [
                     { type: 'content', content: [ { type: 'line', value: 'nested 1' }, ], },
                 ],},
               ], },
@@ -145,7 +145,7 @@ describe('variations', () => {
       content: [{
         type: 'content',
         content: [
-          { type: 'variations', mode: 'sequence', content: [
+          { type: 'variations', mode: 'cycle', content: [
             { type: 'content', content: [
               { type: 'options', content: [
                 { type: 'option', name: 'works?', mode: 'once', content: {

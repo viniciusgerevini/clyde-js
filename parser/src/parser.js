@@ -411,7 +411,7 @@ export default function parse(doc) {
   };
 
   const Variations = () => {
-    const variations = VariationsNode('sequence');
+    const variations = VariationsNode('cycle');
 
     if (peek([TOKENS.VARIATIONS_MODE])) {
       const mode = consume([TOKENS.VARIATIONS_MODE]);

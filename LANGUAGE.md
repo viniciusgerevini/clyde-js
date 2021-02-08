@@ -101,7 +101,7 @@ To ignore a line you can use `--`.
 -- this line is ignored
 this line isn't
 ```
-output:
+Output:
 
 ```javascript
 // get content
@@ -253,7 +253,7 @@ Output:
 { type: 'line', text: 'continue'}
 ```
 
-### It may contain multilines:
+### It may contain multiple lines:
 ```
 * I need to think about that
     some line
@@ -655,13 +655,15 @@ What are you doing here?
      Far abroad.
    -
      I thought you were dead!
-     I know, how dark is that?.
+     I know! How dark is that?.
 )
 ```
 
 There are a few different behaviours available for variations (`sequence`, `once`, `cycle`, `shuffle`):
 
-**sequence**(default): It will return each item once, and then it will stick to the last one.
+**cycle**(default): This option returns each item and, when reaching the end, starts again from the begining.
+
+**sequence**: It will return each item once, and then it will stick to the last one.
 
 For example, in the following block, the first time will return `Once`, second time `Twice` and every other call after that it will return `I lost count...`.
 
@@ -674,8 +676,6 @@ For example, in the following block, the first time will return `Once`, second t
 ```
 
 **once**: Return each item in sequence only once. Using the previous example, after `I lost count...` is shown, the next dialogue calls will not return any of those lines anymore, skipping straight to the next line in the dialogue.
-
-**cycle**: This option works like `sequence`, but it starts the list again once it reaches the end.
 
 **shuffle**: Randomize variations. Any of the previous options can be used in combination with shuffle. (`shuffle`, `shuffle sequence`, `shuffle once`, `shuffle cycle`).
 

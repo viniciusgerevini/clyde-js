@@ -1,4 +1,4 @@
-# Clyde
+# Clyde - Dialogue Language
 
 Clyde is a language for writing game dialogues. It supports branching dialogues, translations and interfacing with your game through variables and events.
 
