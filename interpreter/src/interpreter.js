@@ -406,7 +406,7 @@ export function Interpreter(doc, data, dictionary = {}) {
     getVariable(name) {
       return mem.getVariable(name);
     },
-    begin(blockName) {
+    start(blockName) {
       if (blockName) {
         initializeStack(anchors[blockName]);
       } else {

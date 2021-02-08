@@ -76,7 +76,7 @@ export default function InterpreterToolbar(properties) {
   const selectBlock = (blockName) => {
     setBlock(blockName);
     clearTimeline();
-    dialogue.begin(blockName);
+    dialogue.start(blockName);
   };
 
   const toggleMenu = () => {
@@ -120,7 +120,7 @@ export default function InterpreterToolbar(properties) {
   };
 
   const restart = () => {
-    dialogue.begin(currentBlock);
+    dialogue.start(currentBlock);
     clearTimeline();
   };
 
@@ -152,7 +152,7 @@ export default function InterpreterToolbar(properties) {
   const cleanMemory = () => {
     dialogue.clearData();
     addDialogueLine({ type: 'INTERPRETER_INFO', text: 'Memory cleared'})
-    dialogue.begin(currentBlock);
+    dialogue.start(currentBlock);
     clearEvents();
     clearTimeline();
   };

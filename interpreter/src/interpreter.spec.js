@@ -180,14 +180,14 @@ replace $ghi
       const content = parse(`Hello $abc\n`);
       const dialogue = Interpreter(content, undefined);
       expect(dialogue.getContent().text).toEqual('Hello');
-      dialogue.begin();
+      dialogue.start();
       dialogue.loadDictionary(dictionaryFR);
       expect(dialogue.getContent().text).toEqual('Bonjour');
-      dialogue.begin();
+      dialogue.start();
       dialogue.loadDictionary(dictionaryES);
       expect(dialogue.getContent().text).toEqual('Hola');
 
-      dialogue.begin();
+      dialogue.start();
       dialogue.loadDictionary(dictionaryPT);
       expect(dialogue.getContent().text).toEqual('Olá');
     });

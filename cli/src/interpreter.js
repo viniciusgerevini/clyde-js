@@ -14,7 +14,7 @@ export async function executeInterpreter(args, exitCallback = process.exit, comm
   const dialogue = Interpreter(getContent(filename), data, dictionary);
   const handlers = inputHandlers(dialogue, argv, events, exitCallback);
 
-  dialogue.begin(argv.block);
+  dialogue.start(argv.block);
 
   dialogue.on(dialogue.events.VARIABLE_CHANGED, trackInternalChanges('variable', events));
   dialogue.on(dialogue.events.EVENT_TRIGGERED, trackInternalChanges('event', events));
@@ -65,7 +65,7 @@ const inputHandlers = (dialogue, args, events, exitCallback) => {
     restart: () => {
       saveIfRequired();
       currentOptions = undefined;
-      dialogue.begin(argv.block);
+      dialogue.start(argv.block);
       this.default();
     },
     default: (input) => {

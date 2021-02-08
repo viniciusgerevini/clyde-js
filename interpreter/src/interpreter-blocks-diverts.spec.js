@@ -16,17 +16,17 @@ describe("Interpreter: blocks and diverts", () => {
       const content = parse('Hello!\nHi there.\n== some_block\nHello from the block!\n== some_other_block\nHello from the other block!\n');
       const dialogue = Interpreter(content);
 
-      dialogue.begin('some_block');
+      dialogue.start('some_block');
 
       expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hello from the block!' });
       expect(dialogue.getContent()).toEqual(undefined);
 
-      dialogue.begin('some_other_block');
+      dialogue.start('some_other_block');
 
       expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hello from the other block!' });
       expect(dialogue.getContent()).toEqual(undefined);
 
-      dialogue.begin();
+      dialogue.start();
 
       expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hello!' });
       expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hi there.' });
@@ -48,7 +48,7 @@ this is another block
 `);
       const dialogue = Interpreter(content);
 
-      dialogue.begin();
+      dialogue.start();
 
       expect(dialogue.getContent().text).toEqual('Hello!');
       expect(dialogue.getContent().text).toEqual("Let's go to another block");
@@ -70,7 +70,7 @@ this is another block
 `);
       const dialogue = Interpreter(content);
 
-      dialogue.begin();
+      dialogue.start();
 
       expect(dialogue.getContent().text).toEqual('Hello!');
       expect(dialogue.getContent().text).toEqual("Let's go to another block");
@@ -100,7 +100,7 @@ no a!
 `);
       const dialogue = Interpreter(content);
 
-      dialogue.begin();
+      dialogue.start();
 
       expect(dialogue.getContent().text).toEqual('Hello!');
       expect(dialogue.getContent().name).toEqual("question");
@@ -132,7 +132,7 @@ no a!
 `);
       const dialogue = Interpreter(content);
 
-      dialogue.begin();
+      dialogue.start();
 
       expect(dialogue.getContent().text).toEqual('Hello!');
       expect(dialogue.getContent().name).toEqual("question");
@@ -150,7 +150,7 @@ this will never be seeing
 `);
       const dialogue = Interpreter(content);
 
-      dialogue.begin();
+      dialogue.start();
 
       expect(dialogue.getContent().text).toEqual('Hello!');
       expect(dialogue.getContent()).toEqual(undefined);
@@ -164,7 +164,7 @@ Hello!
 `);
       const dialogue = Interpreter(content);
 
-      dialogue.begin();
+      dialogue.start();
 
       expect(dialogue.getContent().text).toEqual('Hello!');
       expect(dialogue.getContent()).toEqual(undefined);

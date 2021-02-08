@@ -22,7 +22,7 @@ Even though this document is focused on the language itself, I think it's a good
 const dialogue = Interpreter(dialogueDocument);
 
 // Start or restart the dialogue from the begining. Optional when no block provided.
-dialogue.begin(blockName);
+dialogue.start(blockName);
 
 // Listen to events (variable changed, event triggered)
 dialogue.on(eventName, callback);

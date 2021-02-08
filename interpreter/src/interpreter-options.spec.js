@@ -25,7 +25,7 @@ describe("Interpreter: options", () => {
     expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'bb' });
     expect(dialogue.getContent()).toEqual(undefined);
 
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ label: 'a' }, { label: 'c' } ] });
     dialogue.choose(1)
 
@@ -33,7 +33,7 @@ describe("Interpreter: options", () => {
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'cb' });
     expect(dialogue.getContent()).toEqual(undefined);
 
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ label: 'a' }, { label: 'c' } ] });
 
     dialogue.choose(0)
@@ -51,21 +51,21 @@ describe("Interpreter: options", () => {
     expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'b 2' });
     expect(dialogue.getContent()).toEqual(undefined);
 
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' }, { label: 'c 2 left' } ] });
     dialogue.choose(0);
 
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'a 1' });
     expect(dialogue.getContent()).toEqual(undefined);
 
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'c 1 left' } ] });
 
     dialogue.choose(0);
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'c 0' });
     expect(dialogue.getContent()).toEqual(undefined);
 
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent()).toEqual(undefined);
   });
 
@@ -222,7 +222,7 @@ hey
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }] });
     dialogue.choose(0);
     expect(dialogue.getContent().text).toEqual('a');
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'hey' });
   });

@@ -9,17 +9,17 @@ describe("Interpreter: variations", () => {
     expect(dialogue.getContent().text).toEqual('Hello!');
     expect(dialogue.getContent().text).toEqual('Yep!');
 
-    dialogue.begin();
+    dialogue.start();
 
     expect(dialogue.getContent().text).toEqual('Hi!');
     expect(dialogue.getContent().text).toEqual('Yep!');
 
-    dialogue.begin();
+    dialogue.start();
 
     expect(dialogue.getContent().text).toEqual('Hey!');
     expect(dialogue.getContent().text).toEqual('Yep!');
 
-    dialogue.begin();
+    dialogue.start();
 
     expect(dialogue.getContent().text).toEqual('Hey!');
     expect(dialogue.getContent().text).toEqual('Yep!');
@@ -30,13 +30,13 @@ describe("Interpreter: variations", () => {
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent().text).toEqual('Hello!');
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent().text).toEqual('Hi!');
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent().text).toEqual('Hey!');
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent().text).toEqual('Hello!');
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent().text).toEqual('Hi!');
   });
 
@@ -45,13 +45,13 @@ describe("Interpreter: variations", () => {
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent().text).toEqual('Hello!');
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent().text).toEqual('Hi!');
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent().text).toEqual('Hey!');
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent().text).toEqual('end');
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent().text).toEqual('end');
   });
 
@@ -61,12 +61,12 @@ describe("Interpreter: variations", () => {
 
     let usedOptions = [];
     for (let _i in [0, 1, 2]) {
-      dialogue.begin();
+      dialogue.start();
       const option = dialogue.getContent().text
       expect(usedOptions).not.toContain(option);
       usedOptions.push(option);
     }
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent().text).toEqual(usedOptions[2]);
     expect(usedOptions.join(',')).not.toEqual('Hello!,Hi!,Hey');
   });
@@ -77,12 +77,12 @@ describe("Interpreter: variations", () => {
 
     let usedOptions = [];
     for (let _i in [0, 1, 2]) {
-      dialogue.begin();
+      dialogue.start();
       const option = dialogue.getContent().text
       expect(usedOptions).not.toContain(option);
       usedOptions.push(option);
     }
-    dialogue.begin();
+    dialogue.start();
     expect(dialogue.getContent().text).toEqual('end');
   });
 
@@ -93,14 +93,14 @@ describe("Interpreter: variations", () => {
     let usedOptions = [];
     let secondRunUsedOptions = [];
     for (let _i in [0, 1, 2]) {
-      dialogue.begin();
+      dialogue.start();
       const option = dialogue.getContent().text
       expect(usedOptions).not.toContain(option);
       usedOptions.push(option);
     }
 
     for (let _i in [0, 1, 2]) {
-      dialogue.begin();
+      dialogue.start();
       const option = dialogue.getContent().text
       expect(secondRunUsedOptions).not.toContain(option);
       secondRunUsedOptions.push(option);
@@ -109,18 +109,18 @@ describe("Interpreter: variations", () => {
   });
 
   it('works with conditional variations', () => {
-    const content = parse(`( sequence\n - Hello!\n - { someVar } Hi!\n - Hey!\n)\nYep!\n`);
+    const content = parse(`(sequence \n - Hello!\n - { someVar } Hi!\n - Hey!\n)\nYep!\n`);
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent().text).toEqual('Hello!');
     expect(dialogue.getContent().text).toEqual('Yep!');
 
-    dialogue.begin();
+    dialogue.start();
 
     expect(dialogue.getContent().text).toEqual('Hey!');
     expect(dialogue.getContent().text).toEqual('Yep!');
 
-    dialogue.begin();
+    dialogue.start();
 
     expect(dialogue.getContent().text).toEqual('Hey!');
     expect(dialogue.getContent().text).toEqual('Yep!');
@@ -133,11 +133,11 @@ describe("Interpreter: variations", () => {
     let usedOptions = [];
     let secondRunUsedOptions = [];
     for (let _i in [0, 1, 2]) {
-      dialogue.begin();
+      dialogue.start();
       usedOptions.push(dialogue.getContent().text);
     }
     for (let _i in [0, 1, 2]) {
-      dialogue.begin();
+      dialogue.start();
       secondRunUsedOptions.push(dialogue.getContent().text);
     }
     expect(usedOptions).toContain('Hello!');

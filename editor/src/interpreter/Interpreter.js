@@ -72,7 +72,7 @@ export default function Interpreter(p) {
       setLastContent(content);
       dialogue = ClydeInterpreter(doc);
       if (currentBlock) {
-        dialogue.begin(currentBlock);
+        dialogue.start(currentBlock);
         setBlock(currentBlock);
       }
       setDialogue(dialogue);

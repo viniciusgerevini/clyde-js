@@ -32,9 +32,9 @@ next:
     - [x] add file change notification in interpreter timeline
     - [ ] select first block when not default lines defined
 - [ ] interpreter
-    - [ ] handle actionnode before condition node situation (already fixed in GD)
+    - [x] handle actionnode before condition node situation (already fixed in GD)
     - [ ] variations: all conditions not available causes infinite loop
-    - [ ] varyations: use cycle as default mode
+    - [x] varyations: use cycle as default mode
     - [ ] options_count using outdated resource
     - [ ] divert to uunkown block fails
     - [ ] rename beging / start to
@@ -55,7 +55,7 @@ next:
     - [ ] search
     - [ ] persist preferences
     - [ ] download result file
-    - [ ] fix syntax: speaker with spaces, -> diverts <-
+    - [x] fix syntax: speaker with spaces, -> diverts <-
 - [ ] translator
     - [ ] generate ids buttom
     - [ ] translation editor
