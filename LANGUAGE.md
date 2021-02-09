@@ -479,7 +479,7 @@ Output
 
 ### Fallback options
 
-A fallback option ('>') is an option that is executed automatically when there is no other option available. When more than one option available, it behaves like a sticky option.
+A fallback option (`>`) is an option that is executed automatically when there is no other option available. When more than one option is available, it behaves like a sticky option.
 
 ```
 * [ Let's talk about it.]
@@ -702,10 +702,10 @@ There are a few different behaviours available for variations (`sequence`, `once
 
 **sequence**: It will return each item once, and then it will stick to the last one.
 
-For example, in the following block, the first time will return `Once`, second time `Twice` and every other call after that it will return `I lost count...`.
+For example, in the following block, the first time will return `Once`, second time `Twice` and every other call after that will return `I lost count...`.
 
 ```
-(
+( sequence
    - Once
    - Twice
    - I lost count...
