@@ -143,5 +143,12 @@ describe("Interpreter: variations", () => {
     expect(usedOptions).toContain('Hello!');
     expect(secondRunUsedOptions).not.toContain('Hello!');
   });
+
+  it('skip when no condition met', () => {
+    const content = parse(`(\n - { a } A\n -  { b } B\n)\nend\n`);
+    const dialogue = Interpreter(content);
+
+    expect(dialogue.getContent().text).toContain('end');
+  });
 });
 

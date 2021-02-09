@@ -235,7 +235,7 @@ export function Interpreter(doc, data, dictionary = {}) {
     return handleNextNode(stackHead().current);
   };
 
-  const handleVariations = (variations) => {
+  const handleVariations = (variations, attempt = 0 ) => {
     if (!variations._index) {
       variations._index = generateIndex();
       variations.content.forEach((c, index) => {
@@ -245,13 +245,13 @@ export function Interpreter(doc, data, dictionary = {}) {
 
     const next = variationHandlers[variations.mode](variations);
 
-    if (next === -1) {
+    if (next === -1 || attempt > variations.content.length) {
       return handleNextNode(stackHead().current);
     }
 
     if (variations.content[next].content.length === 1 && variations.content[next].content[0].type === 'conditional_content') {
       if (!logic.checkCondition(variations.content[next].content[0].conditions)) {
-        return handleVariations(variations);
+        return handleVariations(variations, attempt + 1);
       }
     }
 
