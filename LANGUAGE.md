@@ -223,7 +223,7 @@ Output:
 
 ### Options (a.k.a branches)
 
-To define options or branches you can use `*` (single use) or `+` (sticky).
+To define options or branches you can use `*` (single use), `+` (sticky) or `>` (fallback).
 
 #### Your options may be single lines:
 ```
@@ -476,6 +476,43 @@ Output
 }
 
 ```
+
+### Fallback options
+
+A fallback option ('>') is an option that is executed automatically when there is no other option available. When more than one option available, it behaves like a sticky option.
+
+```
+* [ Let's talk about it.]
+    A
+> [ That's all for today. ]
+    B
+
+```
+
+Output
+```javascript
+// get content
+{
+    type: 'options',
+    options: [
+        { label: "Let's talk about it." },
+        { label: "That's all for today." },
+    ]
+}
+
+// choose 0
+
+// get content
+{ type: 'line', text: 'A'}
+
+// restart dialogue
+
+// get content
+{ type: 'line', text: 'B'}
+
+```
+In the example above, after the first option is used, the only option remaining is a fallback option. The next time content is requested the fallback option's content is returned without the need of selecting the option.
+
 
 ### Blocks and Diverts
 

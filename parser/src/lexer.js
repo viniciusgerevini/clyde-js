@@ -4,11 +4,11 @@ export const TOKENS = {
   DEDENT: 'DEDENT',
   OPTION: 'OPTION',
   STICKY_OPTION: 'STICKY_OPTION',
+  FALLBACK_OPTION: 'FALLBACK_OPTION',
   SQR_BRACKET_OPEN: 'SQR_BRACKET_OPEN',
   SQR_BRACKET_CLOSE: 'SQR_BRACKET_CLOSE',
   BRACKET_OPEN: 'BRACKET_OPEN',
   BRACKET_CLOSE: 'BRACKET_CLOSE',
-  // QUOTE: '"',
   EOF: 'EOF',
   SPEAKER: 'SPEAKER',
   LINE_ID: 'LINE_ID',
@@ -67,11 +67,11 @@ const tokenFriendlyHint = {
   [TOKENS.DEDENT]: 'DEDENT',
   [TOKENS.OPTION]: '*',
   [TOKENS.STICKY_OPTION]: '+',
+  [TOKENS.FALLBACK_OPTION]: '>',
   [TOKENS.SQR_BRACKET_OPEN]: '[',
   [TOKENS.SQR_BRACKET_CLOSE]: ']',
   [TOKENS.BRACKET_OPEN]: '(',
   [TOKENS.BRACKET_CLOSE]: ')',
-  // [TOKENS.QUOTE]: '"',
   [TOKENS.EOF]: 'EOF',
   [TOKENS.SPEAKER]: '<speaker name>:',
   [TOKENS.LINE_ID]: '$id',
@@ -271,9 +271,16 @@ export function tokenize(input) {
     }
   };
 
+  const optionTypes = {
+    '*': TOKENS.OPTION,
+    '+': TOKENS.STICKY_OPTION,
+    '>': TOKENS.FALLBACK_OPTION,
+  };
+
   // handle options
   const handleOption = () => {
-    const token = input[position] === '*' ? TOKENS.OPTION : TOKENS.STICKY_OPTION;
+    const token = optionTypes[input[position]];
+
     const initialColumn = column;
     column += 1;
     position += 1;
@@ -715,7 +722,7 @@ export function tokenize(input) {
       return handleVariationItem();
     }
 
-    if (input[position] === '*' || input[position] === '+') {
+    if (input[position] === '*' || input[position] === '+'|| input[position] === '>') {
       return handleOption();
     }
 

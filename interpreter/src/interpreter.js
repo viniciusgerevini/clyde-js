@@ -211,6 +211,11 @@ export function Interpreter(doc, data, dictionary = {}) {
       return handleNextNode(stackHead().current);
     }
 
+    if (options.length === 1 && options[0].mode === 'fallback') {
+      selectOption(0);
+      return handleNextNode(stackHead().current);
+    }
+
     return {
       type: 'options',
       speaker: optionsNode.speaker,

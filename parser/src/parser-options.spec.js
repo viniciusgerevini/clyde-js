@@ -111,6 +111,59 @@ npc: what do you want to talk about?
     expect(result).toEqual(expected);
   });
 
+  it('parse fallback option', () => {
+    const result = parse(`
+npc: what do you want to talk about?
+* Life
+  player: I want to talk about life!
+> Everything else... #some_tag
+  player: What about everything else?
+`);
+    const expected = {
+      type: 'document',
+      content: [{
+        type: 'content',
+        content: [
+          { type: 'line', value: 'what do you want to talk about?', speaker: 'npc', },
+          {
+            type: 'options',
+            content: [
+              {
+                type: 'option',
+                name: 'Life',
+                mode: 'once',
+                content: {
+                  type: 'content',
+                  content: [
+                    { type: 'line', value: 'Life' },
+                    { type: 'line', value: 'I want to talk about life!', speaker: 'player', },
+                  ],
+                },
+              },
+              {
+                type: 'option',
+                name: 'Everything else...',
+                mode: 'fallback',
+                content: {
+                  type: 'content',
+                  content: [
+                    { type: 'line', value: 'Everything else...', tags: [ 'some_tag', ] },
+                    { type: 'line', value: 'What about everything else?', speaker: 'player', },
+                  ],
+                },
+                tags: [ 'some_tag', ],
+              },
+            ],
+          },
+        ],
+      },
+      ],
+      blocks: [],
+    };
+    expect(result).toEqual(expected);
+  });
+
+
   it('define label only text', () => {
     const result = parse(`
 npc: what do you want to talk about?

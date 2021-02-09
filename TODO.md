@@ -14,7 +14,7 @@ next:
     - [x] double quotes with empty string showing undefined message
     - [x] check this scenarios
     - [x] returns previous value on variable event
-    - [ ] options: closing option
+    - [x] options: closing option
 - [ ] editor interface
     - [x] main structure
     - [x] split horizontal, vertical http://react-split-pane-v2.surge.sh/?SimpleExample
@@ -33,11 +33,11 @@ next:
     - [ ] select first block when not default lines defined
 - [ ] interpreter
     - [x] handle actionnode before condition node situation (already fixed in GD)
-    - [ ] variations: all conditions not available causes infinite loop
+    - [x] variations: all conditions not available causes infinite loop
     - [x] varyations: use cycle as default mode
     - [ ] options_count using outdated resource
     - [ ] divert to uunkown block fails
-    - [ ] rename beging / start to
+    - [x] rename beging / start to
 - [ ] editor
     - [x] show invisibles
     - [ ] vim mode/ emacs mode

@@ -101,6 +101,7 @@ export default function parse(doc) {
       TOKENS.TEXT,
       TOKENS.OPTION,
       TOKENS.STICKY_OPTION,
+      TOKENS.FALLBACK_OPTION,
       TOKENS.DIVERT,
       TOKENS.DIVERT_PARENT,
       TOKENS.BRACKET_OPEN,
@@ -115,6 +116,7 @@ export default function parse(doc) {
       case TOKENS.TEXT:
       case TOKENS.OPTION:
       case TOKENS.STICKY_OPTION:
+      case TOKENS.FALLBACK_OPTION:
       case TOKENS.DIVERT:
       case TOKENS.DIVERT_PARENT:
       case TOKENS.BRACKET_OPEN:
@@ -151,6 +153,7 @@ export default function parse(doc) {
       TOKENS.TEXT,
       TOKENS.OPTION,
       TOKENS.STICKY_OPTION,
+      TOKENS.FALLBACK_OPTION,
       TOKENS.DIVERT,
       TOKENS.DIVERT_PARENT,
       TOKENS.BRACKET_OPEN,
@@ -178,6 +181,7 @@ export default function parse(doc) {
         break;
       case TOKENS.OPTION:
       case TOKENS.STICKY_OPTION:
+      case TOKENS.FALLBACK_OPTION:
         lines = [Options()];
         break;
       case TOKENS.DIVERT:
@@ -244,7 +248,7 @@ export default function parse(doc) {
     if (isMultilineEnabled && peek([TOKENS.INDENT])) {
       consume([TOKENS.INDENT]);
 
-      if (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION])) {
+      if (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION, TOKENS.FALLBACK_OPTION])) {
         const options = Options();
         options.id = line.id;
         options.name = line.value;
@@ -309,7 +313,7 @@ export default function parse(doc) {
   const Options = () => {
     const options = OptionsNode([]);
 
-    while (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION])) {
+    while (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION, TOKENS.FALLBACK_OPTION])) {
       options.content.push(Option());
     }
 
@@ -320,9 +324,16 @@ export default function parse(doc) {
     return options;
   };
 
+  const optionType = {
+    [TOKENS.OPTION]: 'once',
+    [TOKENS.STICKY_OPTION]: 'sticky',
+    [TOKENS.FALLBACK_OPTION]: 'fallback',
+  }
+
   const Option = () => {
-    consume([TOKENS.OPTION, TOKENS.STICKY_OPTION])
-    const type = currentToken.token == TOKENS.OPTION ? 'once' : 'sticky';
+    consume([TOKENS.OPTION, TOKENS.STICKY_OPTION, TOKENS.FALLBACK_OPTION])
+    const type = optionType[currentToken.token];
+
     const acceptableNext = [TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.INDENT, TOKENS.SQR_BRACKET_OPEN, TOKENS.BRACE_OPEN];
     let lines = [];
     let mainItem;

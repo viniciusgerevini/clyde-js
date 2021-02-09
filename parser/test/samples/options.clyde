@@ -25,6 +25,8 @@ speaker: What's in your mind? $abc
     npc: That's a hard state to achieve.
   + [Anything $abc123]
     npc: That's a hard state to achieve.
+  > [What? $abc123]
+    npc: Never mind.
 
 speaker: What's in your mind?
   * [Nothing $abc123]

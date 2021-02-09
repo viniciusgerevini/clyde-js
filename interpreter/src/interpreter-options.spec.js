@@ -42,6 +42,21 @@ describe("Interpreter: options", () => {
     expect(dialogue.getContent()).toEqual(undefined);
   });
 
+  it('use fallback option when others not available', () => {
+    const content = parse('\nHey hey\nspeaker: hello\n  * a\n  > b\nend\n');
+    const dialogue = Interpreter(content);
+
+    expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
+    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }] });
+    dialogue.choose(0)
+    expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'a' });
+    expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'end' });
+    dialogue.start()
+    expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
+    expect(dialogue.getContent()).toEqual({ type: 'line', text: 'b' });
+    expect(dialogue.getContent()).toEqual({ type: 'line', text: 'end' });
+  });
+
   it('expose special variable OPTIONS_COUNT', () => {
     const content = parse('speaker: hello\n  * [a]\n   a %OPTIONS_COUNT%\n  * [b]\n   b %OPTIONS_COUNT%\n  * [c %OPTIONS_COUNT% left]\n   c %OPTIONS_COUNT%\n');
     const dialogue = Interpreter(content);
