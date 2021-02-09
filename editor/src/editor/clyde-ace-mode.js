@@ -158,7 +158,7 @@ function ClydeHighlightRules() {
 
       { // option
         token : "keyword.control",
-        regex : /^(\s*[*|+])/
+        regex : /^(\s*[*+>])/
       },
 
       { // Logic block start
