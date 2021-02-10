@@ -39,14 +39,15 @@ store.subscribe(throttle(() => {
 
   saveState({
     editor: {
-      preferences: state.editor.preferences
+      preferences: state.editor.preferences,
+      currentValue: state.editor.currentValue
     },
     interpreter: {
       shouldShowExtraMetadata,
       shouldShowDebugPane,
       debugPaneDirection,
       singleBubblePresentation,
-    }
+    },
   });
 }, 1000));
 

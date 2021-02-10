@@ -331,12 +331,11 @@ describe('MainPanelsContainer', () => {
 
     it('chooses option', () => {
       const content = `
->> what do you think?
+what do you think?
   * yes
     nice!
   * no
     ok!
-<<
 `;
       const store = createMockStore(
         { isEditorEnabled: false, isInterpreterEnabled: true },
