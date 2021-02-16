@@ -303,7 +303,7 @@ export function tokenize(input) {
     position += 1;
     column += 1;
 
-    while (input[position].match(/[A-Z|a-z|0-9|_]/)) {
+    while (input[position] && input[position].match(/[A-Z|a-z|0-9|_]/)) {
       values.push(input[position]);
       position += 1;
       column += 1;

@@ -264,7 +264,7 @@ speaker1: this is something
 speaker1: this is something $123
 * this is another thing $abc
 * [ hello $a1b2 ]
-`).getAll();
+speaker1: this is something $123`).getAll();
     expect(tokens).toEqual([
       { token: TOKENS.SPEAKER, value: 'speaker1', line: 1, column: 0 },
       { token: TOKENS.TEXT, value: 'this is something', line: 1, column: 10 },
@@ -277,7 +277,10 @@ speaker1: this is something $123
       { token: TOKENS.TEXT, value: 'hello', line: 3, column: 4 },
       { token: TOKENS.LINE_ID, value: 'a1b2', line: 3, column: 10 },
       { token: TOKENS.SQR_BRACKET_CLOSE, line: 3, column: 16 },
-      { token: TOKENS.EOF, line: 4, column: 0 },
+      { token: TOKENS.SPEAKER, value: 'speaker1', line: 4, column: 0 },
+      { token: TOKENS.TEXT, value: 'this is something', line: 4, column: 10 },
+      { token: TOKENS.LINE_ID, value: '123', line: 4, column: 28 },
+      { token: TOKENS.EOF, line: 4, column: 32 },
     ]);
   });
 
