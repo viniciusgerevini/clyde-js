@@ -24,7 +24,7 @@ export async function executeInterpreter(args, exitCallback = process.exit, comm
       output: process.stdout
   });
 
-  if (!argv.persistent) {
+  if (argv.clearScreen) {
     clearScreen();
   }
   printInputInstructions();
@@ -69,7 +69,7 @@ const inputHandlers = (dialogue, args, events, exitCallback) => {
       this.default();
     },
     default(input) {
-      if (!argv.persistent) {
+      if (argv.clearScreen) {
         clearScreen();
       }
 
@@ -145,10 +145,10 @@ export const buildInterpreterArgsParser = (yargs, commandName = '$0') => {
       description: 'Path to persist data to be used across executions'
     })
 
-    .option('persistent', {
-      alias: 'p',
+    .option('clear-screen', {
+      alias: 'c',
       type: 'boolean',
-      description: 'Do not clear screen on every line'
+      description: 'Clear screen on every line'
     })
 
     .option('debug', {
