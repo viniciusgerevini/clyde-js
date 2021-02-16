@@ -9,7 +9,6 @@ import {
   faBug,
   faComment,
   faComments,
-  faLifeRing,
   faReceipt,
   faGhost,
   faColumns,
@@ -198,13 +197,6 @@ export default function InterpreterToolbar(properties) {
               icon={faColumns}
               text={`Debug pane split: ${debugPaneDirection === 'horizontal' ? 'vertical': 'horizontal'}`}
             />
-
-            <DropDownItem
-              label="Help"
-              //onClick={showHelpModal}
-              icon={faLifeRing}
-              text={'Help'}
-              />
            </DropDownMenu>
           ) : ''
         }
