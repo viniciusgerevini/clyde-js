@@ -55,20 +55,20 @@ const inputHandlers = (dialogue, args, events, exitCallback) => {
   };
 
   return {
-    exit: () => {
+    exit() {
       saveIfRequired();
       exitCallback();
     },
-    help: () => {
+    help() {
       printInputInstructions();
     },
-    restart: () => {
+    restart() {
       saveIfRequired();
       currentOptions = undefined;
       dialogue.start(argv.block);
       this.default();
     },
-    default: (input) => {
+    default(input) {
       if (!argv.persistent) {
         clearScreen();
       }
