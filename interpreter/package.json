@@ -1,15 +1,18 @@
 {
-  "name": "clyde-interpreter",
+  "name": "@clyde-lang/interpreter",
   "version": "0.1.0",
   "main": "./cjs/index.js",
+  "types": "./types/index.d.ts",
   "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "create-types": "npx typescript src/index.js --declaration --allowJs --emitDeclarationOnly --outDir types",
     "build": "npm run cjs",
     "cjs": "mkdir -p cjs && ascjs src cjs",
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage"
   },
   "devDependencies": {
+    "@clyde-lang/parser": "^0.1.0",
     "ascjs": "^4.0.3",
     "jest": "^26.6.3"
   },
