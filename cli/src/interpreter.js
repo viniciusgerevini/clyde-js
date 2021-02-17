@@ -1,8 +1,8 @@
 import fs from 'fs';
 import readline from 'readline';
 import yargs from 'yargs';
-import { parse } from 'clyde-parser';
-import { Interpreter } from 'clyde-interpreter';
+import { parse } from '@clyde-lang/parser';
+import { Interpreter } from '@clyde-lang/interpreter';
 
 export async function executeInterpreter(args, exitCallback = process.exit, commandName) {
   const argv = parseArguments(commandName, args);

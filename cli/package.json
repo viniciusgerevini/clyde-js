@@ -1,6 +1,7 @@
 {
-  "name": "clyde-cli",
+  "name": "@clyde-lang/cli",
   "version": "0.1.0",
+  "description": "CLI tool for executing, parsing and debugging Clyde dialogue files",
   "main": "./cjs/index.js",
   "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
   "license": "MIT",
@@ -14,6 +15,8 @@
     "clyde": "./src/cli.js"
   },
   "dependencies": {
+    "@clyde-lang/interpreter": "^0.1.0",
+    "@clyde-lang/parser": "^0.1.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {

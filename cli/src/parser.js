@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { parse } from 'clyde-parser';
+import { parse } from '@clyde-lang/parser';
 
 export function buildParserArgsParser(yargs) {
   return yargs

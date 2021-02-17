@@ -1,5 +1,7 @@
 # Clyde CLI
 
+[![npm version](https://badge.fury.io/js/%40clyde-lang%2Fcli.svg)](https://www.npmjs.com/package/@clyde-lang/cli)
+
 CLI tool for executing, parsing and debugging [Clyde](https://github.com/viniciusgerevini/clyde) dialogues.
 
 ![interpreter screen](./interpreter_sample.png "CLI interpreter sample")
@@ -57,5 +59,7 @@ Options:
 ## Instalation
 
 ```shell
-npm install -g clyde-cli
+npm install -g @clyde-lang/cli
+# or
+yarn global add @clyde-lang/cli
 ```
