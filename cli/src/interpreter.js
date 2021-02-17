@@ -54,50 +54,87 @@ const inputHandlers = (dialogue, args, events, exitCallback) => {
     }
   };
 
+  const printContent = (content) => {
+    if (content === undefined) {
+      console.log('-- END');
+      if (argv.debug) {
+        printDebugInfo(events);
+      }
+      saveIfRequired();
+      exitCallback();
+      return;
+    }
+
+    if (content.type === 'options') {
+      printOptions(content, argv.verbose);
+      currentOptions = content.options;
+    } else {
+      printLine(content, argv.verbose);
+    }
+
+    if (argv.debug) {
+      printDebugInfo(events);
+    }
+  };
+
+  const handleChoice = (options, input, dialogue) => {
+    if (isNaN(input) || Number(input) > options.length || Number(input) < 1) {
+      console.log(`Your answer needs to be between 1 and ${options.length}.`)
+      return false;
+    }
+
+    dialogue.choose(Math.floor(Number(input) - 1));
+    currentOptions = undefined;
+    return true;
+  };
+
   return {
     exit() {
       saveIfRequired();
       exitCallback();
     },
+
     help() {
       printInputInstructions();
     },
+
     restart() {
       saveIfRequired();
       currentOptions = undefined;
       dialogue.start(argv.block);
       this.default();
     },
-    default(input) {
+
+    default(input, untilOption = false) {
       if (argv.clearScreen) {
         clearScreen();
       }
 
-      if (currentOptions && input && !handleChoice(currentOptions, input, dialogue)) {
+      if (currentOptions && input !== undefined && !handleChoice(currentOptions, input, dialogue)) {
         return;
       }
 
-      const content = dialogue.getContent();
-
-      if (content === undefined) {
-        console.log('-- END');
-        if (argv.debug) {
-          printDebugInfo(events);
+      if (untilOption) {
+        while (!currentOptions) {
+          printContent(dialogue.getContent());
+          console.log("");
         }
-        saveIfRequired();
-        exitCallback();
-        return;
-      }
-
-      if (content.type === 'options') {
-        printOptions(content, argv.verbose);
-        currentOptions = content.options;
       } else {
-        printLine(content, argv.verbose);
+        printContent(dialogue.getContent());
       }
+    },
 
-      if (argv.debug) {
-        printDebugInfo(events);
+    next() {
+      this.default(undefined, true);
+    },
+
+    auto(input) {
+      this.default(input, true);
+
+      if (currentOptions) {
+        const choice = Math.floor(Math.random() * currentOptions.length) + 1;
+        console.log(`Choose: ${choice}\n`)
+        this.auto(choice);
       }
     }
   };
@@ -250,6 +287,8 @@ function printInputInstructions() {
   console.log(`Press ENTER for next line.
 Type "exit" to quit.
 Type "restart" to restart dialogue without reseting variables.
+Type "next" to execute until next branch.
+Type "auto" to trigger Poltergeist mode (auto selection).
 Type "help" to show this message again.`)
 }
 
@@ -276,17 +315,6 @@ function setCharAt(str, index, chr) {
       return str;
     }
     return str.substring(0,index) + chr + str.substring(index+1);
-}
-
-function handleChoice(options, input, dialogue) {
-  if (isNaN(input) || Number(input) > options.length || Number(input) < 1) {
-    console.log(`Your answer needs to be between 1 and ${options.length}.`)
-    return false;
-  }
-
-  dialogue.choose(Math.floor(Number(input) - 1));
-  options = undefined;
-  return true;
 }
 
 function trackInternalChanges(dataType, events) {
