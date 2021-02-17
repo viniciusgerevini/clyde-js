@@ -1,5 +1,0 @@
-# Clyde Editor
-
-
-
-
