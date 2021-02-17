@@ -22,6 +22,7 @@ const Wrapper = styled.div`
   max-height: 100vh;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 `;
 
 const Header = styled.div`
@@ -58,7 +59,6 @@ export default function MainPanels(props) {
     timeline,
     shouldShowExtraMetadata,
     shouldShowDebugPane,
-    debugPaneDirection,
     singleBubblePresentation,
     document: clydeDocument,
     setBlock,
@@ -68,7 +68,6 @@ export default function MainPanels(props) {
     hideExtraMetadata,
     showDebugPane,
     hideDebugPane,
-    setDebugPaneDirection,
     enableSingleBubbleDialogue,
     disableSingleBubbleDialogue,
     chooseOption,
@@ -156,7 +155,6 @@ export default function MainPanels(props) {
              timeline={timeline}
              shouldShowExtraMetadata={shouldShowExtraMetadata}
              shouldShowDebugPane={shouldShowDebugPane}
-             debugPaneDirection={debugPaneDirection}
              singleBubblePresentation={singleBubblePresentation}
              clydeDocument={clydeDocument}
              setBlock={setBlock}
@@ -166,7 +164,6 @@ export default function MainPanels(props) {
              hideExtraMetadata={hideExtraMetadata}
              showDebugPane={showDebugPane}
              hideDebugPane={hideDebugPane}
-             setDebugPaneDirection={setDebugPaneDirection}
              enableSingleBubbleDialogue={enableSingleBubbleDialogue}
              disableSingleBubbleDialogue={disableSingleBubbleDialogue}
              chooseOption={chooseOption}
@@ -196,7 +193,6 @@ MainPanels.propTypes = {
   timeline: PropTypes.array,
   shouldShowExtraMetadata: PropTypes.bool,
   shouldShowDebugPane: PropTypes.bool,
-  debugPaneDirection: PropTypes.string,
   singleBubblePresentation: PropTypes.bool,
   clydeDocument: PropTypes.string,
 
@@ -207,7 +203,6 @@ MainPanels.propTypes = {
   hideExtraMetadata: PropTypes.func,
   showDebugPane: PropTypes.func,
   hideDebugPane: PropTypes.func,
-  setDebugPaneDirection: PropTypes.func,
   enableSingleBubbleDialogue: PropTypes.func,
   disableSingleBubbleDialogue: PropTypes.func,
 

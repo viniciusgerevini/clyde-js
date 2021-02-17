@@ -23,7 +23,6 @@ import {
   hideExtraMetadata,
   showDebugPane,
   hideDebugPane,
-  setDebugPaneDirection,
   enableSingleBubbleDialogue,
   disableSingleBubbleDialogue,
   chooseOption,
@@ -216,22 +215,6 @@ describe('MainPanelsContainer', () => {
       const action = store.getActions()[0];
 
       expect(action.type).toEqual(hideDebugPane.toString());
-    });
-
-    it('set debug pane direction', () => {
-      const store = createMockStore(
-        { isInterpreterEnabled: true },
-        { currentValue:'Hi\n' },
-        { timeline: [], shouldShowDebugPane: true }
-      );
-      const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
-
-      fireEvent.click(getByLabelText(/Interpreter options/i));
-      fireEvent.click(getByText(/Debug pane split: vertical/i));
-
-      const action = store.getActions()[0];
-      expect(action.type).toEqual(setDebugPaneDirection.toString());
-      expect(action.payload).toEqual({ direction: 'vertical' });
     });
 
     it('notifies event', () => {

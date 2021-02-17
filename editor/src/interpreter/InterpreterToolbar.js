@@ -11,7 +11,6 @@ import {
   faComments,
   faReceipt,
   faGhost,
-  faColumns,
   faHandSparkles,
 } from '@fortawesome/free-solid-svg-icons'
 
@@ -53,7 +52,6 @@ export default function InterpreterToolbar(properties) {
     currentBlock,
     shouldShowExtraMetadata,
     shouldShowDebugPane,
-    debugPaneDirection,
     singleBubblePresentation,
     setBlock,
     clearTimeline,
@@ -61,7 +59,6 @@ export default function InterpreterToolbar(properties) {
     hideExtraMetadata,
     showDebugPane,
     hideDebugPane,
-    setDebugPaneDirection,
     enableSingleBubbleDialogue,
     disableSingleBubbleDialogue,
     dialogue,
@@ -103,18 +100,6 @@ export default function InterpreterToolbar(properties) {
       hideDebugPane();
     } else {
       showDebugPane();
-    }
-  };
-
-  const toggleSplitDirection = () => {
-    if ( debugPaneDirection === 'vertical') {
-      setDebugPaneDirection('horizontal');
-    } else {
-      setDebugPaneDirection('vertical');
-    }
-
-    if (!shouldShowDebugPane) {
-      showDebugPane()
     }
   };
 
@@ -191,12 +176,6 @@ export default function InterpreterToolbar(properties) {
               icon={faBug}
               text={`${shouldShowDebugPane ? 'Hide' : 'Show'} debug pane`}
               />
-            <DropDownItem
-              label="Change debug pane split direction"
-              onClick={toggleSplitDirection}
-              icon={faColumns}
-              text={`Debug pane split: ${debugPaneDirection === 'horizontal' ? 'vertical': 'horizontal'}`}
-            />
            </DropDownMenu>
           ) : ''
         }

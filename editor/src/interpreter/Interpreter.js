@@ -35,7 +35,6 @@ export default function Interpreter(p) {
     hideExtraMetadata,
     showDebugPane,
     hideDebugPane,
-    setDebugPaneDirection,
     enableSingleBubbleDialogue,
     disableSingleBubbleDialogue,
     chooseOption,
@@ -46,10 +45,6 @@ export default function Interpreter(p) {
   const [lastContent, setLastContent] = useState('');
   const [persistedDialogue, setDialogue] = useState();
   let dialogue = persistedDialogue;
-  // const dictionary = argv.translation ? await getTranslationDictionary(argv.translation) : undefined;
-  // const data = argv['save-data'] ? loadSaveFile(argv['save-data']) : undefined;
-  // dialogue.on(dialogue.events.VARIABLE_CHANGED, trackInternalChanges('variable', events));
-  // dialogue.on(dialogue.events.EVENT_TRIGGERED, trackInternalChanges('event', events));
   let doc;
   let errorMessage;
 
@@ -93,7 +88,6 @@ export default function Interpreter(p) {
         timeline={timeline}
         shouldShowExtraMetadata={shouldShowExtraMetadata}
         shouldShowDebugPane={shouldShowDebugPane}
-        debugPaneDirection={debugPaneDirection}
         singleBubblePresentation={singleBubblePresentation}
         setBlock={setBlock}
         clearTimeline={clearTimeline}
@@ -101,7 +95,6 @@ export default function Interpreter(p) {
         hideExtraMetadata={hideExtraMetadata}
         showDebugPane={showDebugPane}
         hideDebugPane={hideDebugPane}
-        setDebugPaneDirection={setDebugPaneDirection}
         enableSingleBubbleDialogue={enableSingleBubbleDialogue}
         disableSingleBubbleDialogue={disableSingleBubbleDialogue}
         addDialogueLine={addDialogueLine}
@@ -142,7 +135,6 @@ Interpreter.propTypes = {
   timeline: PropTypes.array,
   shouldShowExtraMetadata: PropTypes.bool,
   shouldShowDebugPane: PropTypes.bool,
-  debugPaneDirection: PropTypes.string,
   singleBubblePresentation: PropTypes.bool,
   clydeDocument: PropTypes.string,
   setBlock: PropTypes.func,
@@ -152,7 +144,6 @@ Interpreter.propTypes = {
   hideExtraMetadata: PropTypes.func,
   showDebugPane: PropTypes.func,
   hideDebugPane: PropTypes.func,
-  setDebugPaneDirection: PropTypes.func,
   enableSingleBubbleDialogue: PropTypes.func,
   disableSingleBubbleDialogue: PropTypes.func,
 };

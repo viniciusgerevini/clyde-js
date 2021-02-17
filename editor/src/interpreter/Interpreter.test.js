@@ -211,7 +211,7 @@ what do you think?
   });
 
   it('renders metadata', () => {
-    const { getByLabelText, queryAllByLabelText } = render(
+    const { queryAllByLabelText } = render(
       <Interpreter
         content={'Hello! $some_id #tag\n'}
         shouldShowExtraMetadata={true}
@@ -367,45 +367,6 @@ neither this one
       expect(showDebugPaneStub).not.toHaveBeenCalled();
     });
 
-    it('toggles debug pane to horizontal when vertical', () => {
-      const showDebugPaneStub = jest.fn();
-      const setDebugPaneDirectionStub = jest.fn();
-      const { getByLabelText, getByText } = render(
-        <Interpreter
-          content={'Hello!\nHi\n'}
-          setDebugPaneDirection={setDebugPaneDirectionStub}
-          showDebugPane={showDebugPaneStub}
-          debugPaneDirection="vertical"
-          timeline={[]}/>
-      );
-
-      fireEvent.click(getByLabelText(/Interpreter options/i));
-      fireEvent.click(getByText(/Debug pane split: horizontal/i));
-
-      expect(setDebugPaneDirectionStub).toHaveBeenCalledWith('horizontal');
-      expect(showDebugPaneStub).toHaveBeenCalled();
-    });
-
-    it('toggles debug pane to vertical when horizontal', () => {
-      const showDebugPaneStub = jest.fn();
-      const setDebugPaneDirectionStub = jest.fn();
-      const { getByLabelText, getByText } = render(
-        <Interpreter
-          content={'Hello!\nHi\n'}
-          setDebugPaneDirection={setDebugPaneDirectionStub}
-          showDebugPane={showDebugPaneStub}
-          debugPaneDirection="horizontal"
-          timeline={[]}/>
-      );
-
-      fireEvent.click(getByLabelText(/Interpreter options/i));
-      fireEvent.click(getByText(/Debug pane split: vertical/i));
-
-      expect(setDebugPaneDirectionStub).toHaveBeenCalledWith('vertical');
-      expect(showDebugPaneStub).toHaveBeenCalled();
-
-      fireEvent.click(getByLabelText(/Interpreter options/i));
-    });
 
     it('triggers show extra metadata', () => {
       const showExtraMetadataStub = jest.fn();

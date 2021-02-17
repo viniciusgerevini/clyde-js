@@ -6,7 +6,6 @@ import reducers, {
   hideExtraMetadata,
   showDebugPane,
   hideDebugPane,
-  setDebugPaneDirection,
   enableSingleBubbleDialogue,
   disableSingleBubbleDialogue,
   chooseOption,
@@ -49,11 +48,6 @@ describe('Interpreter reducers', () => {
   it('hide debug pane', () => {
     const action = hideDebugPane();
     expect(reducers({}, action)).toEqual({ shouldShowDebugPane: false });
-  });
-
-  it('set debug pane direction', () => {
-    const action = setDebugPaneDirection({ direction: 'horizontal' });
-    expect(reducers({}, action)).toEqual({ debugPaneDirection: 'horizontal' });
   });
 
   it('enable single bubble dialogue', () => {

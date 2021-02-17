@@ -16,7 +16,6 @@ import {
   hideExtraMetadata,
   showDebugPane,
   hideDebugPane,
-  setDebugPaneDirection,
   enableSingleBubbleDialogue,
   disableSingleBubbleDialogue,
   chooseOption,
@@ -67,9 +66,6 @@ const mapDispatchToProps = dispatch => ({
   },
   hideDebugPane: () => {
     dispatch(hideDebugPane());
-  },
-  setDebugPaneDirection: (direction) => {
-    dispatch(setDebugPaneDirection({direction}));
   },
   enableSingleBubbleDialogue: () => {
     dispatch(enableSingleBubbleDialogue());

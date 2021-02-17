@@ -4,7 +4,7 @@ Clyde is a language for writing game dialogues. It supports branching dialogues,
 
 It was heavily inspired by [Ink](https://github.com/inkle/ink), but it focus on dialogues instead of narratives.
 
-You can play with the online editor [here]().
+You can play with the online editor [here](https://viniciusgerevini.github.io/clyde/).
 
 Here is a simple dialogue:
 ```
@@ -59,7 +59,7 @@ Godot plugin with importer and interpreter features. It was written completely i
 
 ### Standalone Editor and Interpreter
 
-There is a desktop version for the same editor/interpreter used in the [playground page]().
+There is a desktop version for the same editor/interpreter used in the [playground page](https://viniciusgerevini.github.io/clyde/).
 
 The desktop version has a few extra features, such as saving direct to the disk and being able to watch files for changes. Check the [desktop folder](./desktop) for more information about features.
 

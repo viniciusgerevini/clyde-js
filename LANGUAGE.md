@@ -4,7 +4,7 @@ Clyde is a language for writing game dialogues. It supports branching dialogues,
 
 It was heavily inspired by [Ink](https://github.com/inkle/ink), but it focus on dialogues instead of narratives.
 
-You can play with the online editor [here]().
+You can play with the online editor [here](https://viniciusgerevini.github.io/clyde/).
 
 ### Principles
 
@@ -929,5 +929,5 @@ In the example above, due to the conditional options, `OPTIONS_COUNT` is 2. If m
 
 That's pretty much all features implemented. You can check the `/examples` folder for more examples.
 
-All examples in this page are valid dialogues that can be run on the live [interpreter]().
+All examples in this page are valid dialogues that can be run on the live [interpreter](https://viniciusgerevini.github.io/clyde/).
 
