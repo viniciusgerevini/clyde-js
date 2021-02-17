@@ -1,5 +1,5 @@
 {
-  "name": "clyde-parser",
+  "name": "@clyde-lang/parser",
   "version": "0.1.0",
   "description": "Parser for Clyde dialogue language",
   "main": "./cjs/index.js",
