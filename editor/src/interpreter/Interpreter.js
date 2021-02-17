@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import { Interpreter as ClydeInterpreter } from 'clyde-interpreter';
-import { parse } from 'clyde-parser';
+import { Interpreter as ClydeInterpreter } from '@clyde-lang/interpreter';
+import { parse } from '@clyde-lang/parser';
 
 import { InfoBubble, ErrorBubble } from './Bubbles';
 import InterpreterToolbar from './InterpreterToolbar';
