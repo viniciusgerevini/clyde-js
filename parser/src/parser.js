@@ -51,6 +51,12 @@ const assignmentOperators = {
   [TOKENS.ASSIGN_MOD]: 'assign_mod',
 };
 
+/**
+ * Parses Clyde dialogue string to Clyde object
+ *
+ * @param {string} doc - Clyde document string
+ * @return {Object} Clyde JSON representation
+ */
 export default function parse(doc) {
   const tokens = tokenize(doc);
   // console.log(tokenize(doc).getAll());
