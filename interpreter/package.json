@@ -1,6 +1,7 @@
 {
   "name": "@clyde-lang/interpreter",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "description": "Interpreter for Clyde dialogue language",
   "main": "./cjs/index.js",
   "types": "./types/index.d.ts",
   "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
