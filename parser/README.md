@@ -1,9 +1,11 @@
-# clyde-parser
+# Clyde Parser
+
+[![npm version](https://badge.fury.io/js/%40clyde-lang%2Fparser.svg)](https://www.npmjs.com/package/@clyde-lang/parser)
 
 Parser for [Clyde dialogue language](https://github.com/viniciusgerevini/clyde/blob/master/LANGUAGE.md).
 
 ```javascript
-import { parse } from 'clyde-parser';
+import { parse } from '@clyde-lang/parser';
 
 const result = parse(`
 
@@ -33,10 +35,10 @@ Harry: I'm a what?
 
 ```shell
 
-npm install clyde-parser
+npm install @clyde-lang/parser
 
 # or
 
-yarn add clyde-parser
+yarn add @clyde-lang/parser
 
 ```

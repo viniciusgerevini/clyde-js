@@ -1,11 +1,13 @@
-# clyde-interpreter
+# Clyde Interpreter
+
+[![npm version](https://badge.fury.io/js/%40clyde-lang%2Finterpreter.svg)](https://www.npmjs.com/package/@clyde-lang/interpreter)
 
 
 Interpreter library for [Clyde dialogue language](https://github.com/viniciusgerevini/clyde/blob/master/LANGUAGE.md).
 
 ```javascript
-import { parse } from 'clyde-parser';
-import { Interpreter } from 'clyde-interpreter';
+import { parse } from '@clyde-lang/parser';
+import { Interpreter } from '@clyde-lang/interpreter';
 
 const content = parse(`
 
@@ -46,7 +48,9 @@ dialogue.getContent()
 ## Instalation
 
 ```shell
-npm install clyde-interpreter
+npm install @clyde-lang/interpreter
+
 # or
-yarn add clyde-interpreter
+
+yarn add @clyde-lang/interpreter
 ```

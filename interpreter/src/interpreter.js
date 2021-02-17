@@ -4,6 +4,15 @@ import { Events, events } from './events.js';
 
 export { events } from './events.js';
 
+/**
+ * Clyde Interpreter
+ *
+ * @param {Object} doc - Clyde Object
+ * @param {Object} data - Internal data to be loaded
+ * @param {Object} dictionary - Translation object with key values
+ *
+ * @return {Interpreter} Interpreter instance
+ */
 export function Interpreter(doc, data, dictionary = {}) {
   let textDictionary = dictionary;
   const anchors = {
@@ -388,38 +397,111 @@ export function Interpreter(doc, data, dictionary = {}) {
 
   initializeStack();
 
+  /**
+   * Interpreter instance
+   *
+   * @typedef {Object} Interpreter
+   */
   return {
     events,
+
+    /**
+     * Add event listener
+     *
+     * @param {string} eventName - Event name
+     * @param {function} callback - Callback
+     * @return {function} callback
+     */
     on(eventName, callback) {
       return listeners.addListener(eventName, callback);
     },
+
+    /**
+     * Remove event listener
+     *
+     * @param {string} eventName - Event name
+     * @param {function} callback - Callback provided when adding the listener
+     */
     off(eventName, callback) {
       listeners.removeListener(eventName, callback);
     },
+
+    /**
+     * Get internal data
+     *
+     * @return {object} data
+     */
     getData() {
       return mem.getAll();
     },
+
+    /**
+     * Load internal data
+     *
+     * @param {object} data
+     */
     loadData(data) {
       mem.load(data);
     },
+
+    /**
+     * Clear all internal data
+     */
     clearData() {
       mem.clear();
     },
+
+    /**
+     * Load translation object.
+     *
+     * @param {object} dictionary
+     */
     loadDictionary(dictionary) {
       textDictionary = dictionary;
     },
+
+    /**
+     * Get next dialogue content
+     *
+     * @return {object} Content. Line, Option list or undefined.
+     */
     getContent() {
       return handleNextNode(stackHead().current)
     },
+
+    /**
+     * Choose option by index. Option's index start in 0.
+     *
+     * @param {number} index - Option index
+     */
     choose(index) {
       return selectOption(index)
     },
+
+    /**
+     * set variable
+     *
+     * @param {string} name - Variable name
+     * @param {string|number|boolean|undefined} value - Value
+     */
     setVariable(name, value) {
       mem.setVariable(name, value);
     },
+
+    /**
+     * Return variable value
+     * @param {string} name - Variable name
+     * @return {string|number|boolean|undefined} variable value
+     */
     getVariable(name) {
       return mem.getVariable(name);
     },
+
+    /**
+     * Start dialogue from the begining
+     *
+     * @param {string} [blockName] - Dialogue block to use
+     */
     start(blockName) {
       if (blockName) {
         initializeStack(anchors[blockName]);

@@ -1,4 +1,4 @@
-import { parse } from 'clyde-parser';
+import { parse } from '@clyde-lang/parser';
 import { Interpreter } from './interpreter';
 
 describe("Interpreter", () => {

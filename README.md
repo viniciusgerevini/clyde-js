@@ -45,11 +45,11 @@ You can read the complete language definition with examples on [LANGUAGE.md](./L
 
 There are three Node libraries which can be used to play with this language:
 
-[clyde-parser](./parser): Parses Clyde strings to JSON.
+[@clyde-lang/parser](./parser): Parses Clyde strings to JSON.
 
-[clyde-interpreter](./interpreter): An interpreter that can be used by Node and web applications.
+[@clyde-lang/interpreter](./interpreter): An interpreter that can be used by Node and web applications.
 
-[clyde-cli](./cli): CLI tool for executing, parsing and debugging Clyde dialogues.
+[@clyde-lang/cli](./cli): CLI tool for executing, parsing and debugging Clyde dialogues.
 
 
 ### Clyde Godot plugin

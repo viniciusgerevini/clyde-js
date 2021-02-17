@@ -270,6 +270,16 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@clyde-lang/interpreter@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@clyde-lang/interpreter/-/interpreter-0.1.0.tgz#ddb46fa71f33e6376f31435bf9033a2a1e0997d0"
+  integrity sha512-c9AGDRscPifF4Sk0+fz6IFFCORC8mHv1GX2Q9xUeL+ODos3wH6vLcbLMbQ9k5EvNAgNwEDel09cryimLrqGhUg==
+
+"@clyde-lang/parser@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@clyde-lang/parser/-/parser-0.1.0.tgz#046a604698eec0fc1d8906cb5d54381ee52e272e"
+  integrity sha512-a6V5W+nItkMVxc9KlxJhh1nLmmjWkwz8trBHm1Q7mUV95wzFCks3LtlHNQzT8fvG+ZOr9N2iw9Z1ZcmNRE364g==
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.4.tgz#f864ae85004d0fcab6f50be9141c4da368d1656a"
