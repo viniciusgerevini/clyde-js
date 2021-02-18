@@ -1,0 +1,45 @@
+name: Parser and Interpreter CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  Parser:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./parser
+
+    strategy:
+      matrix:
+        node-version: [12, 14, 15]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Parser - Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: yarn && yarn build && yarn test
+
+  Interpreter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./interpreter
+
+    strategy:
+      matrix:
+        node-version: [12, 14, 15]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Interpreter - Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: cd ../parser && yarn && yarn build && yarn link && cd - && yarn && yarn build && yarn link @clyde-lang/parser && yarn test
+
