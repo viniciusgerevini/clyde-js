@@ -72,5 +72,7 @@ I originally created the editor for the demo page, but I know no custom editor w
 
 [Vim/Neovim](https://github.com/viniciusgerevini/clyde.vim) syntax highlighting.
 
+[VSCode](https://github.com/viniciusgerevini/vscode-clyde) syntax highlighting.
+
 
 
