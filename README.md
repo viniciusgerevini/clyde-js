@@ -57,15 +57,6 @@ There are three Node libraries which can be used to play with this language:
 Godot plugin with importer and interpreter features. It was written completely in GDScript, so it does not require any external dependency. More information in its [repository](https://github.com/viniciusgerevini/godot-clyde-dialogue).
 
 
-### Standalone Editor and Interpreter
-
-There is a desktop version for the same editor/interpreter used in the [playground page](https://viniciusgerevini.github.io/clyde/).
-
-The desktop version has a few extra features, such as saving direct to the disk and being able to watch files for changes. Check the [desktop folder](./desktop) for more information about features.
-
-Besides that, you can use this editor also like a CLI tool, for compiling your files.
-
-
 ###  Syntax highlighting
 
 I originally created the editor for the demo page, but I know no custom editor would be better than your editor of choice. With that in mind here are some syntax highlighting plugins:
@@ -75,4 +66,7 @@ I originally created the editor for the demo page, but I know no custom editor w
 [VSCode](https://github.com/viniciusgerevini/vscode-clyde) syntax highlighting.
 
 
+### Online Editor and Interpreter
+
+[Playground page](https://viniciusgerevini.github.io/clyde/).
 
