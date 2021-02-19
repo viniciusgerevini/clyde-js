@@ -1,0 +1,72 @@
+name: Parser and Interpreter CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  parser:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./parser
+
+    strategy:
+      matrix:
+        node-version: [12, 14, 15]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Parser - Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: yarn && yarn build && yarn test --coverage
+
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        flag-name: run-parser-${{ matrix.node-version }}
+        parallel: true
+        base-path: ./parser
+        path-to-lcov: ./parser/coverage/lcov.info
+
+  interpreter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./interpreter
+
+    strategy:
+      matrix:
+        node-version: [12, 14, 15]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Interpreter - Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: cd ../parser && yarn && yarn build && yarn link && cd - && yarn && yarn build && yarn link @clyde-lang/parser && yarn test --coverage
+
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        flag-name: run-interpreter-${{ matrix.node-version }}
+        parallel: true
+        base-path: ./interpreter
+        path-to-lcov: ./interpreter/coverage/lcov.info
+
+  finish:
+    needs: [parser, interpreter]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        parallel-finished: true
