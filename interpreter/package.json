@@ -1,6 +1,6 @@
 {
   "name": "@clyde-lang/interpreter",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Interpreter for Clyde dialogue language",
   "main": "./cjs/index.js",
   "types": "./types/index.d.ts",
@@ -13,7 +13,7 @@
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage"
   },
   "devDependencies": {
-    "@clyde-lang/parser": "^0.1.0",
+    "@clyde-lang/parser": "^0.1.2",
     "ascjs": "^4.0.3",
     "jest": "^26.6.3"
   },

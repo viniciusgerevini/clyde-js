@@ -288,9 +288,9 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@clyde-lang/parser@^0.1.0":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@clyde-lang/parser/-/parser-0.1.1.tgz#8b2bb51e9819472ec91bf4b3211e769ceb91b774"
-  integrity sha512-RanZs+y529OSi9Zn19sh3rmA/46ebj4F+wvbupFvZ6yQphwHpcPPUwDU4qOfEbrsW55kn4+s+XJc91kBvLbxwQ==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@clyde-lang/parser/-/parser-0.1.2.tgz#7c88a716fb665f4cb7fc64daacdc4581fd9cea9c"
+  integrity sha512-lh4APSlpmkCq2CkUFhQoLxgGMRJneh2YVtPSQ91tZS1CuV8TQHA8lOB3rQrtRrGp5ENZ/rxZqCUzz1cMZlqpCA==
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
