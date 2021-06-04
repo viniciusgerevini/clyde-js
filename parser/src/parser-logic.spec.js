@@ -379,6 +379,18 @@ describe('parse: logic', () => {
       expect(result).toEqual(expected);
     });
 
+    it('condition before line with keyword', () => {
+      const result = parse(`{ when some_var } This is conditional`);
+      const expected = createDocPayload([
+        {
+          type: "conditional_content",
+          conditions: { type: "variable", name: "some_var" },
+          content: { type: "line", value: "This is conditional", }
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
+
     it('condition after line', () => {
       const result = parse(`This is conditional { when some_var }`);
       const expected = createDocPayload([
@@ -403,17 +415,30 @@ describe('parse: logic', () => {
       expect(result).toEqual(expected);
     });
 
+    describe('conditional divert', () => {
+      it('before divert', () => {
+        const result = parse(`{ some_var } -> some_block`);
+        const expected = createDocPayload([
+          {
+            type: "conditional_content",
+            conditions: { type: "variable", name: "some_var" },
+            content: { type: "divert", target: "some_block", }
+          },
+        ]);
+        expect(result).toEqual(expected);
+      });
 
-    it('conditional divert', () => {
-      const result = parse(`{ some_var } -> some_block`);
-      const expected = createDocPayload([
-        {
-          type: "conditional_content",
-          conditions: { type: "variable", name: "some_var" },
-          content: { type: "divert", target: "some_block", }
-        },
-      ]);
-      expect(result).toEqual(expected);
+      it('after divert', () => {
+        const result = parse(`-> some_block { some_var }`);
+        const expected = createDocPayload([
+          {
+            type: "conditional_content",
+            conditions: { type: "variable", name: "some_var" },
+            content: { type: "divert", target: "some_block", }
+          },
+        ]);
+        expect(result).toEqual(expected);
+      });
     });
 
     it('conditional option', () => {
@@ -854,6 +879,26 @@ describe('parse: logic', () => {
         ],
         }
       ]);
+      expect(result).toEqual(expected);
+    });
+
+    it('divert with assignment', () => {
+      const result = parse(`-> go { set a = 2 }`);
+      const expected = createDocPayload([{
+        type: 'action_content',
+        action: {
+          type: 'assignments',
+          assignments: [
+            {
+              type: 'assignment',
+              variable: { type: 'variable', name: 'a', },
+              operation: 'assign',
+              value: { type: 'literal', name: 'number', value: 2, },
+            },
+          ],
+        },
+        content: { type: 'divert', target: 'go', },
+      }]);
       expect(result).toEqual(expected);
     });
   });

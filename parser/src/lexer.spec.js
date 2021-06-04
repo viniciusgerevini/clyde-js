@@ -318,8 +318,10 @@ line 4
     ]);
   });
 
-  it('diverts', () => {
-    const tokens = tokenize(`
+
+  describe('diverts', () => {
+    it('diverts', () => {
+      const tokens = tokenize(`
 hello
 -> first divert
 
@@ -328,17 +330,38 @@ hello
   <-
   -> END
 `).getAll();
-    expect(tokens).toEqual([
-      { token: TOKENS.TEXT, value: 'hello', line: 1, column: 0, },
-      { token: TOKENS.DIVERT, value: 'first divert', line: 2, column: 0, },
-      { token: TOKENS.OPTION, line: 4, column: 0 },
-      { token: TOKENS.TEXT, value: 'test', line: 4, column: 2 },
-      { token: TOKENS.INDENT, line: 5, column: 0 },
-      { token: TOKENS.DIVERT, value: 'divert', line: 5, column: 2 },
-      { token: TOKENS.DIVERT_PARENT, line: 6, column: 2 },
-      { token: TOKENS.DIVERT, value: 'END', line: 7, column: 2 },
-      { token: TOKENS.EOF, line: 8, column: 0 },
-    ]);
+      expect(tokens).toEqual([
+        { token: TOKENS.TEXT, value: 'hello', line: 1, column: 0, },
+        { token: TOKENS.DIVERT, value: 'first divert', line: 2, column: 0, },
+        { token: TOKENS.LINE_BREAK, line: 2, column: 15 },
+        { token: TOKENS.OPTION, line: 4, column: 0 },
+        { token: TOKENS.TEXT, value: 'test', line: 4, column: 2 },
+        { token: TOKENS.INDENT, line: 5, column: 0 },
+        { token: TOKENS.DIVERT, value: 'divert', line: 5, column: 2 },
+        { token: TOKENS.LINE_BREAK, line: 5, column: 11 },
+        { token: TOKENS.DIVERT_PARENT, line: 6, column: 2 },
+        { token: TOKENS.LINE_BREAK, line: 6, column: 4 },
+        { token: TOKENS.DIVERT, value: 'END', line: 7, column: 2 },
+        { token: TOKENS.LINE_BREAK, line: 7, column: 8 },
+        { token: TOKENS.EOF, line: 8, column: 0 },
+      ]);
+    });
+
+    it('divert on EOF', () => {
+      const tokens = tokenize(`-> div`).getAll();
+      expect(tokens).toEqual([
+        { token: TOKENS.DIVERT, value: 'div', line: 0, column: 0, },
+        { token: TOKENS.EOF, line: 0, column: 6 },
+      ]);
+    });
+
+    it('divert parent EOF', () => {
+      const tokens = tokenize(`<-`).getAll();
+      expect(tokens).toEqual([
+        { token: TOKENS.DIVERT_PARENT, line: 0, column: 0, },
+        { token: TOKENS.EOF, line: 0, column: 2 },
+      ]);
+    });
   });
 
   it('variations', () => {
@@ -377,6 +400,7 @@ hello
       { token: TOKENS.INDENT, line: 7, column: 0 },
       { token: TOKENS.MINUS, line: 7, column: 2, },
       { token: TOKENS.DIVERT, value: 'nope', line: 7, column: 4 },
+      { token: TOKENS.LINE_BREAK, line: 7, column: 11 },
       { token: TOKENS.MINUS, line: 8, column: 2, },
       { token: TOKENS.TEXT, value: 'yep', line: 8, column: 4 },
       { token: TOKENS.DEDENT, line: 9, column: 0 },

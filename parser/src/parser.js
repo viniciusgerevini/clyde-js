@@ -205,6 +205,9 @@ export default function parse(doc) {
         if (peek([TOKENS.KEYWORD_SET, TOKENS.KEYWORD_TRIGGER])) {
           lines = [LineWithAction()];
         } else {
+          if (peek([TOKENS.KEYWORD_WHEN])) {
+            consume([TOKENS.KEYWORD_WHEN]);
+          }
           lines = [ConditionalLine()];
         }
         break;
@@ -442,13 +445,32 @@ export default function parse(doc) {
   const Divert = () => {
     consume([ TOKENS.DIVERT, TOKENS.DIVERT_PARENT ]);
     const divert = currentToken;
+    let token
 
     switch (divert.token) {
       case TOKENS.DIVERT:
-        return DivertNode(divert.value);
+        token = DivertNode(divert.value);
+        break;
       case TOKENS.DIVERT_PARENT:
-        return DivertNode('<parent>');
+        token = DivertNode('<parent>');
+        break;
     }
+
+    if (peek([TOKENS.LINE_BREAK])) {
+      consume([TOKENS.LINE_BREAK]);
+      return token;
+    }
+
+    if (peek([TOKENS.EOF])) {
+      return token;
+    }
+
+    if (peek([TOKENS.BRACE_OPEN])) {
+      consume([TOKENS.BRACE_OPEN]);
+      token = LineWithAction(token);
+    }
+
+    return token
   };
 
   const Variations = () => {
