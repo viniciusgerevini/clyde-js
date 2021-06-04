@@ -442,13 +442,27 @@ export default function parse(doc) {
   const Divert = () => {
     consume([ TOKENS.DIVERT, TOKENS.DIVERT_PARENT ]);
     const divert = currentToken;
+    let token
 
     switch (divert.token) {
       case TOKENS.DIVERT:
-        return DivertNode(divert.value);
+        token = DivertNode(divert.value);
+        break;
       case TOKENS.DIVERT_PARENT:
-        return DivertNode('<parent>');
+        token = DivertNode('<parent>');
+        break;
     }
+
+    if (peek([TOKENS.LINE_BREAK])) {
+      consume([TOKENS.LINE_BREAK]);
+      return token;
+    }
+
+    if (peek([TOKENS.EOF])) {
+      return token;
+    }
+
+    return token
   };
 
   const Variations = () => {

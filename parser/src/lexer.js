@@ -350,7 +350,14 @@ export function tokenize(input) {
       position += 1;
       column += 1;
     }
-    return Token(TOKENS.DIVERT, line, initialColumn, values.join('').trim());
+
+    const token = Token(TOKENS.DIVERT, line, initialColumn, values.join('').trim());
+    const linebreak = getFollowingLineBreak();
+    if (linebreak) {
+      return [ token, linebreak ];
+    }
+
+    return token;
   };
 
   const handleDivertToParent = () => {
@@ -358,7 +365,14 @@ export function tokenize(input) {
     position += 2;
     column += 2;
 
-    return Token(TOKENS.DIVERT_PARENT, line, initialColumn);
+    const token = Token(TOKENS.DIVERT_PARENT, line, initialColumn);
+    const linebreak = getFollowingLineBreak();
+
+    if (linebreak) {
+      return [ token, linebreak ];
+    }
+
+    return token;
   };
 
   const handleStartVariations = () => {
