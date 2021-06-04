@@ -205,6 +205,9 @@ export default function parse(doc) {
         if (peek([TOKENS.KEYWORD_SET, TOKENS.KEYWORD_TRIGGER])) {
           lines = [LineWithAction()];
         } else {
+          if (peek([TOKENS.KEYWORD_WHEN])) {
+            consume([TOKENS.KEYWORD_WHEN]);
+          }
           lines = [ConditionalLine()];
         }
         break;

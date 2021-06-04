@@ -379,6 +379,18 @@ describe('parse: logic', () => {
       expect(result).toEqual(expected);
     });
 
+    it('condition before line with keyword', () => {
+      const result = parse(`{ when some_var } This is conditional`);
+      const expected = createDocPayload([
+        {
+          type: "conditional_content",
+          conditions: { type: "variable", name: "some_var" },
+          content: { type: "line", value: "This is conditional", }
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
+
     it('condition after line', () => {
       const result = parse(`This is conditional { when some_var }`);
       const expected = createDocPayload([
