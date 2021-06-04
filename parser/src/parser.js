@@ -462,6 +462,11 @@ export default function parse(doc) {
       return token;
     }
 
+    if (peek([TOKENS.BRACE_OPEN])) {
+      consume([TOKENS.BRACE_OPEN]);
+      token = LineWithAction(token);
+    }
+
     return token
   };
 
