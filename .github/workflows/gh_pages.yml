@@ -1,0 +1,31 @@
+name: Publish Demo Page
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  CI: true
+
+defaults:
+  run:
+    working-directory: ./editor
+
+jobs:
+  publish-gh-pages:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install and Build
+      run: |
+        npm install
+        npm run build
+
+    - name: Deploy  🚀
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+        publish_dir: ./editor/build
+
