@@ -308,9 +308,9 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@clyde-lang/interpreter@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@clyde-lang/interpreter/-/interpreter-0.1.2.tgz#43e5c695e690e4b251dc90ce733c2f4b21eb5061"
-  integrity sha512-BBf9yx1R9LUqYppRpdLNQEc7QltTNy+b9vO7XJGUOtyAOX0eVBhkCDUottQ68VPZKfZYjVU1bSTq+poFWJNEhg==
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@clyde-lang/interpreter/-/interpreter-0.1.3.tgz#0bac6ec3326c1e86db2be665129090e772fe4d62"
+  integrity sha512-6sO0Fh0IVCqG9KHQSHgrfJQ6KZ131Ltqd8GlNOXinK7J5UYlZN01EvSSmo+4cEgF5gEXqA2PhSVbMyZw4Ib9sA==
 
 "@clyde-lang/parser@^0.1.2":
   version "0.1.2"

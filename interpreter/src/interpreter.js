@@ -80,7 +80,7 @@ export function Interpreter(doc, data, dictionary = {}) {
       }
       return current;
     },
-    'shuffle': (variations, mode = 'sequence' ) => {
+    'shuffle': (variations, mode = 'cycle' ) => {
       const SHUFFLE_VISITED_KEY = `${variations._index}_shuffle_visited`;
       const LAST_VISITED_KEY = `${variations._index}_last_index`;
       let visitedItems = mem.getInternalVariable(SHUFFLE_VISITED_KEY, []);
