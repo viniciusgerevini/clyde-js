@@ -55,8 +55,8 @@ describe("Interpreter: variations", () => {
     expect(dialogue.getContent().text).toEqual('end');
   });
 
-  test.each(['shuffle', 'shuffle sequence'])('%s: run shuffled variations in sequence, sticking with the last one', (mode) => {
-    const content = parse(`( ${mode}\n - Hello!\n - Hi!\n - Hey!\n)\nend\n`);
+  it('shuffle sequence: run shuffled variations in sequence, sticking with the last one', () => {
+    const content = parse(`( shuffle sequence\n - Hello!\n - Hi!\n - Hey!\n)\nend\n`);
     const dialogue = Interpreter(content);
 
     let usedOptions = [];
@@ -86,8 +86,8 @@ describe("Interpreter: variations", () => {
     expect(dialogue.getContent().text).toEqual('end');
   });
 
-  it('shuffle cycle: show each alternative out of order and then repeat again when finished.', () => {
-    const content = parse(`( shuffle cycle\n - Hello!\n - Hi!\n - Hey!\n)\nend\n`);
+  test.each(['shuffle', 'shuffle cycle'])('%s: show each alternative out of order and then repeat again when finished.', (mode) => {
+    const content = parse(`( ${mode}\n - Hello!\n - Hi!\n - Hey!\n)\nend\n`);
     const dialogue = Interpreter(content);
 
     let usedOptions = [];
