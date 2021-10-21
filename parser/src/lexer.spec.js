@@ -42,19 +42,6 @@ describe('Lexer', () => {
     ]);
   });
 
-  it('quotted text', () => {
-    const tokens = tokenize('"this is a line with: special# characters $.\\" Enjoy"').getAll();
-    expect(tokens).toEqual([
-      {
-        token: TOKENS.TEXT,
-        value: 'this is a line with: special# characters $." Enjoy',
-        line: 0,
-        column: 1,
-      },
-      { token: TOKENS.EOF, line: 0, column: 53, },
-    ]);
-  });
-
   it('single quotes text', () => {
     const tokens = tokenize("'this is a line with: special# characters $.\\' Enjoy'").getAll();
     expect(tokens).toEqual([
