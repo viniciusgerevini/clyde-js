@@ -206,6 +206,7 @@ If you need to use special characters in your dialogue, you can scape them by us
 ```
 It will cost you \$100.
 "This is an example: ###"
+'This is another example: ###'
 "You can even escape \" inside \"\""
 ```
 
@@ -216,6 +217,9 @@ Output:
 
 // get content
 { type: 'line', text: 'This is an example: ###'}
+
+// get content
+{ type: 'line', text: 'This is another example: ###'}
 
 // get content
 { type: 'line', text: 'You can even escape " inside ""'}
@@ -765,7 +769,7 @@ Logic blocks may contain:
 
 **Assignment operators**: assign `=`, sum `+=`, subtract `-=`, multiply `*=`, divide `/=`, power `^=` and modulo `%=`.
 
-**Literals**: Number (`100`, `1.5`), String (`"some text"`), Boolean (`true`, `false`), Null (`null`).
+**Literals**: Number (`100`, `1.5`), String (`"some text"`, `'some text'`), Boolean (`true`, `false`), Null (`null`).
 
 **Keywords**: `set`, `trigger`, `when`.
 
