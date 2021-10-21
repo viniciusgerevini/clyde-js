@@ -111,6 +111,7 @@ export function tokenize(input) {
   const modes = [
     MODES.DEFAULT
   ];
+  let currentQuote = null;
 
   const stackMode = (mode) => {
     modes.unshift(mode);
@@ -239,11 +240,11 @@ export function tokenize(input) {
       const currentChar = input[position];
 
 
-      if (currentChar === '"') {
+      if (currentChar === currentQuote) {
         break;
       }
 
-      if (currentChar === '\\' && input[position + 1] === '"') {
+      if (currentChar === '\\' && input[position + 1] === currentQuote) {
         value.push(input[position + 1]);
         position += 2;
         column += 2;
@@ -265,6 +266,7 @@ export function tokenize(input) {
     column += 1;
     position += 1;
     if (isCurrentMode(MODES.QSTRING)) {
+      currentQuote = null;
       popMode();
     } else {
       stackMode(MODES.QSTRING);
@@ -541,7 +543,10 @@ export function tokenize(input) {
   };
 
   const handleLogicBlock = () => {
-    if (input[position] === '"') {
+    if (input[position] === '"' || input[position] == "'") {
+      if (currentQuote === null) {
+        currentQuote = input[position]
+      }
       return handleLogicString();
     }
 
@@ -700,8 +705,14 @@ export function tokenize(input) {
       }
     }
 
-    if (input[position] === '"') {
-      return handleQuote();
+    if (input[position] === '"' || input[position] === "'") {
+      if (currentQuote === null) {
+        currentQuote = input[position]
+      }
+
+      if (input[position] === currentQuote) {
+        return handleQuote();
+      }
     }
 
     if (isCurrentMode(MODES.QSTRING)) {
