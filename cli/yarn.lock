@@ -307,15 +307,15 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@clyde-lang/interpreter@^0.1.2":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@clyde-lang/interpreter/-/interpreter-0.1.3.tgz#0bac6ec3326c1e86db2be665129090e772fe4d62"
-  integrity sha512-6sO0Fh0IVCqG9KHQSHgrfJQ6KZ131Ltqd8GlNOXinK7J5UYlZN01EvSSmo+4cEgF5gEXqA2PhSVbMyZw4Ib9sA==
+"@clyde-lang/interpreter@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@clyde-lang/interpreter/-/interpreter-1.0.0.tgz#ab83b430bcb168366349992047815da833599065"
+  integrity sha512-8OY3oK6Ilb1gRmDrsvu5UPuaAVlFMa6o8nXzbIrUtxuMx3BE2J//mu+Wb4tnhVeu6qOqVu68vPJoeTTnH0HHTg==
 
-"@clyde-lang/parser@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@clyde-lang/parser/-/parser-0.1.2.tgz#7c88a716fb665f4cb7fc64daacdc4581fd9cea9c"
-  integrity sha512-lh4APSlpmkCq2CkUFhQoLxgGMRJneh2YVtPSQ91tZS1CuV8TQHA8lOB3rQrtRrGp5ENZ/rxZqCUzz1cMZlqpCA==
+"@clyde-lang/parser@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@clyde-lang/parser/-/parser-1.0.0.tgz#176c625673ccd6921fa1c05d203ac4887d3967ef"
+  integrity sha512-Qt6ni/eAW7kNcaVAIrtdj2eGl2hDbN2bdfIBsux2uU6LNqijDAKN+Lyp1FhM3p3VHZhBhbFiDntrRXiNrgL4Pw==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
