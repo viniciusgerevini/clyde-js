@@ -42,6 +42,45 @@ describe('Lexer', () => {
     ]);
   });
 
+  it('single quotes text', () => {
+    const tokens = tokenize("'this is a line with: special# characters $.\\' Enjoy'").getAll();
+    expect(tokens).toEqual([
+      {
+        token: TOKENS.TEXT,
+        value: "this is a line with: special# characters $.' Enjoy",
+        line: 0,
+        column: 1,
+      },
+      { token: TOKENS.EOF, line: 0, column: 53, },
+    ]);
+  });
+
+  it('text with both leading quotes', () => {
+    const tokens = tokenize(`"'this' is a 'line'"`).getAll();
+    expect(tokens).toEqual([
+      {
+        token: TOKENS.TEXT,
+        value: "'this' is a 'line'",
+        line: 0,
+        column: 1,
+      },
+      { token: TOKENS.EOF, line: 0, column: 20, },
+    ]);
+  });
+
+  it('string literal with both quotes', () => {
+    const tokens = tokenize(`{ set characters = '{"name": "brain"}' }`).getAll();
+    expect(tokens).toEqual([
+      { column: 0,  line: 0, token: TOKENS.BRACE_OPEN },
+      { column: 2,  line: 0, token: TOKENS.KEYWORD_SET },
+      { column: 6,  line: 0, token: TOKENS.IDENTIFIER, value: 'characters'},
+      { column: 17, line: 0, token: TOKENS.ASSIGN },
+      { column: 19, line: 0, token: TOKENS.STRING_LITERAL, value: `{"name": "brain"}` },
+      { column: 39, line: 0, token: TOKENS.BRACE_CLOSE },
+      { column: 40, line: 0, token: TOKENS.EOF }
+    ]);
+  });
+
   it('escape characters in regular text', () => {
     const tokens = tokenize('this is a line with\\: special\\# characters \\$.\\" Enjoy').getAll();
     expect(tokens).toEqual([
