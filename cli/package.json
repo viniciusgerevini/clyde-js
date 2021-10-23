@@ -1,6 +1,6 @@
 {
   "name": "@clyde-lang/cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI tool for executing, parsing and debugging Clyde dialogue files",
   "main": "./cjs/index.js",
   "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
