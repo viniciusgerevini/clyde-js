@@ -1,20 +1,20 @@
 {
   "files": {
     "main.css": "/clyde/static/css/main.23a88984.chunk.css",
-    "main.js": "/clyde/static/js/main.98af9194.chunk.js",
-    "main.js.map": "/clyde/static/js/main.98af9194.chunk.js.map",
+    "main.js": "/clyde/static/js/main.f4f4a484.chunk.js",
+    "main.js.map": "/clyde/static/js/main.f4f4a484.chunk.js.map",
     "runtime-main.js": "/clyde/static/js/runtime-main.7be0ec15.js",
     "runtime-main.js.map": "/clyde/static/js/runtime-main.7be0ec15.js.map",
-    "static/js/2.f366323e.chunk.js": "/clyde/static/js/2.f366323e.chunk.js",
-    "static/js/2.f366323e.chunk.js.map": "/clyde/static/js/2.f366323e.chunk.js.map",
+    "static/js/2.4e60f113.chunk.js": "/clyde/static/js/2.4e60f113.chunk.js",
+    "static/js/2.4e60f113.chunk.js.map": "/clyde/static/js/2.4e60f113.chunk.js.map",
     "index.html": "/clyde/index.html",
     "static/css/main.23a88984.chunk.css.map": "/clyde/static/css/main.23a88984.chunk.css.map",
-    "static/js/2.f366323e.chunk.js.LICENSE.txt": "/clyde/static/js/2.f366323e.chunk.js.LICENSE.txt"
+    "static/js/2.4e60f113.chunk.js.LICENSE.txt": "/clyde/static/js/2.4e60f113.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.7be0ec15.js",
-    "static/js/2.f366323e.chunk.js",
+    "static/js/2.4e60f113.chunk.js",
     "static/css/main.23a88984.chunk.css",
-    "static/js/main.98af9194.chunk.js"
+    "static/js/main.f4f4a484.chunk.js"
   ]
 }
