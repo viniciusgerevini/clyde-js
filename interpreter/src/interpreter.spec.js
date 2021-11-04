@@ -120,6 +120,27 @@ result is %someVar%
       expect(anotherDialogue.getContent().text).toEqual('result is 1');
     });
 
+
+    it('make sure options are right when loading previously stringified data', () =>{
+      const content = parse(`
+* [a]
+  set as 1!{ set someVar = 1 }
+* [b]
+  set as 2!{ set someVar = 2 }
+result is %someVar%
+`);
+      const dialogue = Interpreter(content);
+      const anotherDialogue = Interpreter(content);
+      expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'a' }, { label: 'b' }] });
+      dialogue.choose(0);
+
+      const stringifiedData = JSON.stringify(dialogue.getData());
+      anotherDialogue.loadData(JSON.parse(stringifiedData));
+
+      expect(anotherDialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'b' }] });
+    });
+
+
     it('clear all data', () =>{
       const content = parse(`
 Hi!{ set someVar = 1 }
