@@ -222,7 +222,7 @@ this is something
     hello again
 * a whole new list
   hello
-* [ hello ]
+*= hello
   hi
   this is just some text with [ brackets ]
   and this is some text with * and + and >
@@ -248,9 +248,8 @@ this is something
       { token: TOKENS.TEXT, value: 'hello', line: 7, column: 2 },
       { token: TOKENS.DEDENT, line: 8, column: 0 },
       { token: TOKENS.OPTION, line: 8, column: 0 },
-      { token: TOKENS.SQR_BRACKET_OPEN, line: 8, column: 2 },
-      { token: TOKENS.TEXT, value: 'hello', line: 8, column: 4 },
-      { token: TOKENS.SQR_BRACKET_CLOSE, line: 8, column: 10 },
+      { token: TOKENS.ASSIGN, line: 8, column: 1 },
+      { token: TOKENS.TEXT, value: 'hello', line: 8, column: 3 },
       { token: TOKENS.INDENT, line: 9, column: 0 },
       { token: TOKENS.TEXT, value: 'hi', line: 9, column: 2 },
       { token: TOKENS.TEXT, value: 'this is just some text with [ brackets ]', line: 10, column: 2 },
@@ -268,7 +267,7 @@ speaker1: this is something
   * speaker2: this is another thing
     speaker3: hello
   + speaker4: this is a sticky option
-* [ speaker5: hello ]
+*= speaker5: hello
   speaker 1: this is ok
 `).getAll();
     expect(tokens).toEqual([
@@ -287,10 +286,9 @@ speaker1: this is something
       { token: TOKENS.TEXT, value: 'this is a sticky option', line: 4, column: 14 },
       { token: TOKENS.DEDENT, line: 5, column: 0 },
       { token: TOKENS.OPTION, line: 5, column: 0 },
-      { token: TOKENS.SQR_BRACKET_OPEN, line: 5, column: 2 },
-      { token: TOKENS.SPEAKER, value: 'speaker5', line: 5, column: 4 },
-      { token: TOKENS.TEXT, value: 'hello', line: 5, column: 14 },
-      { token: TOKENS.SQR_BRACKET_CLOSE, line: 5, column: 20 },
+      { token: TOKENS.ASSIGN, line: 5, column: 1 },
+      { token: TOKENS.SPEAKER, value: 'speaker5', line: 5, column: 3 },
+      { token: TOKENS.TEXT, value: 'hello', line: 5, column: 13 },
       { token: TOKENS.INDENT, line: 6, column: 0 },
       { token: TOKENS.SPEAKER, value: 'speaker 1', line: 6, column: 2 },
       { token: TOKENS.TEXT, value: 'this is ok', line: 6, column: 13 },
@@ -302,7 +300,7 @@ speaker1: this is something
     const tokens = tokenize(`
 speaker1: this is something $123
 * this is another thing $abc
-* [ hello $a1b2 ]
+*= hello $a1b2
 speaker1: this is something $123`).getAll();
     expect(tokens).toEqual([
       { token: TOKENS.SPEAKER, value: 'speaker1', line: 1, column: 0 },
@@ -312,10 +310,9 @@ speaker1: this is something $123`).getAll();
       { token: TOKENS.TEXT, value: 'this is another thing', line: 2, column: 2 },
       { token: TOKENS.LINE_ID, value: 'abc', line: 2, column: 24 },
       { token: TOKENS.OPTION, line: 3, column: 0 },
-      { token: TOKENS.SQR_BRACKET_OPEN, line: 3, column: 2 },
-      { token: TOKENS.TEXT, value: 'hello', line: 3, column: 4 },
-      { token: TOKENS.LINE_ID, value: 'a1b2', line: 3, column: 10 },
-      { token: TOKENS.SQR_BRACKET_CLOSE, line: 3, column: 16 },
+      { token: TOKENS.ASSIGN, line: 3, column: 1 },
+      { token: TOKENS.TEXT, value: 'hello', line: 3, column: 3 },
+      { token: TOKENS.LINE_ID, value: 'a1b2', line: 3, column: 9 },
       { token: TOKENS.SPEAKER, value: 'speaker1', line: 4, column: 0 },
       { token: TOKENS.TEXT, value: 'this is something', line: 4, column: 10 },
       { token: TOKENS.LINE_ID, value: '123', line: 4, column: 28 },

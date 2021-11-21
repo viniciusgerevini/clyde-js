@@ -29,7 +29,6 @@ npc: what do you want to talk about?
                 content: {
                   type: 'content',
                   content: [
-                    { type: 'line', value: 'Life', speaker: 'speaker' },
                     { type: 'line', value: 'I want to talk about life!', speaker: 'player', },
                     { type: 'line', value: 'Well! That\'s too complicated...', speaker: 'npc', },
                   ],
@@ -42,7 +41,6 @@ npc: what do you want to talk about?
                 content: {
                   type: 'content',
                   content: [
-                    { type: 'line', value: 'Everything else...', tags: [ 'some_tag', ] },
                     { type: 'line', value: 'What about everything else?', speaker: 'player', },
                     { type: 'line', value: 'I don\'t have time for this...', speaker: 'npc', },
                   ],
@@ -83,7 +81,6 @@ npc: what do you want to talk about?
                 content: {
                   type: 'content',
                   content: [
-                    { type: 'line', value: 'Life' },
                     { type: 'line', value: 'I want to talk about life!', speaker: 'player', },
                   ],
                 },
@@ -95,7 +92,6 @@ npc: what do you want to talk about?
                 content: {
                   type: 'content',
                   content: [
-                    { type: 'line', value: 'Everything else...', tags: [ 'some_tag', ] },
                     { type: 'line', value: 'What about everything else?', speaker: 'player', },
                   ],
                 },
@@ -135,7 +131,6 @@ npc: what do you want to talk about?
                 content: {
                   type: 'content',
                   content: [
-                    { type: 'line', value: 'Life' },
                     { type: 'line', value: 'I want to talk about life!', speaker: 'player', },
                   ],
                 },
@@ -147,7 +142,6 @@ npc: what do you want to talk about?
                 content: {
                   type: 'content',
                   content: [
-                    { type: 'line', value: 'Everything else...', tags: [ 'some_tag', ] },
                     { type: 'line', value: 'What about everything else?', speaker: 'player', },
                   ],
                 },
@@ -164,13 +158,13 @@ npc: what do you want to talk about?
   });
 
 
-  it('define label only text', () => {
+  it('define label to display as content', () => {
     const result = parse(`
 npc: what do you want to talk about?
-* [Life]
+*= Life
   player: I want to talk about life!
   npc: Well! That's too complicated...
-* [Everything else... #some_tag]
+*= Everything else... #some_tag
   player: What about everything else?
   npc: I don't have time for this...
 `);
@@ -190,6 +184,7 @@ npc: what do you want to talk about?
                 content: {
                   type: 'content',
                   content: [
+                    { type: 'line', value: 'Life' },
                     { type: 'line', value: 'I want to talk about life!', speaker: 'player', },
                     { type: 'line', value: 'Well! That\'s too complicated...', speaker: 'npc', },
                   ],
@@ -202,6 +197,7 @@ npc: what do you want to talk about?
                 content: {
                   type: 'content',
                   content: [
+                    { type: 'line', value: 'Everything else...', tags: ['some_tag'], },
                     { type: 'line', value: 'What about everything else?', speaker: 'player', },
                     { type: 'line', value: 'I don\'t have time for this...', speaker: 'npc', },
                   ],
@@ -287,7 +283,6 @@ spk: second try
                 content: {
                   type: 'content',
                   content: [
-                    { type: 'line', value: 'life' },
                     { type: 'line', value: 'I want to talk about life!', speaker: 'player', },
                     { type: 'line', value: 'Well! That\'s too complicated...', speaker: 'npc', },
                   ],
@@ -307,7 +302,6 @@ spk: second try
                 content: {
                   type: 'content',
                   content: [
-                    { type: 'line', value: 'life' },
                     { type: 'line', value: 'Well! That\'s too complicated...', speaker: 'npc', },
                   ],
                 },
@@ -349,7 +343,6 @@ spk: second try
                 content: {
                   type: 'content',
                   content: [
-                    { type: 'line', value: 'life' },
                     { type: 'line', value: 'I want to talk about life!', speaker: 'player', },
                   ],
                 },
@@ -367,7 +360,6 @@ spk: second try
                 content: {
                   type: 'content',
                   content: [
-                    { type: 'line', value: 'universe' },
                     { type: 'line', value: 'I want to talk about the universe!', speaker: 'player', },
                   ],
                 },
@@ -385,8 +377,8 @@ spk: second try
 
   it('ensures options ending worked', () => {
     const result = parse(`
-* yes
-* no
+*= yes
+*= no
 
 { some_check } maybe
 `);
@@ -437,8 +429,8 @@ spk: second try
 
   it('ensures option item ending worked', () => {
     const result = parse(`
-* yes { set yes = true }
-* [no]
+*= yes { set yes = true }
+* no
   no
 `);
     const expected = {
@@ -486,8 +478,8 @@ spk: second try
 
   it('options with blocks both sides', () => {
     const result = parse(`
-* { what } yes { set yes = true }
-* {set no = true} [no] { when something }
+*= { what } yes { set yes = true }
+* {set no = true} no { when something }
   no
 `);
     const expected = {
@@ -559,11 +551,11 @@ spk: second try
 
   it('options with multiple blocks on same side', () => {
     const result = parse(`
-* yes { when what } { set yes = true }
-* no {set no = true} { when something }
-* { when what } { set yes = true } yes
-* {set no = true} { when something } no
-* {set yes = true} { when yes } yes { set one_more = true }
+*= yes { when what } { set yes = true }
+*= no {set no = true} { when something }
+*= { when what } { set yes = true } yes
+*= {set no = true} { when something } no
+*= {set yes = true} { when yes } yes { set one_more = true }
 `);
     const expected = {
       type: 'document',
