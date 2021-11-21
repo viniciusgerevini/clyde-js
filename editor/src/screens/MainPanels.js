@@ -47,7 +47,7 @@ export default function MainPanels(props) {
     isInterpreterEnabled = true,
     toggleEditor,
     toggleInterpreter,
-    interpreterSplitDirection = 'vertical',
+    interpreterSplitDirection = 'horizontal',
     changeInterpreterSplitDirection,
     // editor
     editorDefaultValue,

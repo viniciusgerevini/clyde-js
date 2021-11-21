@@ -1,11 +1,11 @@
 {
   "name": "clyde-editor",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "homepage": "https://viniciusgerevini.github.io/clyde",
   "dependencies": {
-    "@clyde-lang/interpreter": "^1.0.0",
-    "@clyde-lang/parser": "^1.0.0",
+    "@clyde-lang/interpreter": "^2.0.0",
+    "@clyde-lang/parser": "^2.0.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.14",

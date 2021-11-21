@@ -42,13 +42,13 @@ I believe this is all
   it('use condition on options', () => {
     const content = parse(`
 {set choice_count = 0 }
-+ [always]
++ always
   forevaaa
   <-
-* { choice_count < 1 } [one time]
+* { choice_count < 1 } one time
   a { set choice_count += 1 }
   <-
-+ { choice_count < 2 } [twice]
++ { choice_count < 2 } twice
   b { set choice_count += 1 }
   <-
 `

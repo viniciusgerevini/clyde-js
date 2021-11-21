@@ -126,15 +126,15 @@ describe('variations', () => {
   it('variations with options', () => {
     const result = parse(`
 (
-  - * works?
+  - *= works?
     yes
-  * [yep?]
+  * yep?
     yes
   - nice
   -
-    * works?
+    *= works?
       yes
-    * [yep?]
+    * yep?
       yes
 )
 `);

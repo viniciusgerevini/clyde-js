@@ -83,10 +83,10 @@ line 4
 -> one
 -> END
 <-
-* [thats it]
+* thats it
   -> somewhere
   <-
-* [ does it work this way? ]
+* does it work this way?
   -> go
 `);
     const expected = {

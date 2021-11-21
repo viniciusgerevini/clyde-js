@@ -25,7 +25,7 @@ export default function Interpreter(p) {
     timeline,
     shouldShowExtraMetadata,
     shouldShowDebugPane,
-    debugPaneDirection,
+    debugPaneDirection = "horizontal",
     singleBubblePresentation,
     clydeDocument,
     setBlock,

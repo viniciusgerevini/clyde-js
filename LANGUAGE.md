@@ -2,14 +2,14 @@
 
 Clyde is a language for writing game dialogues. It supports branching dialogues, translations and interfacing with your game through variables and events.
 
-It was heavily inspired by [Ink](https://github.com/inkle/ink), but it focus on dialogues instead of narratives.
+It was heavily inspired by [Ink](https://github.com/inkle/ink), but it focuses on dialogues instead of narratives.
 
 You can play with the online editor [here](https://viniciusgerevini.github.io/clyde/).
 
 ### Principles
 
-- Simple to write. As close to normal text as possible.
-- File as source of truth. No extra databases or random data created during parsing.
+- Simple to write. As close to regular writing as possible.
+- File as the source of truth. No extra databases or random data is created during parsing.
 - Simple API. While other dialogue solutions try to be full game engines, Clyde's goal is to handle dialogues only, providing a simple interface that can be used in different scenarios.
 - Localisation in mind.
 
@@ -21,7 +21,7 @@ Even though this document is focused on the language itself, I think it's a good
 ``` javascript
 const dialogue = Interpreter(dialogueDocument);
 
-// Start or restart the dialogue from the begining. Optional when no block provided.
+// Start or restart the dialogue from the beginning. Optional when no block provided.
 dialogue.start(blockName);
 
 // Listen to events (variable changed, event triggered)
@@ -128,7 +128,7 @@ Output:
 
 ### Grouping lines
 
-If you wan't to group multiple lines in one call, you just need to indent the subsequent lines. You can choose to use spaces or tabs (or even both, however I don't recommend that):
+If you want to group multiple lines in one call, you just need to indent the subsequent lines. You can choose to use spaces or tabs (or even both, however, I don't recommend that):
 
 ```
 This is the first dialogue line.
@@ -147,7 +147,7 @@ Output:
 
 ### Speaker
 
-Use `:` to set a line speaker. Anything from the begining of the line to `:`(colon) is used as speaker.
+Use `:` to set a line speaker. Anything from the beginning of the line to `:`(colon) is used as speaker.
 
 ```
 Hagrid: Harry, yer a wizard.
@@ -229,10 +229,43 @@ Output:
 
 To define options or branches you can use `*` (single use), `+` (sticky) or `>` (fallback).
 
-#### Your options may be single lines:
+### Simple options
 ```
 * yes
+  Let's do this!
 * no
+  Not this time!
+
+continue
+```
+
+Output:
+```javascript
+// get content
+{
+    type: 'options',
+    options: [
+        { label: 'yes' },
+        { label: 'no' },
+    ]
+}
+
+// choose 0
+
+// get content
+{ type: 'line', text: "Let's do this!" }
+
+// get content
+{ type: 'line', text: 'continue'}
+```
+
+#### Your options may be single lines:
+
+By default, option labels are not returned as content. If you want to return a label, you can
+use the option display character `=`:
+```
+*= yes
+*= no
 
 continue
 ```
@@ -262,7 +295,7 @@ Output:
 * I need to think about that
     some line
     some other line
-* Simple option
+*= Simple option
 
 continue
 ```
@@ -281,9 +314,6 @@ Output
 // choose 0
 
 // get content
-{ type: 'line', text: 'I need to think about that'}
-
-// get content
 { type: 'line', text: 'some line'}
 
 // get content
@@ -299,7 +329,7 @@ Options can be nested:
 
 ```
 * Option a - has nested options
-    * Yes
+    *= Yes
     * No
         nope
 *
@@ -324,9 +354,6 @@ Output
 // choose 0
 
 // get content
-{ type: 'line', text: 'Option a - has nested options'}
-
-// get content
 {
     type: 'options',
     options: [
@@ -336,9 +363,6 @@ Output
 }
 
 // choose 1
-
-// get content
-{ type: 'line', text: 'No'}
 
 // get content
 { type: 'line', text: 'Nope'}
@@ -347,42 +371,14 @@ Output
 { type: 'line', text: 'continue'}
 ```
 
-### Display-only text
-
-As you may have noticed, everytime you choose an option, the option label is also returned as a line. You can set the first line as display only by using `[` and `]`
-
-
-```
-* Yes
-* [ No ]
-    nope
-```
-
-Output
-```javascript
-// get content
-{
-    type: 'options',
-    options: [
-        { label: 'Yes' },
-        { label: 'No' }
-    ]
-}
-
-// choose 1
-
-// get content
-{ type: 'line', text: 'nope'}
-```
-
 ### Options list's title
 
-Depending on how you show your dialogue, your options list may lose its context. To prevent that, you can define titles for your option list by indenting its block.
+Depending on how you show your dialogue, your options list may lose its context. To prevent that, you can define titles for your options list by indenting its block.
 
 ```
 Do you like turtles?
-    * Yes
-    * No
+    *= Yes
+    *= No
 ```
 
 Output
@@ -408,9 +404,9 @@ Output
 Option's default behaviour is to be removed from the list once used:
 
 ```
-* [ Option a ]
+* Option a
     A
-* [ Option b ]
+* Option b
     B
 
 ```
@@ -445,9 +441,9 @@ Output
 This is not always the desired behaviour. For that, you can use `+` for sticky options:
 
 ```
-+ [ Option a ]
++ Option a
     A
-* [ Option b ]
+* Option b
     B
 
 ```
@@ -486,9 +482,9 @@ Output
 A fallback option (`>`) is an option that is executed automatically when there is no other option available. When more than one option is available, it behaves like a sticky option.
 
 ```
-* [ Let's talk about it.]
+* Let's talk about it.
     A
-> [ That's all for today. ]
+> That's all for today.
     B
 
 ```
@@ -524,11 +520,11 @@ Nesting content can get messy real quick. An alternative is to group your conten
 
 ```
 What do you want to talk about?
-    * [Life]
+    * Life
       -> talk about life
-    * [The universe]
+    * The universe
       -> talk about the universe
-    * [Everything else...]
+    * Everything else...
       -> talk about everything else
 
 == talk about life
@@ -566,7 +562,7 @@ npc: I don't have time for this...
 { type: 'line', speaker: 'npc', text: "That's too complex!" }
 ```
 
-Blocks also allow you to have multiple dialogues in the same file, and run them independently from each other.
+Blocks also allow you to have multiple dialogues in the same file and run them independently from each other.
 
 ### Divert to parent
 
@@ -574,7 +570,7 @@ You can use `<-` to divert back to the parent block or parent option list.
 
 By default, blocks do not return to their callers.
 
-Because of that, in the following example the `npc: Let's continue...` line will never be called.
+Because of that, in the following example, the `npc: Let's continue...` line will never be called.
 ```
 npc: What do you want to do?
 
@@ -590,7 +586,7 @@ npc: Well! That's too complicated...
 
 ```
 
-In order to keep the progression in the main block, you can use a divert to parent `<-` inside the block.
+To keep the progression in the main block, you should use a divert to parent `<-` inside the block.
 
 ```
 npc: What do you want to do?
@@ -607,25 +603,25 @@ npc: Well! That's too complicated...
 
 ```
 
-Diverts to parent can also be used in options list, to allow the player to go through all options if they wish to.
+Diverts to parent can also be used in the options list, to allow the player to go through all options if they wish to.
 
 ```
 What do you want to talk about?
-    * [Life]
+    * Life
       -> talk about life
       <-
-    * [The universe]
+    * The universe
       -> talk about the universe
       <-
-    * [Everything else...]
+    * Everything else...
       -> talk about everything else
       <-
-    + [Nothing in special]
+    + Nothing in special
         I don't want to talk about anything.
 
 npc: That's all for today!
 
--- blocks defintions after this line
+-- blocks definitions after this line
 
 == talk about life
 player: I want to talk about life!
@@ -643,17 +639,17 @@ npc: I don't have time for this...
 <-
 ```
 
-These diverts can be simplified by joining them into the previous divert:
+You can join both diverts together in the same line for a cleaner look:
 
 ```
 What do you want to talk about?
-    * [Life]
+    * Life
       -> talk about life <-
-    * [The universe]
+    * The universe
       -> talk about the universe <-
-    * [Everything else...]
+    * Everything else...
       -> talk about everything else <-
-    + [Nothing in special]
+    + Nothing in special
         I don't want to talk about anything.
 ```
 
@@ -677,7 +673,7 @@ The first option will continue to line `As I was saying...`. The second option w
 
 ## Variations
 
-In some cases you may have a dialogue that can be repeated multiple times. To make things more interesting, you can use variations `(` `)` to show a different message every time the dialogue is run.
+In some cases, you may have a dialogue that can be repeated multiple times. To make things more interesting, you can use variations `(` `)` to show a different message every time the dialogue is executed.
 
 ```
 -- simple lines
@@ -702,11 +698,11 @@ What are you doing here?
 
 There are a few different behaviours available for variations (`sequence`, `once`, `cycle`, `shuffle`):
 
-**cycle**(default): This option returns each item and, when reaching the end, starts again from the begining.
+**cycle**(default): This option returns each item and, when reaching the end, starts again from the beginning.
 
 **sequence**: It will return each item once, and then it will stick to the last one.
 
-For example, in the following block, the first time will return `Once`, second time `Twice` and every other call after that will return `I lost count...`.
+For example, in the following block, the first time will return `Once`, the second time `Twice` and every other call after that will return `I lost count...`.
 
 ```
 ( sequence
@@ -796,12 +792,12 @@ some text here { set is_happy = true}
 some text here { set is_happy = true, is_naughty = false, a = b, b = 2 }
 ```
 
-Regardless the position, the assignment will always be executed when the line is returned.
+Regardless of the position, the assignment will always be executed when the line is returned.
 
 
 ### Conditions
 
-Conditions are used to control which lines should be shown. They do not require any special keyword, but you can optionally use `when` to explicitally show that the block is a condition. Examples:
+Conditions are used to control which lines should be shown. They do not require any special keyword, but you can optionally use `when` to explicitly show that the block is a condition. Examples:
 
 ```
 { set something = true }
@@ -933,5 +929,5 @@ In the example above, due to the conditional options, `OPTIONS_COUNT` is 2. If m
 
 That's pretty much all features implemented. You can check the `/examples` folder for more examples.
 
-All examples in this page are valid dialogues that can be run on the live [interpreter](https://viniciusgerevini.github.io/clyde/).
+All examples on this page are valid dialogues that can be run on the live [interpreter](https://viniciusgerevini.github.io/clyde/).
 

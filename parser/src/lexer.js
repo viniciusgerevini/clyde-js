@@ -5,8 +5,6 @@ export const TOKENS = {
   OPTION: 'OPTION',
   STICKY_OPTION: 'STICKY_OPTION',
   FALLBACK_OPTION: 'FALLBACK_OPTION',
-  SQR_BRACKET_OPEN: 'SQR_BRACKET_OPEN',
-  SQR_BRACKET_CLOSE: 'SQR_BRACKET_CLOSE',
   BRACKET_OPEN: 'BRACKET_OPEN',
   BRACKET_CLOSE: 'BRACKET_CLOSE',
   EOF: 'EOF',
@@ -68,8 +66,6 @@ const tokenFriendlyHint = {
   [TOKENS.OPTION]: '*',
   [TOKENS.STICKY_OPTION]: '+',
   [TOKENS.FALLBACK_OPTION]: '>',
-  [TOKENS.SQR_BRACKET_OPEN]: '[',
-  [TOKENS.SQR_BRACKET_CLOSE]: ']',
   [TOKENS.BRACKET_OPEN]: '(',
   [TOKENS.BRACKET_CLOSE]: ')',
   [TOKENS.EOF]: 'EOF',
@@ -290,13 +286,11 @@ export function tokenize(input) {
     return Token(token, line, initialColumn);
   };
 
-  // handle brackets
-  const handleBrackets = () => {
-    const token = input[position] === '[' ? TOKENS.SQR_BRACKET_OPEN : TOKENS.SQR_BRACKET_CLOSE;
+  const handleOptionDisplayChar = () => {
     const initialColumn = column;
     column += 1;
     position += 1;
-    return Token(token, line, initialColumn);
+    return Token(TOKENS.ASSIGN, line, initialColumn);
   };
 
   const handleLineId = () => {
@@ -751,8 +745,8 @@ export function tokenize(input) {
       return handleOption();
     }
 
-    if (isCurrentMode(MODES.OPTION) && ['[', ']' ].includes(input[position])) {
-      return handleBrackets();
+    if (isCurrentMode(MODES.OPTION) && input[position] === '=') {
+      return handleOptionDisplayChar();
     }
 
     if (input[position] === '$') {

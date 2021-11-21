@@ -343,24 +343,24 @@ export default function parse(doc) {
     consume([TOKENS.OPTION, TOKENS.STICKY_OPTION, TOKENS.FALLBACK_OPTION])
     const type = optionType[currentToken.token];
 
-    const acceptableNext = [TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.INDENT, TOKENS.SQR_BRACKET_OPEN, TOKENS.BRACE_OPEN];
+    const acceptableNext = [TOKENS.SPEAKER, TOKENS.TEXT, TOKENS.INDENT, TOKENS.ASSIGN, TOKENS.BRACE_OPEN];
     let lines = [];
     let mainItem;
-    let useFirstLineAsDisplayOnly = false;
+    let includeLabelAsContent = false;
     let root;
     let wrapper;
 
     consume(acceptableNext);
 
+    if (currentToken.token === TOKENS.ASSIGN) {
+      includeLabelAsContent = true;
+      consume(acceptableNext);
+    }
+
     if (currentToken.token === TOKENS.BRACE_OPEN) {
       const block = NestedLogicBlocks();
       root = block.root;
       wrapper = block.wrapper;
-      consume(acceptableNext);
-    }
-
-    if (currentToken.token === TOKENS.SQR_BRACKET_OPEN) {
-      useFirstLineAsDisplayOnly = true;
       consume(acceptableNext);
     }
 
@@ -370,9 +370,7 @@ export default function parse(doc) {
         isMultilineEnabled = false;
         mainItem = Line();
         isMultilineEnabled = true;
-        if (useFirstLineAsDisplayOnly) {
-          consume([TOKENS.SQR_BRACKET_CLOSE]);
-        } else {
+        if (includeLabelAsContent) {
           lines.push(mainItem);
         }
 

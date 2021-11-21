@@ -43,13 +43,6 @@ describe('MainPanels component', () => {
     expect(stubToggleInterpreter).toHaveBeenCalledWith(true);
   });
 
-  it('defaults split direction to vertical', () => {
-    const { container } = render(<MainPanels/>);
-    const panel = container.querySelector('div[direction="vertical"]');
-
-    expect(panel).toBeInTheDocument();
-  });
-
   it('configures split direction as horizontal', () => {
     const { container } = render(<MainPanels interpreterSplitDirection="horizontal" />);
     const panel = container.querySelector('div[direction="horizontal"]');
@@ -59,7 +52,7 @@ describe('MainPanels component', () => {
 
   it('sets split direction as horizontal', () => {
     const stubDirectionChange = jest.fn();
-    const { getByLabelText } = render(<MainPanels changeInterpreterSplitDirection={stubDirectionChange} />);
+    const { getByLabelText } = render(<MainPanels interpreterSplitDirection="vertical" changeInterpreterSplitDirection={stubDirectionChange} />);
 
     fireEvent.click(getByLabelText(/Toggle settings menu/i));
     fireEvent.click(getByLabelText(/Change split direction/i));

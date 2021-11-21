@@ -83,10 +83,10 @@ this is another block
       const content = parse(`
 Hello!
 question
-  * [yes]
+  * yes
     -> yes_answer
     continue
-  * [no]
+  * no
     -> no_answer
 end
 
@@ -114,11 +114,11 @@ no a!
       const content = parse(`
 Hello!
 question
-  * [yes]
+  * yes
     -> yes_answer
     continue
     <-
-  * [no]
+  * no
     -> no_answer
 end
 
