@@ -21,15 +21,15 @@ const load = () => {
 Narrator: Hello there!
 Player: Hi!
 Narrator: What do you want to talk about?
-  + [Life]
+  + Life
     -> about life <-
-  + [The universe]
+  + The universe
     -> about the universe <-
-  * [Everything else... #some_tag]
+  * Everything else... #some_tag
     -> about everything else <-
-  + [Earth]
+  + Earth
     -> about earth <-
-  + [Nothing]
+  + Nothing
     -> goodbye <-
 
 

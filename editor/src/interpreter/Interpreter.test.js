@@ -77,9 +77,9 @@ describe('Interpreter component', () => {
 
     const content = `
 what do you think?
-  * [yes]
+  * yes
     nice!
-  * [no]
+  * no
     ok!
 `;
 
@@ -118,9 +118,9 @@ what do you think?
 
     const content = `
 speaker: what do you think?
-  * [yes]
+  * yes
     nice!
-  * [no]
+  * no
     ok!
 `;
 
@@ -168,9 +168,9 @@ speaker: what do you think?
 
     const content = `
 what do you think?
-  * [yes]
+  * yes
     nice!
-  * [no]
+  * no
     ok!
 <<
 `;
@@ -524,7 +524,7 @@ hi
 first line
 second line
 third line
-* [yes]
+* yes
   nice!
 `;
 
@@ -580,17 +580,17 @@ third line
       const content = `
 first line
 hello
-  * [hi]
+  * hi
     hi!
 
 second line
 hello
-  * [hi]
+  * hi
     hi!
 
 third line
 hello
-  * [hi]
+  * hi
     hi!
 this is the end
 `;
