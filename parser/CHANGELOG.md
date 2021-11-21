@@ -2,6 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## 2.0.1 (2021-11-21)
+
+### Fixed
+
+- Options with closing brackets `]` would cause an infinite loop
+
 ## 2.0.0 (2021-11-21)
 
 ### Breaking Changes
