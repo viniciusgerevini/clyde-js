@@ -6,9 +6,8 @@ import throttle from 'lodash/throttle';
 import reducer from './redux/reducers';
 import MainPanelsContainer from './screens/MainPanelsContainer';
 
+import { createEmptyState as createEmptyEditorState } from './redux/editor';
 import { loadState, saveState } from './storage/local-storage';
-
-
 
 const EDITOR_DEFAULT_VALUE = `--
 --
@@ -78,9 +77,9 @@ Narrator: Good bye!
 
 
 const load = () => {
-  const data = loadState() || { editor: reducer.editor?.createEmptyState() };
+  const data = loadState() || { editor: createEmptyEditorState() };
 
-  if (data.editor && !data.editor.currentValue) {
+  if (!data.editor.currentValue) {
     data.editor.currentValue = EDITOR_DEFAULT_VALUE;
   }
 
