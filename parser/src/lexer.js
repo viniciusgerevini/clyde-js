@@ -199,7 +199,7 @@ export function tokenize(input) {
     while (position < input.length) {
       const currentChar = input[position];
 
-      if (['\n', '$', '#', '{' ].includes(currentChar) || (isCurrentMode(MODES.OPTION) && currentChar === ']')) {
+      if (['\n', '$', '#', '{' ].includes(currentChar)) {
         break;
       }
 

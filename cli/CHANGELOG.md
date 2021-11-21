@@ -2,6 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## 2.0.1 (2021-11-21)
+
+### Changed
+
+- Updated @clyde-lang/parser to v2.0.1 and @clyde-lang/interpreter to v2.0.1.
+
 ## 2.0.0 (2021-11-21)
 
 ### Breaking changes
