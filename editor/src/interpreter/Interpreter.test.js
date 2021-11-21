@@ -225,7 +225,7 @@ what do you think?
     const id = queryAllByLabelText(/line id/i);
     const tags = queryAllByLabelText(/line tags/i);
 
-    expect(queryAllByLabelText(/metadata/i).length).toBe(3);
+    expect(queryAllByLabelText(/metadata/i).length).toBe(4); // this is 4 because it includes the menu
     expect(id[0].innerHTML).toMatch(/.*id:.*some_id/);
     expect(tags[0].innerHTML).toMatch(/.*tags:.*tag/);
 
@@ -340,7 +340,6 @@ neither this one
           timeline={[]}/>
       );
 
-      fireEvent.click(getByLabelText(/Interpreter options/i));
       fireEvent.click(getByText(/Show debug pane/i));
 
       expect(showDebugPaneStub).toHaveBeenCalled();
@@ -360,7 +359,6 @@ neither this one
           timeline={[]}/>
       );
 
-      fireEvent.click(getByLabelText(/Interpreter options/i));
       fireEvent.click(getByText(/Hide debug pane/i));
 
       expect(hideDebugPaneStub).toHaveBeenCalled();
@@ -379,7 +377,6 @@ neither this one
           timeline={[]}/>
       );
 
-      fireEvent.click(getByLabelText(/Interpreter options/i));
       fireEvent.click(getByText(/Show metadata/i));
 
       expect(showExtraMetadataStub).toHaveBeenCalled();
@@ -397,7 +394,6 @@ neither this one
           shouldShowExtraMetadata
           timeline={[]}/>
       );
-      fireEvent.click(getByLabelText(/Interpreter options/i));
       fireEvent.click(getByText(/Hide metadata/i));
 
       expect(hideExtraMetadataStub).toHaveBeenCalled();
@@ -416,7 +412,6 @@ neither this one
           timeline={[]}/>
       );
 
-      fireEvent.click(getByLabelText(/Interpreter options/i));
       fireEvent.click(getByLabelText(/Set single bubble dialogue/i));
 
       expect(enableSingleBubbleDialogueStub).toHaveBeenCalled();
@@ -435,7 +430,6 @@ neither this one
           timeline={[]}/>
       );
 
-      fireEvent.click(getByLabelText(/Interpreter options/i));
       fireEvent.click(getByLabelText(/Set multi bubble dialogue/i));
 
       expect(disableSingleBubbleDialogueStub).toHaveBeenCalled();

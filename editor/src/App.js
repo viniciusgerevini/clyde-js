@@ -8,12 +8,9 @@ import MainPanelsContainer from './screens/MainPanelsContainer';
 
 import { loadState, saveState } from './storage/local-storage';
 
-const load = () => {
-  const data = loadState() || { editor: {} };
 
 
-  if (!data.editor?.currentValue) {
-    data.editor.currentValue = `--
+const EDITOR_DEFAULT_VALUE = `--
 --
 -- This is a sample dialogue.
 --
@@ -78,6 +75,13 @@ Player: What do you know about earth?
 Player: Bye!
 Narrator: Good bye!
 `;
+
+
+const load = () => {
+  const data = loadState() || { editor: reducer.editor?.createEmptyState() };
+
+  if (data.editor && !data.editor.currentValue) {
+    data.editor.currentValue = EDITOR_DEFAULT_VALUE;
   }
 
   return {

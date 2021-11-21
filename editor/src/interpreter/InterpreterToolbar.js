@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from 'styled-components';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faCog,
   faRedoAlt,
   faFastForward,
   faBug,
@@ -13,8 +12,6 @@ import {
   faGhost,
   faHandSparkles,
 } from '@fortawesome/free-solid-svg-icons'
-
-import DropDownMenu, { DropDownItem } from '../screens/DropdownMenu';
 
 const InterpreterToolbarWrapper = styled.div`
   display: flex;
@@ -34,17 +31,6 @@ const InterpreterToolbarWrapper = styled.div`
   }
 `;
 
-const IconWrapper = styled.span`
-  cursor: pointer;
-  position: relative;
-  margin: 0px 20px;
-  > svg {
-    font-size: 1.5em;
-    &:hover {
-      color: #222;
-    }
-  }
-`;
 
 export default function InterpreterToolbar(properties) {
   const {
@@ -67,16 +53,10 @@ export default function InterpreterToolbar(properties) {
     clearEvents,
   } = properties;
 
-  const [isMenuVisible, setMenuVisibility] = useState(false);
-
   const selectBlock = (blockName) => {
     setBlock(blockName);
     clearTimeline();
     dialogue.start(blockName);
-  };
-
-  const toggleMenu = () => {
-    setMenuVisibility(!isMenuVisible);
   };
 
   const toggleMultipleBubbles = () => {
@@ -158,28 +138,9 @@ export default function InterpreterToolbar(properties) {
         onClick={toggleMultipleBubbles}
       />
 
-      <IconWrapper>
-        <FontAwesomeIcon icon={faCog} onClick={toggleMenu} title="Interpreter options"/>
-        { isMenuVisible ? (
-          <DropDownMenu onClick={toggleMenu} style={{ width: '280px' }}>
+      <FontAwesomeIcon icon={faReceipt} onClick={toggleExtraMetadata} title={`${shouldShowExtraMetadata ? 'Hide' : 'Show'} metadata`}/>
 
-            <DropDownItem
-              label="Toggle extra metadata"
-              onClick={toggleExtraMetadata}
-              icon={faReceipt}
-              text={`${shouldShowExtraMetadata ? 'Hide' : 'Show'} metadata`}
-            />
-
-            <DropDownItem
-              label="Toggle debug pane"
-              onClick={toggleDebugPane}
-              icon={faBug}
-              text={`${shouldShowDebugPane ? 'Hide' : 'Show'} debug pane`}
-              />
-           </DropDownMenu>
-          ) : ''
-        }
-      </IconWrapper>
+      <FontAwesomeIcon icon={faBug} onClick={toggleDebugPane} title={`${shouldShowDebugPane ? 'Hide' : 'Show'} debug pane`}/>
     </InterpreterToolbarWrapper>
   );
 }

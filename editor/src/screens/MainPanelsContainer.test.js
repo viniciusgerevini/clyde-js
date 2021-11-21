@@ -193,7 +193,6 @@ describe('MainPanelsContainer', () => {
       );
       const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
 
-      fireEvent.click(getByLabelText(/Interpreter options/i));
       fireEvent.click(getByText(/Show debug pane/i));
 
       const action = store.getActions()[0];
@@ -209,7 +208,6 @@ describe('MainPanelsContainer', () => {
       );
       const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
 
-      fireEvent.click(getByLabelText(/Interpreter options/i));
       fireEvent.click(getByText(/Hide debug pane/i));
 
       const action = store.getActions()[0];
@@ -255,7 +253,6 @@ describe('MainPanelsContainer', () => {
       );
       const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
 
-      fireEvent.click(getByLabelText(/Interpreter options/i));
       fireEvent.click(getByText(/Show metadata/i));
 
       const action = store.getActions()[0];
@@ -271,7 +268,6 @@ describe('MainPanelsContainer', () => {
       );
       const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
 
-      fireEvent.click(getByLabelText(/Interpreter options/i));
       fireEvent.click(getByText(/Hide metadata/i));
 
       const action = store.getActions()[0];
@@ -288,7 +284,6 @@ describe('MainPanelsContainer', () => {
       );
       const { getByLabelText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
 
-      fireEvent.click(getByLabelText(/Interpreter options/i));
       fireEvent.click(getByLabelText(/Set single bubble dialogue/i));
 
       const action = store.getActions()[0];
@@ -304,7 +299,6 @@ describe('MainPanelsContainer', () => {
       );
       const { getByLabelText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
 
-      fireEvent.click(getByLabelText(/Interpreter options/i));
       fireEvent.click(getByLabelText(/Set multi bubble dialogue/i));
 
       const action = store.getActions()[0];
