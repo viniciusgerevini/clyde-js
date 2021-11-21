@@ -3,7 +3,7 @@
 
 { not introductionMade } Jules: Okay now, tell me about that. { set introductionMade =  true, europeTopicsTalked = 0 }
 Vincent: What do you want to know?
-  * Jules: Is hash legal there?
+  *= Jules: Is hash legal there?
     Vincent: Yes, but is ain't a hundred percent legal.
              I mean you can't walk into a restaurant, roll a joint,
              and start puffin' away. You're only supposed to smoke in
@@ -17,7 +17,7 @@ Vincent: What do you want to know?
              Searching you is a right that the cops in Amsterdam don't have.
     Jules: That did it, man - I'm f**n' goin', that's all there is to it.
     <-
-  + { europeTopicsTalked < 4 }  [Something about Europe.]
+  + { europeTopicsTalked < 4 }  Something about Europe.
     { europeTopicsTalked == 0 }
              Vincent: You know what the funniest thing about Europe is?
              Jules: what?
@@ -29,14 +29,14 @@ Vincent: What do you want to know?
     )
 
     About Europe...
-      * [You can buy beer in movie theatres.]
+      * You can buy beer in movie theatres.
         Vincent: Well, in Amsterdam, you can buy beer in a
                  movie theatre.
         Vincent: And I don't mean in a paper
                  cup either. They give you a glass of beer,
         { set europeTopicsTalked += 1}
         <-
-      * Vincent: You know what they call a Quarter Pounder with Cheese in Paris?
+      *= Vincent: You know what they call a Quarter Pounder with Cheese in Paris?
         Jules: They don't call it a Quarter Pounder with Cheese?
         Vincent: No, they got the metric system there, they wouldn't know what
                  the f a Quarter Pounder is.
@@ -47,11 +47,11 @@ Vincent: What do you want to know?
         { set quarterPounderTalkCompleted = true }
         { set europeTopicsTalked += 1}
         <-
-      * { quarterPounderTalkCompleted } Jules: What do they call a Whopper?
+      *= { quarterPounderTalkCompleted } Jules: What do they call a Whopper?
                                         Vincent: I dunno, I didn't go into a Burger King.
                                         { set europeTopicsTalked += 1}
                                         <-
-      * [What they put on the french fries instead of ketchup.]
+      * What they put on the french fries instead of ketchup.
         Vincent: You know what they put on french fries in Holland
                  instead of ketchup?
         Jules: What?
@@ -62,11 +62,11 @@ Vincent: What do you want to know?
         Jules: Uuccch!
         { set europeTopicsTalked += 1}
         <-
-      + { OPTIONS_COUNT > 1 } [I'm suddenly not interested anymore.]
+      + { OPTIONS_COUNT > 1 } I'm suddenly not interested anymore.
         Jules: We talk about this another time.
     { set europeTalkCompleted = true }
     <-
-  + { OPTIONS_COUNT > 1 } [Nah, maybe another time]
+  + { OPTIONS_COUNT > 1 } Nah, maybe another time
     ( shuffle
        - Vincent: Alright!
        - Vincent: No problem!
