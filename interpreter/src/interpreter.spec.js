@@ -79,9 +79,9 @@ describe("Interpreter", () => {
   describe('persistence', () => {
     it('get all data and start new instance with right state', () =>{
       const content = parse(`
-* [a]
+* a
   Hi!{ set someVar = 1 }
-* [b]
+* b
   hello %someVar%
 `);
       const dialogue = Interpreter(content);
@@ -99,9 +99,9 @@ describe("Interpreter", () => {
 
     it('get all data and load in another instance', () =>{
       const content = parse(`
-* [a]
+* a
   set as 1!{ set someVar = 1 }
-* [b]
+* b
   set as 2!{ set someVar = 2 }
 result is %someVar%
 `);
@@ -123,9 +123,9 @@ result is %someVar%
 
     it('make sure options are right when loading previously stringified data', () =>{
       const content = parse(`
-* [a]
+* a
   set as 1!{ set someVar = 1 }
-* [b]
+* b
   set as 2!{ set someVar = 2 }
 result is %someVar%
 `);
@@ -178,7 +178,7 @@ This will not be replaced
 This should be replaced $abc
 This will not be replaced either $def
 replace $ghi
-  * [replace $jkl]
+  * replace $jkl
     <-
 (
   -replace $mno

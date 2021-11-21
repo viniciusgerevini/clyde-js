@@ -2,6 +2,16 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## 2.0.0 (2021-11-21)
+
+### Breaking Changes
+
+Updated @clyde-lang/parser to v2.0.0 to support new Options behaviour.
+
+- Option lines are not included as content anymore.
+- Supports `=` to keep old behaviour of showing the main line.
+- Brackets (`[]`) for display only options are not required or allowed.
+
 ## 1.0.0 (2021-10-21)
 
 ### Breaking changes
