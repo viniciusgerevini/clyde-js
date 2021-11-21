@@ -220,7 +220,7 @@ this is something
     hello
   + this is a sticky option
     hello again
-* a whole new list
+* [a whole new list]
   hello
 *= hello
   hi
@@ -243,7 +243,7 @@ this is something
       { token: TOKENS.DEDENT, line: 6, column: 2 },
       { token: TOKENS.DEDENT, line: 6, column: 0 },
       { token: TOKENS.OPTION, line: 6, column: 0 },
-      { token: TOKENS.TEXT, value: 'a whole new list', line: 6, column: 2 },
+      { token: TOKENS.TEXT, value: '[a whole new list]', line: 6, column: 2 },
       { token: TOKENS.INDENT, line: 7, column: 0 },
       { token: TOKENS.TEXT, value: 'hello', line: 7, column: 2 },
       { token: TOKENS.DEDENT, line: 8, column: 0 },
