@@ -3,6 +3,10 @@ name: Publish Demo Page
 on:
   push:
     branches: [ master ]
+    paths:
+      - editor/**
+      - interpreter/**
+      - parser/**
 
 env:
   CI: true
