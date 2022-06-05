@@ -3,8 +3,14 @@ name: Parser and Interpreter CI
 on:
   push:
     branches: [ master ]
+    paths:
+      - interpreter/**
+      - parser/**
   pull_request:
     branches: [ master ]
+    paths:
+      - interpreter/**
+      - parser/**
 
 jobs:
   parser:
