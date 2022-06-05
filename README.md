@@ -1,5 +1,8 @@
 # Clyde - Dialogue Language
 
+![Parser and Interpreter tests](https://github.com/viniciusgerevini/clyde/actions/workflows/main.yml/badge.svg?branch=master)
+![Editor tests](https://github.com/viniciusgerevini/clyde/actions/workflows/editor.yml/badge.svg?branch=master)
+![Playground deploy](https://github.com/viniciusgerevini/clyde/actions/workflows/gh_pages.yml/badge.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/viniciusgerevini/clyde/badge.svg?branch=master)](https://coveralls.io/github/viniciusgerevini/clyde?branch=master)
 
 Clyde is a language for writing game dialogues. It supports branching dialogues, translations and interfacing with your game through variables and events.
