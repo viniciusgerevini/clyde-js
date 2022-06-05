@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "workspaces": [
+    "cli",
+    "editor",
+    "interpreter",
+    "parser"
+  ]
+}
