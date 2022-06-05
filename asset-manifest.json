@@ -1,20 +1,13 @@
 {
   "files": {
-    "main.css": "/clyde/static/css/main.23a88984.chunk.css",
-    "main.js": "/clyde/static/js/main.248340bc.chunk.js",
-    "main.js.map": "/clyde/static/js/main.248340bc.chunk.js.map",
-    "runtime-main.js": "/clyde/static/js/runtime-main.64ec23c1.js",
-    "runtime-main.js.map": "/clyde/static/js/runtime-main.64ec23c1.js.map",
-    "static/js/2.942daec9.chunk.js": "/clyde/static/js/2.942daec9.chunk.js",
-    "static/js/2.942daec9.chunk.js.map": "/clyde/static/js/2.942daec9.chunk.js.map",
+    "main.css": "/clyde/static/css/main.18e36f58.css",
+    "main.js": "/clyde/static/js/main.dec37983.js",
     "index.html": "/clyde/index.html",
-    "static/css/main.23a88984.chunk.css.map": "/clyde/static/css/main.23a88984.chunk.css.map",
-    "static/js/2.942daec9.chunk.js.LICENSE.txt": "/clyde/static/js/2.942daec9.chunk.js.LICENSE.txt"
+    "main.18e36f58.css.map": "/clyde/static/css/main.18e36f58.css.map",
+    "main.dec37983.js.map": "/clyde/static/js/main.dec37983.js.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.64ec23c1.js",
-    "static/js/2.942daec9.chunk.js",
-    "static/css/main.23a88984.chunk.css",
-    "static/js/main.248340bc.chunk.js"
+    "static/css/main.18e36f58.css",
+    "static/js/main.dec37983.js"
   ]
 }
