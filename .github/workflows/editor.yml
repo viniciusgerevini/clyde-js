@@ -1,0 +1,31 @@
+name: Editor tests
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - editor/**
+  pull_request:
+    branches: [ master ]
+    paths:
+      - editor/**
+
+jobs:
+  editor:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Editor - Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    # using workspace as yarn workspaces only geenrate lock files in the root
+    - run: yarn install && yarn workspace @clyde-lang/parser build && yarn workspace @clyde-lang/interpreter build && yarn workspace clyde-editor test --coverage
