@@ -1,5 +1,7 @@
 # Clyde - Dialogue Language
 
+[![Coverage Status](https://coveralls.io/repos/github/viniciusgerevini/clyde/badge.svg?branch=master)](https://coveralls.io/github/viniciusgerevini/clyde?branch=master)
+
 Clyde is a language for writing game dialogues. It supports branching dialogues, translations and interfacing with your game through variables and events.
 
 It was heavily inspired by [Ink](https://github.com/inkle/ink), but it focuses on dialogues instead of narratives.
