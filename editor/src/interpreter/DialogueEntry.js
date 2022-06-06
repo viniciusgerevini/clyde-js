@@ -15,6 +15,7 @@ const DialogueBubble = styled.div`
 `;
 
 const DialogueContent = styled.div`
+  white-space: pre;
 `;
 
 const DialogueSpeaker = styled.div`
