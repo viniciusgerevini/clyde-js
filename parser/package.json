@@ -6,7 +6,7 @@
   "types": "./dist/mjs/index.d.ts",
   "scripts": {
     "prepublish": "npm run build",
-    "build": "rm -rf dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "build": "rm -rf dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./configure_dist_modules",
     "test": "jest --coverage"
   },
   "keywords": [],

@@ -210,7 +210,7 @@ he he
 
     expect(tokens.next()).toEqual({ token: TOKENS.TEXT, value: 'normal line', line: 0, column: 0, });
     expect(tokens.next()).toEqual({ token: TOKENS.EOF, line: 0, column: 11 });
-    expect(tokens.next()).toEqual(undefined);
+    expect(tokens.next()).toEqual({ token: TOKENS.EOF, line: 0, column: 11 });
   });
 
   it('options', () => {

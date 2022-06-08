@@ -10,15 +10,15 @@ export const BlockNode = (blockName, content) => {
   return { type: 'block', name: blockName, content };
 }
 
-export const LineNode = (value, speaker, id, tags) => {
+export const LineNode = (value: string, speaker?: string, id?: string, tags?: string[]) => {
   return { type: 'line', value, speaker, id, tags };
 };
 
-export const OptionsNode = (content, name, id, speaker, tags) => {
+export const OptionsNode = (content, name?: string, id?: string, speaker?: string, tags?: string) => {
   return { type: 'options', name, content, id, speaker, tags };
 }
 
-export const OptionNode = (content, mode, name, id, speaker, tags) => {
+export const OptionNode = (content, mode?: string, name?: string, id?: string, speaker?: string, tags?: string) => {
   return { type: 'option', name, mode, content, id, speaker, tags };
 }
 
@@ -57,11 +57,11 @@ export const NullTokenNode = () => {
   return { type: 'null' };
 }
 
-export const ConditionalContentNode = (conditions, content) => {
+export const ConditionalContentNode = (conditions, content?) => {
   return { type: 'conditional_content', conditions, content };
 }
 
-export const ActionContentNode = (action, content) => {
+export const ActionContentNode = (action, content?) => {
   return { type: 'action_content', action, content };
 }
 

@@ -796,9 +796,9 @@ export function tokenize(input: string): TokenList {
     },
 
     // retuns a token each time
-    next(): Token | undefined {
+    next(): Token {
       if (pendingTokens.length) {
-        return pendingTokens.shift();
+        return pendingTokens.shift()!;
       }
 
       while (position < length) {
@@ -806,17 +806,14 @@ export function tokenize(input: string): TokenList {
         if (token) {
           if (Array.isArray(token)) {
             pendingTokens = token;
-            return pendingTokens.shift();
+            return pendingTokens.shift()!;
           } else {
             return token;
           }
         }
       }
 
-      if (position === length) {
-        position += 1;
-        return { token: TOKENS.EOF, line, column };
-      }
+      return { token: TOKENS.EOF, line, column };
     }
   }
 }

@@ -1,4 +1,4 @@
-import { TOKENS, tokenize, getTokenFriendlyHint } from './lexer.js';
+import { TOKENS, tokenize, getTokenFriendlyHint, Token } from './lexer';
 
 import {
   DocumentNode,
@@ -21,7 +21,7 @@ import {
   AssignmentNode,
   EventsNode,
   EventNode,
-} from './nodes.js';
+} from './nodes';
 
 const variationsModes = ['sequence', 'once', 'cycle', 'shuffle', 'shuffle sequence', 'shuffle once', 'shuffle cycle' ];
 const operators = {
@@ -54,14 +54,12 @@ const assignmentOperators = {
 /**
  * Parses Clyde dialogue string to Clyde object
  *
- * @param {string} doc - Clyde document string
- * @return {Object} Clyde JSON representation
  */
-export default function parse(doc) {
+export default function parse(doc: string) {
   const tokens = tokenize(doc);
   // console.log(tokenize(doc).getAll());
   // console.log(JSON.stringify(test.getAll()));
-  let currentToken;
+  let currentToken: Token;
   let lookaheadTokens = [];
   let isMultilineEnabled = true;
 
@@ -84,12 +82,11 @@ export default function parse(doc) {
     return currentToken;
   };
 
-  const peek = (expected, offset = 0) => {
+  const peek = (expected?: string[], offset = 0) => {
     while (lookaheadTokens.length < (offset + 1)) {
       const token = tokens.next();
-      if (token) {
-        lookaheadTokens.push(token);
-      } else {
+      lookaheadTokens.push(token);
+      if (token.token == TOKENS.EOF) {
         break;
       }
     }
@@ -513,7 +510,7 @@ export default function parse(doc) {
     return variations;
   };
 
-  const LineWithAction = (line) => {
+  const LineWithAction = (line?: any) => {
     const token = peek([
       TOKENS.KEYWORD_SET,
       TOKENS.KEYWORD_TRIGGER,
