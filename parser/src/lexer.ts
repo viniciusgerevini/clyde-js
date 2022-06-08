@@ -51,12 +51,12 @@ export const TOKENS = {
   LINE_BREAK: 'line break',
 }
 
-const MODES = {
-  DEFAULT: 'DEFAULT',
-  OPTION: 'OPTION',
-  QSTRING: 'QSTRING',
-  LOGIC: 'LOGIC',
-  VARIATIONS: 'VARIATIONS',
+enum LexerMode {
+  DEFAULT,
+  OPTION,
+  QSTRING,
+  LOGIC,
+  VARIATIONS,
 };
 
 const tokenFriendlyHint = {
@@ -89,7 +89,29 @@ const tokenFriendlyHint = {
   [TOKENS.LESS]: '<',
 }
 
-export function getTokenFriendlyHint(token) {
+type OptionType = '*' | '+' | '>';
+
+const optionTypes = {
+  '*': TOKENS.OPTION,
+  '+': TOKENS.STICKY_OPTION,
+  '>': TOKENS.FALLBACK_OPTION,
+};
+
+export type Token = {
+  token: string;
+  value?: string;
+  line: number;
+  column: number;
+};
+
+interface TokenList {
+  getAll(): Token[];
+  next(): Token | undefined;
+}
+
+export type TokenHandlerReturn = Token | Token[] | void;
+
+export function getTokenFriendlyHint(token: string): string {
   const hint = tokenFriendlyHint[token];
   if (!hint) {
     return token;
@@ -97,19 +119,19 @@ export function getTokenFriendlyHint(token) {
   return hint;
 }
 
-export function tokenize(input) {
+export function tokenize(input: string): TokenList {
   let indent = [0];
   let position = 0;
   let line = 0;
   let column = 0;
   let length = input.length;
-  let pendingTokens = [];
+  let pendingTokens: Token[] = [];
   const modes = [
-    MODES.DEFAULT
+    LexerMode.DEFAULT
   ];
-  let currentQuote = null;
+  let currentQuote: string | null = null;
 
-  const stackMode = (mode) => {
+  const stackMode = (mode: LexerMode) => {
     modes.unshift(mode);
   };
 
@@ -119,18 +141,17 @@ export function tokenize(input) {
     }
   };
 
-  const isCurrentMode = (mode) => {
+  const isCurrentMode = (mode: LexerMode): boolean => {
     return modes[0] === mode;
   };
 
-  const checkSequence = (string, initialPosition, value) => {
+  const checkSequence = (string: string, initialPosition: number, value: string): boolean => {
     const sequence = string.slice(initialPosition, initialPosition + value.length);
     return sequence === value;
   };
 
-
   // handle indentation
-  const handleIndent = () => {
+  const handleIndent = (): TokenHandlerReturn => {
     let initialLine = line;
 
     let indentation = 0;
@@ -142,7 +163,7 @@ export function tokenize(input) {
         const previousIndent = indent[0];
         column += indentation;
         indent.unshift(indentation);
-        return Token(TOKENS.INDENT, initialLine, previousIndent);
+        return { token: TOKENS.INDENT, line: initialLine, column: previousIndent };
     }
 
     if (indentation === indent[0]) {
@@ -154,14 +175,14 @@ export function tokenize(input) {
     while (indentation < indent[0]) {
         indent.shift();
         column = indent[0];
-        tokens.push(Token(TOKENS.DEDENT, line, column));
+        tokens.push({ token: TOKENS.DEDENT, line, column });
     }
 
     return tokens;
   };
 
   // handle comments
-  const handleComments = () => {
+  const handleComments = (): void => {
     while (input[position] && input[position] !== '\n') {
       position += 1;
     }
@@ -170,20 +191,20 @@ export function tokenize(input) {
   };
 
   // handle line breaks
-  const handleLineBreaks = () => {
+  const handleLineBreaks = (): void => {
     while (input[position] === '\n') {
       line += 1;
       position += 1;
       column = 0;
     }
 
-    if (isCurrentMode(MODES.OPTION)) {
+    if (isCurrentMode(LexerMode.OPTION)) {
       popMode();
     }
   };
 
   // handle spaces
-  const handleSpace = () => {
+  const handleSpace = (): void => {
     while (input[position] === ' ') {
       position += 1;
       column += 1;
@@ -191,7 +212,7 @@ export function tokenize(input) {
   };
 
   // handle text
-  const handleText = () => {
+  const handleText = (): TokenHandlerReturn => {
     const initialLine = line;
     const initialColumn = column;
     let value = [];
@@ -213,7 +234,7 @@ export function tokenize(input) {
       if (currentChar === ':') {
         position += 1;
         column += 1;
-        return Token(TOKENS.SPEAKER, initialLine, initialColumn, value.join('').trim());
+        return { token: TOKENS.SPEAKER, line: initialLine, column: initialColumn, value: value.join('').trim() };
       }
 
       value.push(currentChar);
@@ -222,8 +243,7 @@ export function tokenize(input) {
       column += 1;
     }
 
-
-    return Token(TOKENS.TEXT, initialLine, initialColumn, value.join('').trim());
+    return { token: TOKENS.TEXT, line: initialLine, column: initialColumn, value: value.join('').trim() };
   };
 
   // handle text in quotes
@@ -254,43 +274,37 @@ export function tokenize(input) {
     }
 
 
-    return Token(TOKENS.TEXT, initialLine, initialColumn, value.join('').trim());
+    return { token: TOKENS.TEXT, line: initialLine, column: initialColumn, value: value.join('').trim() };
   };
 
   // handle quote
-  const handleQuote = () => {
+  const handleQuote = (): void => {
     column += 1;
     position += 1;
-    if (isCurrentMode(MODES.QSTRING)) {
+    if (isCurrentMode(LexerMode.QSTRING)) {
       currentQuote = null;
       popMode();
     } else {
-      stackMode(MODES.QSTRING);
+      stackMode(LexerMode.QSTRING);
     }
-  };
-
-  const optionTypes = {
-    '*': TOKENS.OPTION,
-    '+': TOKENS.STICKY_OPTION,
-    '>': TOKENS.FALLBACK_OPTION,
   };
 
   // handle options
   const handleOption = () => {
-    const token = optionTypes[input[position]];
+    const token = optionTypes[input[position] as OptionType];
 
     const initialColumn = column;
     column += 1;
     position += 1;
-    stackMode(MODES.OPTION);
-    return Token(token, line, initialColumn);
+    stackMode(LexerMode.OPTION);
+    return { token, line, column: initialColumn };
   };
 
   const handleOptionDisplayChar = () => {
     const initialColumn = column;
     column += 1;
     position += 1;
-    return Token(TOKENS.ASSIGN, line, initialColumn);
+    return { token: TOKENS.ASSIGN, line, column: initialColumn };
   };
 
   const handleLineId = () => {
@@ -304,7 +318,7 @@ export function tokenize(input) {
       position += 1;
       column += 1;
     }
-    return Token(TOKENS.LINE_ID, line, initialColumn, values.join(''));
+    return { token: TOKENS.LINE_ID, line, column: initialColumn, value: values.join('') };
   };
 
   const handleTag = () => {
@@ -318,7 +332,7 @@ export function tokenize(input) {
       position += 1;
       column += 1;
     }
-    return Token(TOKENS.TAG, line, initialColumn, values.join(''));
+    return { token: TOKENS.TAG, line, column: initialColumn, value: values.join('') };
   };
 
   const handleBlock = () => {
@@ -332,10 +346,10 @@ export function tokenize(input) {
       position += 1;
       column += 1;
     }
-    return Token(TOKENS.BLOCK, line, initialColumn, values.join('').trim());
+    return { token: TOKENS.BLOCK, line, column: initialColumn, value: values.join('').trim() };
   };
 
-  const handleDivert = () => {
+  const handleDivert = (): TokenHandlerReturn => {
     const initialColumn = column;
     let values = [];
     position += 2;
@@ -347,7 +361,7 @@ export function tokenize(input) {
       column += 1;
     }
 
-    const token = Token(TOKENS.DIVERT, line, initialColumn, values.join('').trim());
+    const token = { token: TOKENS.DIVERT, line, column: initialColumn, value: values.join('').trim() };
     const linebreak = getFollowingLineBreak();
     if (linebreak) {
       return [ token, linebreak ];
@@ -361,7 +375,7 @@ export function tokenize(input) {
     position += 2;
     column += 2;
 
-    const token = Token(TOKENS.DIVERT_PARENT, line, initialColumn);
+    const token = { token: TOKENS.DIVERT_PARENT, line, column: initialColumn };
     const linebreak = getFollowingLineBreak();
 
     if (linebreak) {
@@ -371,12 +385,12 @@ export function tokenize(input) {
     return token;
   };
 
-  const handleStartVariations = () => {
+  const handleStartVariations = (): Token[] => {
     const initialColumn = column;
     const values = [];
     column += 1;
     position += 1;
-    stackMode(MODES.VARIATIONS);
+    stackMode(LexerMode.VARIATIONS);
 
     while (input[position] && input[position].match(/[A-Z|a-z| ]/)) {
       values.push(input[position]);
@@ -384,14 +398,14 @@ export function tokenize(input) {
       column += 1;
     }
 
-    const tokens = [
-      Token(TOKENS.BRACKET_OPEN, line, initialColumn)
+    const tokens: Token[] = [
+      { token: TOKENS.BRACKET_OPEN, line, column: initialColumn }
     ];
 
     const value = values.join('').trim();
 
     if (value.length) {
-      tokens.push(Token(TOKENS.VARIATIONS_MODE, line, initialColumn + 2, value));
+      tokens.push({ token: TOKENS.VARIATIONS_MODE, line, column: initialColumn + 2, value });
     }
 
     return tokens;
@@ -402,14 +416,14 @@ export function tokenize(input) {
     column += 1;
     position += 1;
     popMode();
-    return Token(TOKENS.BRACKET_CLOSE, line, initialColumn);
+    return { token: TOKENS.BRACKET_CLOSE, line, column: initialColumn };
   };
 
   const handleVariationItem = () => {
     const initialColumn = column;
     column += 1;
     position += 1;
-    return Token(TOKENS.MINUS, line, initialColumn);
+    return { token: TOKENS.MINUS, line, column: initialColumn };
   };
 
 
@@ -417,8 +431,8 @@ export function tokenize(input) {
     const initialColumn = column;
     column += 1;
     position += 1;
-    stackMode(MODES.LOGIC);
-    const token = Token(TOKENS.BRACE_OPEN, line, initialColumn);
+    stackMode(LexerMode.LOGIC);
+    const token = { token: TOKENS.BRACE_OPEN, line, column: initialColumn };
     const linebreak = getLeadingLineBreak();
     if (linebreak) {
       return [ linebreak, token ];
@@ -426,12 +440,12 @@ export function tokenize(input) {
     return token;
   };
 
-  const handleLogicBlockStop = () => {
+  const handleLogicBlockStop = (): TokenHandlerReturn => {
     const initialColumn = column;
     column += 1;
     position += 1;
     popMode();
-    const token = Token(TOKENS.BRACE_CLOSE, line, initialColumn);
+    const token = { token: TOKENS.BRACE_CLOSE, line, column: initialColumn };
     const linebreak = getFollowingLineBreak();
     if (linebreak) {
       return [ token, linebreak ];
@@ -444,7 +458,7 @@ export function tokenize(input) {
     'set', 'trigger', 'when'
   ];
 
-  const handleLogicIdentifier = () => {
+  const handleLogicIdentifier = (): TokenHandlerReturn => {
     const initialColumn = column;
     let values = '';
 
@@ -458,48 +472,48 @@ export function tokenize(input) {
       return handleLogicDescriptiveOperator(values, initialColumn);
     }
 
-    return Token(TOKENS.IDENTIFIER, line, initialColumn, values.trim());
+    return { token: TOKENS.IDENTIFIER, line, column: initialColumn, value: values.trim() };
   };
 
-  const handleLogicDescriptiveOperator = (value, initialColumn) => {
+  const handleLogicDescriptiveOperator = (value: string, initialColumn: number): TokenHandlerReturn => {
     switch(value.toLowerCase()) {
       case 'not':
-        return Token(TOKENS.NOT, line, initialColumn);
+        return { token: TOKENS.NOT, line, column: initialColumn };
       case 'and':
-        return Token(TOKENS.AND, line, initialColumn);
+        return { token: TOKENS.AND, line, column: initialColumn };
       case 'or':
-        return Token(TOKENS.OR, line, initialColumn);
+        return { token: TOKENS.OR, line, column: initialColumn };
       case 'is':
-        return Token(TOKENS.EQUAL, line, initialColumn);
+        return { token: TOKENS.EQUAL, line, column: initialColumn };
       case 'isnt':
-        return Token(TOKENS.NOT_EQUAL, line, initialColumn);
+        return { token: TOKENS.NOT_EQUAL, line, column: initialColumn };
       case 'true':
       case 'false':
-        return Token(TOKENS.BOOLEAN_LITERAL, line, initialColumn, value);
+        return { token: TOKENS.BOOLEAN_LITERAL, line, column: initialColumn, value };
       case 'null':
-        return Token(TOKENS.NULL_TOKEN, line, initialColumn);
+        return { token: TOKENS.NULL_TOKEN, line, column: initialColumn };
       case 'set':
-        return Token(TOKENS.KEYWORD_SET, line, initialColumn);
+        return { token: TOKENS.KEYWORD_SET, line, column: initialColumn };
       case 'trigger':
-        return Token(TOKENS.KEYWORD_TRIGGER, line, initialColumn);
+        return { token: TOKENS.KEYWORD_TRIGGER, line, column: initialColumn };
       case 'when':
-        return Token(TOKENS.KEYWORD_WHEN, line, initialColumn);
+        return { token: TOKENS.KEYWORD_WHEN, line, column: initialColumn };
     }
 
   };
 
-  const handleLogicNot = () => {
+  const handleLogicNot = (): Token => {
     const initialColumn = column;
     column += 1;
     position += 1;
-    return Token(TOKENS.NOT, line, initialColumn);
+    return { token: TOKENS.NOT, line, column: initialColumn };
   };
 
-  const handleLogicOperator = (token, length) => {
+  const handleLogicOperator = (token: string, length: number): Token => {
     const initialColumn = column;
     column += length;
     position += length;
-    return Token(token, line, initialColumn);
+    return { token, line, column: initialColumn };
   };
 
   const handleLogicNumber = () => {
@@ -512,7 +526,7 @@ export function tokenize(input) {
       column += 1;
     }
 
-    return Token(TOKENS.NUMBER_LITERAL, line, initialColumn, values);
+    return { token: TOKENS.NUMBER_LITERAL, line, column: initialColumn, value: values };
   };
 
   const handleLogicString = () => {
@@ -529,14 +543,14 @@ export function tokenize(input) {
     return token;
   };
 
-  const createSimpleToken = (token, length = 1) => {
+  const createSimpleToken = (token: string, length = 1): Token => {
     const initialColumn = column;
     column += length;
     position += length;
-    return Token(token, line, initialColumn);
+    return { token, line, column: initialColumn };
   };
 
-  const handleLogicBlock = () => {
+  const handleLogicBlock = (): TokenHandlerReturn => {
     if (input[position] === '"' || input[position] == "'") {
       if (currentQuote === null) {
         currentQuote = input[position]
@@ -649,7 +663,7 @@ export function tokenize(input) {
     }
   };
 
-  const getFollowingLineBreak = () => {
+  const getFollowingLineBreak = (): Token | void => {
     let lookupPosition = position;
     let lookupColumn = column;
     while (input[lookupPosition] === ' ') {
@@ -658,7 +672,7 @@ export function tokenize(input) {
     }
 
     if (input[lookupPosition] === '\n') {
-      return Token(TOKENS.LINE_BREAK, line, lookupColumn);
+      return { token: TOKENS.LINE_BREAK, line, column: lookupColumn };
     }
   };
 
@@ -669,29 +683,29 @@ export function tokenize(input) {
     }
 
     if (input[lookupPosition] === '\n') {
-      return Token(TOKENS.LINE_BREAK, line, 0);
+      return { token: TOKENS.LINE_BREAK, line, column: 0 };
     }
   };
 
   // get next token
-  function getNextToken() {
-    if (!isCurrentMode(MODES.QSTRING) && input[position] === '-' && input[position + 1] === '-') {
+  function getNextToken(): TokenHandlerReturn {
+    if (!isCurrentMode(LexerMode.QSTRING) && input[position] === '-' && input[position + 1] === '-') {
       return handleComments();
     }
 
-    if (!isCurrentMode(MODES.QSTRING) && input[position] === '\n') {
+    if (!isCurrentMode(LexerMode.QSTRING) && input[position] === '\n') {
       return handleLineBreaks();
     }
 
-    if (!isCurrentMode(MODES.LOGIC) && ((column === 0 && input[position].match(/[\t ]/)) || (column === 0 && indent.length > 1))) {
+    if (!isCurrentMode(LexerMode.LOGIC) && ((column === 0 && input[position].match(/[\t ]/)) || (column === 0 && indent.length > 1))) {
       return handleIndent();
     }
 
-    if (!isCurrentMode(MODES.QSTRING) && input[position] === '{') {
+    if (!isCurrentMode(LexerMode.QSTRING) && input[position] === '{') {
       return handleLogicBlockStart();
     }
 
-    if(isCurrentMode(MODES.LOGIC)) {
+    if(isCurrentMode(LexerMode.LOGIC)) {
       const response = handleLogicBlock();
 
       if (response)  {
@@ -709,7 +723,7 @@ export function tokenize(input) {
       }
     }
 
-    if (isCurrentMode(MODES.QSTRING)) {
+    if (isCurrentMode(LexerMode.QSTRING)) {
       return handleQText();
     }
 
@@ -737,7 +751,7 @@ export function tokenize(input) {
       return handleDivertToParent();
     }
 
-    if (isCurrentMode(MODES.VARIATIONS) && input[position] === '-') {
+    if (isCurrentMode(LexerMode.VARIATIONS) && input[position] === '-') {
       return handleVariationItem();
     }
 
@@ -745,7 +759,7 @@ export function tokenize(input) {
       return handleOption();
     }
 
-    if (isCurrentMode(MODES.OPTION) && input[position] === '=') {
+    if (isCurrentMode(LexerMode.OPTION) && input[position] === '=') {
       return handleOptionDisplayChar();
     }
 
@@ -763,9 +777,9 @@ export function tokenize(input) {
   return {
     // returns a list with all tokens
     getAll() {
-      let tokens = [];
+      let tokens: Token[] = [];
       while (position < length) {
-        const token = getNextToken(input, position, line, column, indent);
+        const token = getNextToken();
         if (token) {
           if (Array.isArray(token)) {
             tokens = tokens.concat(token);
@@ -776,19 +790,19 @@ export function tokenize(input) {
       }
 
       position += 1;
-      tokens.push(Token(TOKENS.EOF, line, column));
+      tokens.push({ token: TOKENS.EOF, line, column });
 
       return tokens;
     },
 
     // retuns a token each time
-    next() {
+    next(): Token | undefined {
       if (pendingTokens.length) {
         return pendingTokens.shift();
       }
 
       while (position < length) {
-        const token = getNextToken(input, position, line, column, indent);
+        const token = getNextToken();
         if (token) {
           if (Array.isArray(token)) {
             pendingTokens = token;
@@ -801,19 +815,9 @@ export function tokenize(input) {
 
       if (position === length) {
         position += 1;
-        return Token(TOKENS.EOF, line, column);
+        return { token: TOKENS.EOF, line, column };
       }
     }
   }
 }
-
-export function Token(token, line, column, value) {
-  return {
-    token,
-    value,
-    line,
-    column
-  };
-}
-
 
