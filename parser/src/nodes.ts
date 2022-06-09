@@ -1,6 +1,7 @@
-export const DocumentNode = (content = [], blocks = []) => {
-  return { type: 'document', content, blocks};
-};
+export class ClydeDocumentRoot {
+  public readonly type = 'document';
+  constructor(public content = [], public blocks = []) {};
+}
 
 export const ContentNode = (content) => {
   return { type: 'content', content };

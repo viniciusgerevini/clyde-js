@@ -1,7 +1,7 @@
 import { TOKENS, tokenize, getTokenFriendlyHint, Token } from './lexer';
 
 import {
-  DocumentNode,
+  ClydeDocumentRoot,
   ContentNode,
   BlockNode,
   LineNode,
@@ -55,7 +55,7 @@ const assignmentOperators = {
  * Parses Clyde dialogue string to Clyde object
  *
  */
-export default function parse(doc: string) {
+export default function parse(doc: string): ClydeDocumentRoot {
   const tokens = tokenize(doc);
   // console.log(tokenize(doc).getAll());
   // console.log(JSON.stringify(test.getAll()));
@@ -97,7 +97,7 @@ export default function parse(doc: string) {
     }
   };
 
-  const Document = () => {
+  const Document = (): ClydeDocumentRoot => {
     const expected = [
       TOKENS.EOF,
       TOKENS.SPEAKER,
@@ -114,7 +114,7 @@ export default function parse(doc: string) {
 
     switch (next.token) {
       case TOKENS.EOF:
-        return DocumentNode();
+        return new ClydeDocumentRoot();
       case TOKENS.SPEAKER:
       case TOKENS.TEXT:
       case TOKENS.OPTION:
@@ -125,13 +125,13 @@ export default function parse(doc: string) {
       case TOKENS.BRACKET_OPEN:
       case TOKENS.BRACE_OPEN:
       case TOKENS.LINE_BREAK:
-        const result =  DocumentNode([ContentNode(Lines())]);
+        const result =  new ClydeDocumentRoot([ContentNode(Lines())]);
         if (peek([TOKENS.BLOCK])) {
           result.blocks = Blocks();
         }
         return result;
       case TOKENS.BLOCK:
-        return DocumentNode([], Blocks());
+        return new ClydeDocumentRoot([], Blocks());
       default:
         wrongTokenError(next, expected);
     };
