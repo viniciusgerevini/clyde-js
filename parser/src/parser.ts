@@ -23,6 +23,7 @@ import {
   EventNode,
   OperandNode,
   LogicBlockNode,
+  ActionableNode,
 } from './nodes';
 
 const variationsModes = ['sequence', 'once', 'cycle', 'shuffle', 'shuffle sequence', 'shuffle once', 'shuffle cycle' ];
@@ -71,11 +72,11 @@ export default function parse(doc: string): ClydeDocumentRoot {
   let lookaheadTokens = [];
   let isMultilineEnabled = true;
 
-  const wrongTokenError = (token, expected) => {
+  const wrongTokenError = (token: Token, expected: string[]) => {
     throw new Error(`Unexpected token "${getTokenFriendlyHint(token.token)}" on line ${token.line+1} column ${token.column+1}. Expected ${expected.map(getTokenFriendlyHint).join(', ')} `);
   }
 
-  const consume = (expected) => {
+  const consume = (expected: string[]) => {
     if (!lookaheadTokens.length) {
       lookaheadTokens.push(tokens.next());
     }
@@ -158,7 +159,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
     return blocks;
   };
 
-  const Lines = () => {
+  const Lines = (): ActionableNode[] => {
     const acceptableNext = [
       TOKENS.SPEAKER,
       TOKENS.TEXT,
@@ -171,7 +172,8 @@ export default function parse(doc: string): ClydeDocumentRoot {
       TOKENS.BRACE_OPEN,
       TOKENS.LINE_BREAK,
     ];
-    let lines;
+    let lines: ActionableNode[];
+
     const tk = peek(acceptableNext);
 
     if (!tk) {
@@ -182,10 +184,10 @@ export default function parse(doc: string): ClydeDocumentRoot {
       case TOKENS.SPEAKER:
       case TOKENS.TEXT:
         consume([ TOKENS.SPEAKER, TOKENS.TEXT ]);
-        const line = Line();
+        const line = DialogueLine();
         if (peek([TOKENS.BRACE_OPEN])) {
           consume([TOKENS.BRACE_OPEN]);
-          lines = [LineWithAction(line)];
+          lines = [LineWithAction(line) as (LogicBlockNode | AssignmentsNode | EventsNode)];
         } else {
           lines = [line];
         }
@@ -208,7 +210,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
       case TOKENS.BRACE_OPEN:
         consume([TOKENS.BRACE_OPEN]);
         if (peek([TOKENS.KEYWORD_SET, TOKENS.KEYWORD_TRIGGER])) {
-          lines = [LineWithAction()];
+          lines = [LineWithAction() as (LogicBlockNode | AssignmentsNode | EventsNode)];
         } else {
           if (peek([TOKENS.KEYWORD_WHEN])) {
             consume([TOKENS.KEYWORD_WHEN]);
@@ -225,11 +227,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
     return lines;
   }
 
-  const Line = () => {
-    return DialogueLine();
-  };
-
-  const DialogueLine = () => {
+  const DialogueLine = (): LineNode | OptionsNode => {
     switch (currentToken.token) {
       case TOKENS.SPEAKER:
         return LineWithSpeaker();
@@ -238,18 +236,18 @@ export default function parse(doc: string): ClydeDocumentRoot {
     }
   };
 
-  const LineWithSpeaker = () => {
+  const LineWithSpeaker = (): LineNode => {
     const { value } = currentToken;
     consume([TOKENS.TEXT]);
-    const line = DialogueLine();
+    const line = DialogueLine() as LineNode;
     line.speaker =  value;
     return line;
   }
 
-  const TextLine = () => {
+  const TextLine = (): LineNode | OptionsNode => {
     const { value } = currentToken;
     const next = peek([TOKENS.LINE_ID, TOKENS.TAG]);
-    let line;
+    let line: LineNode | OptionsNode;
 
     if (next) {
       consume([TOKENS.LINE_ID, TOKENS.TAG]);
@@ -271,7 +269,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
       } else {
         while (!peek([TOKENS.DEDENT, TOKENS.EOF])) {
           consume([TOKENS.TEXT]);
-          const nextLine = TextLine();
+          const nextLine = TextLine() as LineNode;
           line.value += ` ${nextLine.value}`;
           if (nextLine.id) {
             line.id = nextLine.id;
@@ -288,7 +286,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
     return line;
   }
 
-  const LineWithMetadata = () => {
+  const LineWithMetadata = (): LineNode => {
     switch (currentToken.token) {
       case TOKENS.LINE_ID:
         return LineWithId();
@@ -297,7 +295,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
     }
   };
 
-  const LineWithId = () => {
+  const LineWithId = (): LineNode => {
     const { value } = currentToken;
     const next = peek([TOKENS.TAG]);
     if (next) {
@@ -309,7 +307,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
     return new LineNode(undefined, undefined, value);
   };
 
-  const LineWithTags = () => {
+  const LineWithTags = (): LineNode => {
     const { value } = currentToken;
     const next = peek([TOKENS.LINE_ID, TOKENS.TAG]);
     if (next) {
@@ -373,7 +371,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
       case TOKENS.SPEAKER:
       case TOKENS.TEXT:
         isMultilineEnabled = false;
-        mainItem = Line();
+        mainItem = DialogueLine();
         isMultilineEnabled = true;
         if (includeLabelAsContent) {
           lines.push(mainItem);
@@ -517,7 +515,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
     return variations;
   };
 
-  const LineWithAction = (line?: any): LogicBlockNode | AssignmentsNode | OperandNode | EventsNode => { // TODO replace any
+  const LineWithAction = (line?: LineNode | OptionsNode | LogicBlockNode | DivertNode): LogicBlockNode | AssignmentsNode | OperandNode | EventsNode => {
     const token = peek([
       TOKENS.KEYWORD_SET,
       TOKENS.KEYWORD_TRIGGER,
@@ -529,7 +527,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
 
       if (peek([TOKENS.BRACE_OPEN])) {
         consume([TOKENS.BRACE_OPEN]);
-        content = LineWithAction(line);
+        content = LineWithAction(line) as LogicBlockNode;
       }
 
       if (peek([TOKENS.LINE_BREAK])) {
@@ -562,9 +560,9 @@ export default function parse(doc: string): ClydeDocumentRoot {
     consume([TOKENS.SPEAKER, TOKENS.TEXT]);
 
     if (!token) {
-      return new ConditionalContentNode(expression as OperandNode, Line());
+      return new ConditionalContentNode(expression as OperandNode, DialogueLine());
     }
-    return new ActionContentNode(expression as (EventsNode | AssignmentsNode), Line());
+    return new ActionContentNode(expression as (EventsNode | AssignmentsNode), DialogueLine());
   };
 
   const LogicElement = (): AssignmentsNode | EventsNode | OperandNode => {
@@ -638,7 +636,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
   const ConditionalLine = (): ConditionalContentNode => {
     const expression = Condition();
 
-    let content;
+    let content: ContentNode | LineNode | OptionsNode | DivertNode | LogicBlockNode | AssignmentsNode | EventsNode;
 
     if (peek([TOKENS.DIVERT, TOKENS.DIVERT_PARENT])) {
       content = Divert();
@@ -649,13 +647,13 @@ export default function parse(doc: string): ClydeDocumentRoot {
       consume([TOKENS.DEDENT, TOKENS.EOF]);
     } else if (peek([TOKENS.BRACE_OPEN])) {
       consume([TOKENS.BRACE_OPEN]);
-      content = LineWithAction();
+      content = LineWithAction() as (LogicBlockNode | AssignmentsNode | EventsNode);
     } else {
       consume([TOKENS.SPEAKER, TOKENS.TEXT]);
-      content = Line();
+      content = DialogueLine();
       if (peek([TOKENS.BRACE_OPEN])) {
         consume([TOKENS.BRACE_OPEN]);
-        content = LineWithAction(content);
+        content = LineWithAction(content) as (LogicBlockNode | AssignmentsNode | EventsNode);
       }
     }
 

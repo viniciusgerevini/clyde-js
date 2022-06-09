@@ -154,3 +154,4 @@ export class EventNode {
 
 export type LogicBlockNode = ConditionalContentNode | ActionContentNode;
 
+export type ActionableNode = LineNode | OptionsNode | DivertNode | LogicBlockNode | AssignmentsNode | EventsNode | VariationsNode;
