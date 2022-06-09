@@ -1,5 +1,5 @@
 import { parse } from '@clyde-lang/parser';
-import { Interpreter } from './interpreter';
+import { Interpreter, DialogueLine } from './interpreter';
 
 describe("Interpreter: options", () => {
 
@@ -211,14 +211,14 @@ Jules: Let's get to work!
     expect(dialogue.getContent()).toEqual({ type: 'options', speaker: 'Vincent', name: 'What do you want to know?', options: firstOptions });
 
     dialogue.choose(1);
-    expect(dialogue.getContent().text).toEqual('You know what the funniest thing about Europe is?');
-    expect(dialogue.getContent().text).toEqual('what?');
-    expect(dialogue.getContent().text).toEqual("It's the little differences. A lotta the same sh*t we got here, they they got there, but there they're a little different.");
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('You know what the funniest thing about Europe is?');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('what?');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("It's the little differences. A lotta the same sh*t we got here, they they got there, but there they're a little different.");
     expect(dialogue.getContent()).toEqual({ type: 'options', speaker: 'Jules', name: 'Examples?', options: secondOptions });
 
     dialogue.choose(0);
 
-    expect(dialogue.getContent().text).toEqual("Well, in Amsterdam, you can buy beer in a movie theatre. And I don't mean in a paper cup either. They give you a glass of beer,");
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("Well, in Amsterdam, you can buy beer in a movie theatre. And I don't mean in a paper cup either. They give you a glass of beer,");
     secondOptions.splice(0, 1);
     expect(dialogue.getContent()).toEqual({ type: 'options', speaker: 'Jules', name: 'Examples?', options: secondOptions });
   });
@@ -236,7 +236,7 @@ hey
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }] });
     dialogue.choose(0);
-    expect(dialogue.getContent().text).toEqual('a');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('a');
     dialogue.start();
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'hey' });
@@ -256,9 +256,9 @@ hey
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }] });
     dialogue.choose(0);
-    expect(dialogue.getContent().text).toEqual('a');
-    expect(dialogue.getContent().text).toEqual('hey you');
-    expect(dialogue.getContent().text).toEqual('hey');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('a');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('hey you');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('hey');
   });
 
   it('validates condition when lines has condition and assignment', () => {
@@ -275,7 +275,7 @@ hey
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }] });
     dialogue.choose(0);
-    expect(dialogue.getContent().text).toEqual('a');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('a');
     dialogue.start();
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'hey' });

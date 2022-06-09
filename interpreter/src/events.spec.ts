@@ -1,7 +1,7 @@
-import { Events } from './events.js';
+import { Events, EventsInstance, EventType } from './events';
 
 describe('Events', () => {
-  let listeners
+  let listeners: EventsInstance;
 
   beforeEach(() => {
     listeners = Events();
@@ -10,31 +10,31 @@ describe('Events', () => {
   it('add listener', (done) => {
     const expectedData = "something";
 
-    listeners.addListener(listeners.events.VARIABLE_CHANGED, (data) => {
+    listeners.addListener(EventType.VARIABLE_CHANGED, (data: any) => {
       expect(data).toEqual(expectedData);
       done();
     });
 
-    listeners.triggerEvent(listeners.events.VARIABLE_CHANGED, expectedData);
+    listeners.triggerEvent(EventType.VARIABLE_CHANGED, expectedData);
   });
 
   it('remove listener', (done) => {
     const expectedData = "something";
 
-    const callback = listeners.addListener(listeners.events.VARIABLE_CHANGED, () => {
+    const callback = listeners.addListener(EventType.VARIABLE_CHANGED, () => {
       throw new Error('should not have triggered listener');
     });
 
-    listeners.removeListener(listeners.events.VARIABLE_CHANGED, callback);
+    listeners.removeListener(EventType.VARIABLE_CHANGED, callback);
 
-    listeners.triggerEvent(listeners.events.VARIABLE_CHANGED, expectedData);
+    listeners.triggerEvent(EventType.VARIABLE_CHANGED, expectedData);
 
     setTimeout(() => done(), 100);
   });
 
   it('throw error when removing wrong listener', () => {
     expect( () => {
-      listeners.removeListener(listeners.events.VARIABLE_CHANGED, () => {})
+      listeners.removeListener(EventType.VARIABLE_CHANGED, () => {})
     }).toThrow(/listener not defined/i);
   });
 });

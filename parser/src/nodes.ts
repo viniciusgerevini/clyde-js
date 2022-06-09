@@ -134,7 +134,7 @@ export class ExpressionNode {
 
 export class AssignmentsNode {
   public type = 'assignments';
-  constructor (public assignments: (AssignmentNode| VariableNode)[]) {}; // TODO variable node is temporary until { set banana } is fixed
+  constructor (public assignments: AssignmentNode[]) {};
 }
 
 export class AssignmentNode {

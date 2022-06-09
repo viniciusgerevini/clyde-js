@@ -1,5 +1,5 @@
 import { parse } from '@clyde-lang/parser';
-import { Interpreter } from './interpreter';
+import { Interpreter, DialogueLine } from './interpreter';
 
 describe("Interpreter: conditions", () => {
   it('show only lines that meet the criteria', () => {
@@ -25,18 +25,18 @@ I believe this is all
     );
     const dialogue = Interpreter(content);
 
-    expect(dialogue.getContent().text).toEqual('Start with hp 100');
-    expect(dialogue.getContent().text).toEqual('you should see this line.');
-    expect(dialogue.getContent().text).toEqual('Set hp 90.');
-    expect(dialogue.getContent().text).toEqual('but you should see this line.');
-    expect(dialogue.getContent().text).toEqual('but you should see this other line.');
-    expect(dialogue.getContent().text).toEqual('and also this line.');
-    expect(dialogue.getContent().text).toEqual('this one.');
-    expect(dialogue.getContent().text).toEqual('and this one.');
-    expect(dialogue.getContent().text).toEqual('and this one for sure.');
-    expect(dialogue.getContent().text).toEqual('Almost there!');
-    expect(dialogue.getContent().text).toEqual('It accepts mafs');
-    expect(dialogue.getContent().text).toEqual('I believe this is all');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('Start with hp 100');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('you should see this line.');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('Set hp 90.');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('but you should see this line.');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('but you should see this other line.');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('and also this line.');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('this one.');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('and this one.');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('and this one for sure.');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('Almost there!');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('It accepts mafs');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('I believe this is all');
   });
 
   it('use condition on options', () => {
@@ -57,12 +57,12 @@ I believe this is all
 
     expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'always' },{ label: 'one time' }, { label: 'twice' } ] });
     dialogue.choose(2);
-    expect(dialogue.getContent().text).toEqual('b');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('b');
 
     expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'always' }, { label: 'twice' } ] });
 
     dialogue.choose(1);
-    expect(dialogue.getContent().text).toEqual('b');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('b');
 
     expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'always' }] });
   });

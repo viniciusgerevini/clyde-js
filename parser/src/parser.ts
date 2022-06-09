@@ -119,7 +119,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
       TOKENS.BRACKET_OPEN,
       TOKENS.BRACE_OPEN,
     ];
-    const next = peek()!;
+    const next = peek();
 
     switch (next.token) {
       case TOKENS.EOF:
@@ -676,12 +676,21 @@ export default function parse(doc: string): ClydeDocumentRoot {
     return expression;
   };
 
-  const AssignmentExpression = (): AssignmentNode | VariableNode => {
+  const AssignmentExpression = (): AssignmentNode  => {
+    const assignment = AssignmentExpressionInternal();
+
+    if (assignment.type == "variable") {
+      return new AssignmentNode(assignment as VariableNode, assignmentOperators[TOKENS.ASSIGN], new BooleanLiteralNode(true));
+    } else {
+      return assignment as AssignmentNode;
+    }
+  };
+
+  const AssignmentExpressionInternal = (): AssignmentNode | VariableNode => {
     consume([TOKENS.IDENTIFIER]);
     const variable = new VariableNode(currentToken.value);
 
     if (peek([TOKENS.BRACE_CLOSE])) {
-      // TODO make a true boolean assignment to solve scenario where { set banana }
       return variable;
     }
 
@@ -690,7 +699,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
     consume(operators);
 
     if (peek([TOKENS.IDENTIFIER]) && peek([...operators, TOKENS.BRACE_CLOSE], 1)) {
-      return new AssignmentNode(variable, assignmentOperators[currentToken.token], AssignmentExpression());
+      return new AssignmentNode(variable, assignmentOperators[currentToken.token], AssignmentExpressionInternal());
     }
     return new AssignmentNode(variable, assignmentOperators[currentToken.token], Expression());
   };

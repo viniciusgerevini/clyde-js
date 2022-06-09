@@ -1,32 +1,31 @@
-import { LogicInterpreter } from './logic_interpreter';
+import { Events } from './events';
+import { Memory } from './memory';
+import { LogicInterpreter, LogicInterpreterInstance } from './logic_interpreter';
 
 describe("Logic Interpreter", () => {
-  let logic;
+  let logic: LogicInterpreterInstance;
 
   beforeEach(() => {
-    const mem = {
-      variables: {}
-    };
-    logic = LogicInterpreter(mem);
+    logic = LogicInterpreter(Memory(Events()));
   });
 
   it('throws when unknown condition', () => {
-    const wrongCondition = { type: 'unknownType' };
+    const wrongCondition: any = { type: 'unknownType' };
     expect(() => logic.checkCondition(wrongCondition)).toThrow(/Unknown condition type "unknownType"/);
   });
 
   it('throws when unknown expression', () => {
-    const wrongCondition = { type: 'expression', name: 'unknownExpression' };
+    const wrongCondition: any = { type: 'expression', name: 'unknownExpression' };
     expect(() => logic.checkCondition(wrongCondition)).toThrow(/Unknown expression "unknownExpression"/);
   });
 
   it('throws when unknown expression', () => {
-    const wrongAssignment = { operation: 'unknownOperation', variable: {}, value: { type: 'literal' } };
+    const wrongAssignment: any = { operation: 'unknownOperation', variable: {}, value: { type: 'literal' } };
     expect(() => logic.handleAssignement(wrongAssignment)).toThrow(/Unknown operation "unknownOperation"/);
   });
 
   it('throws when unknown node', () => {
-    const wrongAssignment = { operation: 'assign', variable: {}, value: { type: 'something'} };
+    const wrongAssignment: any = { operation: 'assign', variable: {}, value: { type: 'something'} };
     expect(() => logic.handleAssignement(wrongAssignment)).toThrow(/Unknown node "something"/);
   });
 });

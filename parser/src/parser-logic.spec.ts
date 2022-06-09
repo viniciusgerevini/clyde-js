@@ -901,6 +901,24 @@ describe('parse: logic', () => {
       }]);
       expect(result).toEqual(expected);
     });
+
+    it('assign True boolean when standalone variable', () => {
+      const result = parse('{ set a }');
+      const expected = createDocPayload([
+        {
+          type: 'assignments',
+          assignments: [
+            {
+              type: 'assignment',
+              variable: { type: 'variable', name: 'a', },
+              operation: 'assign',
+              value: { type: 'literal', name: 'boolean', value: true, },
+            },
+          ],
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
   });
 
   describe('events', () => {

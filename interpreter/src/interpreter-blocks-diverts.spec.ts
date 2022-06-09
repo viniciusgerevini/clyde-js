@@ -1,5 +1,5 @@
 import { parse } from '@clyde-lang/parser';
-import { Interpreter } from './interpreter';
+import { Interpreter, DialogueLine, DialogueOptions } from './interpreter';
 
 describe("Interpreter: blocks and diverts", () => {
   describe('blocks', () => {
@@ -50,9 +50,9 @@ this is another block
 
       dialogue.start();
 
-      expect(dialogue.getContent().text).toEqual('Hello!');
-      expect(dialogue.getContent().text).toEqual("Let's go to another block");
-      expect(dialogue.getContent().text).toEqual('this is another block');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Hello!');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual("Let's go to another block");
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('this is another block');
       expect(dialogue.getContent()).toEqual(undefined);
     });
 
@@ -72,10 +72,10 @@ this is another block
 
       dialogue.start();
 
-      expect(dialogue.getContent().text).toEqual('Hello!');
-      expect(dialogue.getContent().text).toEqual("Let's go to another block");
-      expect(dialogue.getContent().text).toEqual('this is another block');
-      expect(dialogue.getContent().text).toEqual('this line should be called after block');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Hello!');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual("Let's go to another block");
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('this is another block');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('this line should be called after block');
       expect(dialogue.getContent()).toEqual(undefined);
     });
 
@@ -102,12 +102,12 @@ no a!
 
       dialogue.start();
 
-      expect(dialogue.getContent().text).toEqual('Hello!');
-      expect(dialogue.getContent().name).toEqual("question");
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Hello!');
+      expect((dialogue.getContent() as DialogueOptions).name).toEqual("question");
       dialogue.choose(0);
-      expect(dialogue.getContent().text).toEqual('yes a!');
-      expect(dialogue.getContent().text).toEqual('continue');
-      expect(dialogue.getContent().text).toEqual('end');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('yes a!');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('continue');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('end');
     });
 
     it('divert back to options', () => {
@@ -134,12 +134,12 @@ no a!
 
       dialogue.start();
 
-      expect(dialogue.getContent().text).toEqual('Hello!');
-      expect(dialogue.getContent().name).toEqual("question");
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Hello!');
+      expect((dialogue.getContent() as DialogueOptions).name).toEqual("question");
       dialogue.choose(0);
-      expect(dialogue.getContent().text).toEqual('yes a!');
-      expect(dialogue.getContent().text).toEqual('continue');
-      expect(dialogue.getContent().name).toEqual("question");
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('yes a!');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('continue');
+      expect((dialogue.getContent() as DialogueOptions).name).toEqual("question");
     });
 
     it('end dialogue', () => {
@@ -152,7 +152,7 @@ this will never be seeing
 
       dialogue.start();
 
-      expect(dialogue.getContent().text).toEqual('Hello!');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Hello!');
       expect(dialogue.getContent()).toEqual(undefined);
       expect(dialogue.getContent()).toEqual(undefined);
     });
@@ -166,7 +166,7 @@ Hello!
 
       dialogue.start();
 
-      expect(dialogue.getContent().text).toEqual('Hello!');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Hello!');
       expect(dialogue.getContent()).toEqual(undefined);
     });
   });

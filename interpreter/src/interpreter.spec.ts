@@ -1,5 +1,6 @@
 import { parse } from '@clyde-lang/parser';
-import { Interpreter } from './interpreter';
+import { EventType } from './events';
+import { Interpreter, DialogueLine } from './interpreter';
 
 describe("Interpreter", () => {
   describe('lines', () => {
@@ -28,7 +29,7 @@ describe("Interpreter", () => {
 
       dialogue.setVariable('something', 456);
 
-      dialogue.on(dialogue.events.VARIABLE_CHANGED, (data) => {
+      dialogue.on(EventType.VARIABLE_CHANGED, (data: any) => {
         expect(data).toEqual({ name:'something', value: 123, previousValue: 456 });
         done();
       });
@@ -40,11 +41,11 @@ describe("Interpreter", () => {
       const content = parse('Hi!{ set something = 123 }\n');
       const dialogue = Interpreter(content);
 
-      const callback = dialogue.on(dialogue.events.VARIABLE_CHANGED, () => {
+      const callback = dialogue.on(EventType.VARIABLE_CHANGED, () => {
         throw new Error('should not have triggered listener');
       });
 
-      dialogue.off(dialogue.events.VARIABLE_CHANGED, callback);
+      dialogue.off(EventType.VARIABLE_CHANGED, callback);
 
       dialogue.getContent()
 
@@ -55,7 +56,7 @@ describe("Interpreter", () => {
       const content = parse('Hi!{ trigger some_event }\n');
       const dialogue = Interpreter(content);
 
-      dialogue.on(dialogue.events.EVENT_TRIGGERED, (data) => {
+      dialogue.on(EventType.EVENT_TRIGGERED, (data: any) => {
         expect(data).toEqual({ name:'some_event' });
         done();
       });
@@ -67,7 +68,7 @@ describe("Interpreter", () => {
       const content = parse('{ trigger some_event }\n');
       const dialogue = Interpreter(content);
 
-      dialogue.on(dialogue.events.EVENT_TRIGGERED, (data) => {
+      dialogue.on(EventType.EVENT_TRIGGERED, (data: any) => {
         expect(data).toEqual({ name:'some_event' });
         done();
       });
@@ -88,13 +89,13 @@ describe("Interpreter", () => {
 
       expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'a' }, { label: 'b' }] });
       dialogue.choose(0);
-      expect(dialogue.getContent().text).toEqual('Hi!');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Hi!');
 
       const newDialogue = Interpreter(content, dialogue.getData());
 
       expect(newDialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'b' }] });
       newDialogue.choose(0);
-      expect(newDialogue.getContent().text).toEqual('hello 1');
+      expect((newDialogue.getContent() as DialogueLine).text).toEqual('hello 1');
     });
 
     it('get all data and load in another instance', () =>{
@@ -112,12 +113,12 @@ result is %someVar%
       expect(anotherDialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'a' }, { label: 'b' }] });
       dialogue.choose(0);
       anotherDialogue.choose(1);
-      expect(dialogue.getContent().text).toEqual('set as 1!');
-      expect(anotherDialogue.getContent().text).toEqual('set as 2!');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('set as 1!');
+      expect((anotherDialogue.getContent() as DialogueLine).text).toEqual('set as 2!');
 
       anotherDialogue.loadData(dialogue.getData());
 
-      expect(anotherDialogue.getContent().text).toEqual('result is 1');
+      expect((anotherDialogue.getContent() as DialogueLine).text).toEqual('result is 1');
     });
 
 
@@ -148,9 +149,9 @@ hello %someVar%
 `);
       const dialogue = Interpreter(content);
 
-      expect(dialogue.getContent().text).toEqual('Hi!');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Hi!');
       dialogue.clearData();
-      expect(dialogue.getContent().text).toEqual('hello ');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('hello ');
     });
   });
 
@@ -185,12 +186,12 @@ replace $ghi
 )
 `);
       const dialogue = Interpreter(content, undefined, dictionary);
-      expect(dialogue.getContent().text).toEqual('This will not be replaced');
-      expect(dialogue.getContent().text).toEqual('this is a replacement');
-      expect(dialogue.getContent().text).toEqual('This will not be replaced either');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('This will not be replaced');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('this is a replacement');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('This will not be replaced either');
       expect(dialogue.getContent()).toEqual({ id: 'ghi', type: 'options', name: 'replaced', options: [{ id: 'jkl', label: 'replaced 2' }]});
       dialogue.choose(0);
-      expect(dialogue.getContent().text).toEqual('replaced 3');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('replaced 3');
     });
 
     it('load dictionaries on runtime', () => {
@@ -200,23 +201,23 @@ replace $ghi
 
       const content = parse(`Hello $abc\n`);
       const dialogue = Interpreter(content, undefined);
-      expect(dialogue.getContent().text).toEqual('Hello');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Hello');
       dialogue.start();
       dialogue.loadDictionary(dictionaryFR);
-      expect(dialogue.getContent().text).toEqual('Bonjour');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Bonjour');
       dialogue.start();
       dialogue.loadDictionary(dictionaryES);
-      expect(dialogue.getContent().text).toEqual('Hola');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Hola');
 
       dialogue.start();
       dialogue.loadDictionary(dictionaryPT);
-      expect(dialogue.getContent().text).toEqual('Olá');
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Olá');
     });
   });
 
   describe('Unknowns', () => {
     it('fails when unkown node type detected', () => {
-      const content = parse('Hi!\n');
+      const content = parse('Hi!\n') as any;
       content.type = 'SomeUnkownNode';
       const dialogue = Interpreter(content);
 

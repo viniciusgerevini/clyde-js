@@ -1,30 +1,78 @@
-import { LogicInterpreter } from'./logic_interpreter.js';
-import { Memory } from './memory.js';
-import { Events, events } from './events.js';
+import { LogicInterpreter } from'./logic_interpreter';
+import { Memory, InternalMemory } from './memory';
+import { Events, EventType } from './events';
+import {
+  ClydeDocumentRoot,
+  ContentNode,
+  BlockNode,
+  LineNode,
+  OptionsNode,
+  OptionNode,
+  DivertNode,
+  VariationsNode,
+  ConditionalContentNode,
+  ActionContentNode,
+  AssignmentsNode,
+  EventsNode,
+  EventNode,
+} from '@clyde-lang/parser';
 
-export { events } from './events.js';
+type StackItem = {
+  current: any,
+  contentIndex: number,
+};
+
+type WorkingNode = {
+  _index?: number,
+}
+
+type WorkingActionContentNode = ActionContentNode & { mode: string };
+
+export type DialogueLine = {
+  type: 'line';
+  text: string
+  speaker?: string;
+  tags?: string[];
+  id?: string;
+};
+
+export type DialogueOptions = {
+  type: 'options',
+  options: DialogueOption[],
+  name?: string;
+  speaker?: string;
+  tags?: string[];
+  id?: string;
+};
+
+export type DialogueOption = {
+  label: string, 
+  speaker?: string;
+  tags?: string[];
+  id?: string;
+};
+
+type ContentReturnType = DialogueLine | DialogueOptions | undefined;
+
+type Dictionary = {
+  [key: string]: string,
+};
 
 /**
  * Clyde Interpreter
- *
- * @param {Object} doc - Clyde Object
- * @param {Object} data - Internal data to be loaded
- * @param {Object} dictionary - Translation object with key values
- *
- * @return {Interpreter} Interpreter instance
  */
-export function Interpreter(doc, data, dictionary = {}) {
+export function Interpreter(clydeDoc: ClydeDocumentRoot, data?: any, dictionary: Dictionary  = {}) {
+  const doc: ClydeDocumentRoot & WorkingNode = clydeDoc;
   let textDictionary = dictionary;
-  const anchors = {
+  const anchors: {[name: string]: any} = {
   };
   const listeners = Events();
   const mem = Memory(listeners, data);
-  let stack;
+  let stack: StackItem[];
   const logic = LogicInterpreter(mem);
 
-
   doc._index = 1;
-  doc.blocks.forEach((block, index) => {
+  doc.blocks.forEach((block: BlockNode & WorkingNode, index: number) => {
     block._index = index + 2;
     anchors[block.name] = block;
   });
@@ -36,55 +84,55 @@ export function Interpreter(doc, data, dictionary = {}) {
     }]
   };
 
-  const nodeHandlers = {
+  const nodeHandlers: { [type: string]: Function } = {
     'document': () => handleDocumentNode(),
-    'content': node => handleContentNode(node),
-    'options': node => handleOptionsNode(node),
-    'option': node => handleOptionNode(node),
-    'line': node => handleLineNode(node),
-    'action_content': node => handleActionContent(node),
-    'conditional_content': (node, fallback) => handleConditionalContent(node, fallback),
-    'variations': node => handleVariations(node),
-    'block': node => handleBlockNode(node),
-    'divert': node => handleDivert(node),
-    'assignments': node => handleAssignementNode(node),
-    'events': node => handleEventNode(node),
-    'error': node => { throw new Error(`Unkown node type "${node.type}"`) },
+    'content': (node: ContentNode) => handleContentNode(node),
+    'options': (node: OptionsNode) => handleOptionsNode(node),
+    'option': (node: OptionNode) => handleOptionNode(node),
+    'line': (node: LineNode) => handleLineNode(node),
+    'action_content': (node: ActionContentNode) => handleActionContent(node),
+    'conditional_content': (node: ConditionalContentNode, fallback: any) => handleConditionalContent(node, fallback),
+    'variations': (node: VariationsNode) => handleVariations(node),
+    'block': (node: BlockNode) => handleBlockNode(node),
+    'divert': (node: DivertNode) => handleDivert(node),
+    'assignments': (node: AssignmentsNode) => handleAssignementNode(node),
+    'events': (node: EventsNode) => handleEventNode(node),
+    'error': (node: any) => { throw new Error(`Unkown node type "${node.type}"`) },
   };
 
-  const variationHandlers = {
-    'cycle': (variations) => {
-      let current = mem.getInternalVariable(variations._index, -1);
+  const variationHandlers: { [type: string]: Function } = {
+    'cycle': (variations: VariationsNode & WorkingNode) => {
+      let current = mem.getInternalVariable(`${variations._index}`, -1);
       if (current < variations.content.length - 1) {
         current += 1;
       } else {
         current = 0
       }
-      mem.setInternalVariable(variations._index, current);
+      mem.setInternalVariable(`${variations._index}`, current);
       return current;
     },
-    'once': (variations) => {
-      const current = mem.getInternalVariable(variations._index, -1);
+    'once': (variations: VariationsNode & WorkingNode) => {
+      const current = mem.getInternalVariable(`${variations._index}`, -1);
       const index = current + 1;
       if (index <= variations.content.length - 1) {
-        mem.setInternalVariable(variations._index, index);
+        mem.setInternalVariable(`${variations._index}`, index);
         return index;
       }
       return -1;
     },
-    'sequence': (variations) => {
-      let current = mem.getInternalVariable(variations._index, -1);
+    'sequence': (variations: VariationsNode & WorkingNode) => {
+      let current = mem.getInternalVariable(`${variations._index}`, -1);
       if (current < variations.content.length - 1) {
         current += 1;
-        mem.setInternalVariable(variations._index, current);
+        mem.setInternalVariable(`${variations._index}`, current);
       }
       return current;
     },
-    'shuffle': (variations, mode = 'cycle' ) => {
+    'shuffle': (variations: VariationsNode & WorkingNode, mode = 'cycle' ): number => {
       const SHUFFLE_VISITED_KEY = `${variations._index}_shuffle_visited`;
       const LAST_VISITED_KEY = `${variations._index}_last_index`;
-      let visitedItems = mem.getInternalVariable(SHUFFLE_VISITED_KEY, []);
-      const remainingOptions = variations.content.filter(a => !visitedItems.includes(a._index));
+      let visitedItems: number[] = mem.getInternalVariable(SHUFFLE_VISITED_KEY, []);
+      const remainingOptions: (ContentNode & WorkingNode)[]  = variations.content.filter((a: ContentNode & WorkingNode) => !visitedItems.includes(a._index!));
 
       if (remainingOptions.length === 0) {
         if (mode === 'once') {
@@ -100,29 +148,29 @@ export function Interpreter(doc, data, dictionary = {}) {
       const random = Math.floor(Math.random() * remainingOptions.length);
       const index = variations.content.indexOf(remainingOptions[random]);
 
-      visitedItems.push(remainingOptions[random]._index);
+      visitedItems.push(remainingOptions[random]._index!);
 
       mem.setInternalVariable(LAST_VISITED_KEY, index);
       mem.setInternalVariable(SHUFFLE_VISITED_KEY, visitedItems);
 
       return index;
     },
-    'shuffle sequence': (variations) => {
+    'shuffle sequence': (variations: VariationsNode) => {
       return variationHandlers['shuffle'](variations, 'sequence');
     },
-    'shuffle once': (variations) => {
+    'shuffle once': (variations: VariationsNode) => {
       return variationHandlers['shuffle'](variations, 'once');
     },
-    'shuffle cycle': (variations) => {
+    'shuffle cycle': (variations: VariationsNode) => {
       return variationHandlers['shuffle'](variations, 'cycle');
     }
   };
 
-  const handleNextNode = (node, fallback) => (nodeHandlers[node.type] || nodeHandlers['error'])(node, fallback);
+  const handleNextNode = (node: any, fallback?: any) => (nodeHandlers[node.type] || nodeHandlers['error'])(node, fallback);
 
   const generateIndex = () => (10 * stackHead().current._index) + stackHead().contentIndex;
 
-  const addToStack = (node) => {
+  const addToStack = (node: any) => {
     if (stackHead().current !== node) {
       stack.push({
         current: node,
@@ -140,7 +188,7 @@ export function Interpreter(doc, data, dictionary = {}) {
     }
   }
 
-  const handleContentNode = (contentNode) => {
+  const handleContentNode = (contentNode: ContentNode & WorkingNode) => {
     if (stackHead().current !== contentNode) {
       if (!contentNode._index) {
         contentNode._index = generateIndex();
@@ -161,7 +209,7 @@ export function Interpreter(doc, data, dictionary = {}) {
     return handleNextNode(stackHead().current);
   };
 
-  const handleBlockNode = (block) => {
+  const handleBlockNode = (block: BlockNode) => {
     addToStack(block);
 
     const node = stackHead();
@@ -173,7 +221,7 @@ export function Interpreter(doc, data, dictionary = {}) {
     }
   };
 
-  const handleDivert = (divert) => {
+  const handleDivert = (divert: DivertNode) => {
     if (divert.target === '<parent>') {
 
       while (!['document', 'block', 'option', 'options'].includes(stackHead().current.type)) {
@@ -192,21 +240,21 @@ export function Interpreter(doc, data, dictionary = {}) {
     }
   };
 
-  const handleAssignementNode = (assignment) => {
-    assignment.assignments.forEach(logic.handleAssignement)
+  const handleAssignementNode = (assignment: AssignmentsNode) => {
+    assignment.assignments.forEach(logic.handleAssignement);
     return handleNextNode(stackHead().current);
   };
 
-  const handleEventNode = (events) => {
-    events.events.forEach(event => {
+  const handleEventNode = (events: EventsNode) => {
+    events.events.forEach((event: EventNode) => {
       listeners.triggerEvent(
-        listeners.events.EVENT_TRIGGERED,
+        EventType.EVENT_TRIGGERED,
         { name: event.name });
     });
     return handleNextNode(stackHead().current);
   };
 
-  const handleOptionsNode = (optionsNode) => {
+  const handleOptionsNode = (optionsNode: OptionsNode & WorkingNode): DialogueOptions => {
     if (!optionsNode._index) {
       optionsNode._index = generateIndex();
       mem.setInternalVariable('OPTIONS_COUNT', optionsNode.content.length);
@@ -230,8 +278,8 @@ export function Interpreter(doc, data, dictionary = {}) {
       speaker: optionsNode.speaker,
       id: optionsNode.id,
       tags: optionsNode.tags,
-      name: replaceVariables(translateText(optionsNode.name, optionsNode.id)),
-      options: options.map(t => t.type === 'action_content' ? t.content : t).map((t) => ({
+      name: replaceVariables(translateText(optionsNode.name as string, optionsNode.id)),
+      options: options.map((t: ActionContentNode | OptionNode) => t.type === 'action_content' ? t.content : t).map((t) => ({
         label: replaceVariables(translateText(t.name, t.id)),
         speaker: t.speaker,
         tags: t.tags,
@@ -240,7 +288,7 @@ export function Interpreter(doc, data, dictionary = {}) {
     };
   };
 
-  const handleOptionNode = (_optionNode) => {
+  const handleOptionNode = (_optionNode: OptionNode) => {
     // this is called when the contents inside the option
     // were read. option list default behavior is to quit
     // so we need to remove both option and option list from the stack.
@@ -249,10 +297,10 @@ export function Interpreter(doc, data, dictionary = {}) {
     return handleNextNode(stackHead().current);
   };
 
-  const handleVariations = (variations, attempt = 0 ) => {
+  const handleVariations = (variations: VariationsNode & WorkingNode, attempt = 0 ): ContentReturnType => {
     if (!variations._index) {
       variations._index = generateIndex();
-      variations.content.forEach((c, index) => {
+      variations.content.forEach((c: ContentNode & WorkingNode, index: number) => {
         c._index = generateIndex() * 100 + index;
       });
     }
@@ -273,7 +321,7 @@ export function Interpreter(doc, data, dictionary = {}) {
   };
 
 
-  const handleLineNode = (lineNode) => {
+  const handleLineNode = (lineNode: LineNode & WorkingNode): DialogueLine => {
     if (!lineNode._index) {
       lineNode._index = generateIndex();
     }
@@ -286,31 +334,31 @@ export function Interpreter(doc, data, dictionary = {}) {
     };
   }
 
-  const handleActionContent = (actionNode) => {
+  const handleActionContent = (actionNode: ActionContentNode) => {
     handleAction(actionNode);
     return handleNextNode(actionNode.content);
   };
 
-  const handleAction = (actionNode) => {
+  const handleAction = (actionNode: ActionContentNode) => {
     if (actionNode.action.type === 'events') {
-      actionNode.action.events.forEach(event => {
+      (actionNode.action as EventsNode).events.forEach((event: EventNode) => {
         listeners.triggerEvent(
-          listeners.events.EVENT_TRIGGERED,
+          EventType.EVENT_TRIGGERED,
           { name: event.name });
       });
     } else {
-      actionNode.action.assignments.forEach(logic.handleAssignement)
+      (actionNode.action as AssignmentsNode).assignments.forEach(logic.handleAssignement)
     }
   }
 
-  const handleConditionalContent = (conditionalNode, fallbackNode = stackHead().current) => {
+  const handleConditionalContent = (conditionalNode: ConditionalContentNode, fallbackNode = stackHead().current) => {
     if (logic.checkCondition(conditionalNode.conditions)) {
       return handleNextNode(conditionalNode.content);
     }
     return handleNextNode(fallbackNode);
   };
 
-  const selectOption = (contentIndex) => {
+  const selectOption = (contentIndex: number): void => {
     const node = stackHead();
     if (node.current.type === 'options') {
       const content = getVisibleOptions(node.current);
@@ -319,12 +367,12 @@ export function Interpreter(doc, data, dictionary = {}) {
         throw new Error(`Index ${contentIndex} not available.`)
       }
 
-      mem.setAsAccessed(content[contentIndex]._index);
+      mem.setAsAccessed(`${content[contentIndex]._index}`);
       mem.setInternalVariable('OPTIONS_COUNT', getVisibleOptions(node.current).length);
-      content[contentIndex].content._index = content[contentIndex]._index;
+      (content[contentIndex].content as (ContentNode & WorkingNode))._index = content[contentIndex]._index;
 
       if (content[contentIndex].type === 'action_content') {
-        handleAction(content[contentIndex]);
+        handleAction(content[contentIndex] as ActionContentNode);
         addToStack(content[contentIndex].content);
         addToStack(content[contentIndex].content.content);
       } else {
@@ -339,15 +387,15 @@ export function Interpreter(doc, data, dictionary = {}) {
 
   const stackHead = () => stack[stack.length - 1];
 
-  const getVisibleOptions = (options) => {
+  const getVisibleOptions = (options: OptionsNode): ((OptionNode | WorkingActionContentNode) & WorkingNode)[] => {
     return options.content
-      .map(prepareOption)
-      .filter((t) => {
+      .map((o: any, index: number) => prepareOption(o, index))
+      .filter((t: any) => {
         return t && !(t.mode === 'once' && mem.wasAlreadyAccessed(t._index));
       });
   };
 
-  const prepareOption = (option, index) => {
+  const prepareOption = (option: ( WorkingActionContentNode | ConditionalContentNode | OptionNode) & WorkingNode, index: number): any => {
     if (!option._index) {
       option._index = generateIndex() * 100 + index;
     }
@@ -372,19 +420,19 @@ export function Interpreter(doc, data, dictionary = {}) {
     return option;
   };
 
-  const translateText = (text, id) => {
+  const translateText = (text: string, id: string | undefined) => {
     if (id && textDictionary[id]) {
       return textDictionary[id];
     }
     return text;
   };
 
-  const replaceVariables = (text) => {
+  const replaceVariables = (text: string) => {
     if (text) {
       (text.match(/\%([A-z0-9]*)\%/g) || [])
         .map(match => {
           const name = match.replace(/\%/g, '');
-          let value;
+          let value: any;
           value = mem.getVariable(name);
           return { name: match, value };
         })
@@ -399,110 +447,106 @@ export function Interpreter(doc, data, dictionary = {}) {
 
   /**
    * Interpreter instance
-   *
-   * @typedef {Object} Interpreter
    */
   return {
-    events,
-
     /**
      * Add event listener
      *
-     * @param {string} eventName - Event name
-     * @param {function} callback - Callback
-     * @return {function} callback
+     * @param eventName - Event name
+     * @param callback - Callback
+     * @return callback
      */
-    on(eventName, callback) {
+    on(eventName: EventType, callback: Function): Function {
       return listeners.addListener(eventName, callback);
     },
 
     /**
      * Remove event listener
      *
-     * @param {string} eventName - Event name
-     * @param {function} callback - Callback provided when adding the listener
+     * @param eventName - Event name
+     * @param callback - Callback provided when adding the listener
      */
-    off(eventName, callback) {
+    off(eventName: EventType, callback: Function) {
       listeners.removeListener(eventName, callback);
     },
 
     /**
      * Get internal data
      *
-     * @return {object} data
+     * @return data
      */
-    getData() {
+    getData(): InternalMemory {
       return mem.getAll();
     },
 
     /**
      * Load internal data
      *
-     * @param {object} data
+     * @param data
      */
-    loadData(data) {
+    loadData(data: InternalMemory) {
       mem.load(data);
     },
 
     /**
      * Clear all internal data
      */
-    clearData() {
+    clearData(): void {
       mem.clear();
     },
 
     /**
      * Load translation object.
      *
-     * @param {object} dictionary
+     * @param dictionary
      */
-    loadDictionary(dictionary) {
+    loadDictionary(dictionary: Dictionary) {
       textDictionary = dictionary;
     },
 
     /**
      * Get next dialogue content
      *
-     * @return {object} Content. Line, Option list or undefined.
+     * @return Content. Line, Option list or undefined.
      */
-    getContent() {
+    getContent(): DialogueLine | DialogueOptions | undefined {
       return handleNextNode(stackHead().current)
     },
 
     /**
      * Choose option by index. Option's index start in 0.
      *
-     * @param {number} index - Option index
+     * @param index - Option index
      */
-    choose(index) {
-      return selectOption(index)
+    choose(index: number): void {
+      selectOption(index)
     },
 
     /**
      * set variable
      *
-     * @param {string} name - Variable name
-     * @param {string|number|boolean|undefined} value - Value
+     * @param name - Variable name
+     * @param value - Value
      */
-    setVariable(name, value) {
+    setVariable(name: string, value: any): void {
       mem.setVariable(name, value);
     },
 
     /**
      * Return variable value
-     * @param {string} name - Variable name
-     * @return {string|number|boolean|undefined} variable value
+     * @param name - Variable name
+     * @return variable value
      */
-    getVariable(name) {
+    getVariable(name: string): any {
       return mem.getVariable(name);
     },
 
     /**
      * Start dialogue from the begining
      *
-     * @param {string} [blockName] - Dialogue block to use
+     * @param [blockName] - Dialogue block to use
      */
-    start(blockName) {
+    start(blockName?: string): void {
       if (blockName) {
         initializeStack(anchors[blockName]);
       } else {
