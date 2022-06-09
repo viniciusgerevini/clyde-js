@@ -1,87 +1,156 @@
 export class ClydeDocumentRoot {
   public readonly type = 'document';
-  constructor(public content = [], public blocks = []) {};
+  constructor(public content: ContentNode[] = [], public blocks: BlockNode[] = []) {};
 }
 
-export const ContentNode = (content) => {
-  return { type: 'content', content };
-};
-
-export const BlockNode = (blockName, content) => {
-  return { type: 'block', name: blockName, content };
+export class ContentNode {
+  public readonly type = 'content';
+  constructor(public content: any) {}; // TODO check if there is a better definition
 }
 
-export const LineNode = (value: string, speaker?: string, id?: string, tags?: string[]) => {
-  return { type: 'line', value, speaker, id, tags };
-};
-
-export const OptionsNode = (content, name?: string, id?: string, speaker?: string, tags?: string) => {
-  return { type: 'options', name, content, id, speaker, tags };
+export class BlockNode {
+  public readonly type = 'block';
+  constructor(public name: string, public content: ContentNode) {};
 }
 
-export const OptionNode = (content, mode?: string, name?: string, id?: string, speaker?: string, tags?: string) => {
-  return { type: 'option', name, mode, content, id, speaker, tags };
+export class LineNode {
+  public readonly type = 'line';
+
+  constructor (
+    public value: string,
+    public speaker?: string,
+    public id?: string,
+    public tags?: string[]
+  ) {};
 }
 
-export const DivertNode = (target) => {
-  if (target === 'END') {
-    target = '<end>';
+export class OptionsNode {
+  public readonly type = 'options';
+
+  constructor (
+    public content: (LogicBlockNode | OptionNode)[],
+    public name?: string,
+    public id?: string,
+    public speaker?: string,
+    public tags?: string[]
+  ) {};
+}
+
+export class OptionNode {
+  public readonly type = 'option';
+
+  constructor (
+    public content: ContentNode,
+    public mode?: string,
+    public name?: string,
+    public id?: string,
+    public speaker?: string,
+    public tags?: string[]
+  ) {};
+}
+
+export class DivertNode { 
+  public readonly type = 'divert';
+  public target: string;
+
+  constructor (target: string) {
+    if (target === 'END') {
+      this.target = '<end>';
+    } else {
+      this.target = target;
+    }
   }
-  return { type: 'divert', target };
 }
 
-export const VariationsNode = (mode, content = []) => {
-  return { type: 'variations', mode, content };
+export class VariationsNode {
+  public readonly type = 'variations';
+  constructor(public mode: string, public content: ContentNode[] = []) {};
 }
 
-export const VariableNode = (name) => {
-  return { type: 'variable', name };
+export class VariableNode {
+  public readonly type = 'variable';
+  constructor(public name: string) {};
 }
 
-export const NumberLiteralNode = (value) => {
-  return LiteralNode('number', Number(value));
+export type OperandNode = LiteralNode | NullTokenNode | ExpressionNode | VariableNode;
+
+export interface LiteralNode {
+  type: 'literal';
+  name: string;
+  value: any;
 }
 
-export const BooleanLiteralNode = (value) => {
-  return LiteralNode('boolean', value === 'true');
+export class NumberLiteralNode implements LiteralNode {
+  public type = 'literal' as 'literal';
+  public name = "number";
+
+  constructor(public value: number) {};
+
+  static create(value: string) {
+    return new NumberLiteralNode(Number(value));
+  }
 }
 
-export const StringLiteralNode = (value) => {
-  return LiteralNode('string', value);
+export class BooleanLiteralNode implements LiteralNode {
+  public type = 'literal' as 'literal';
+  public name = "boolean";
+
+  constructor(public value: boolean) {};
+
+  static create(value: string) {
+    return new BooleanLiteralNode(value === 'true');
+  }
 }
 
-export const LiteralNode = (name, value) => {
-  return { type: 'literal', name, value };
+export class StringLiteralNode implements LiteralNode {
+  public type = 'literal' as 'literal';
+  public name = "string";
+
+  constructor(public value: string) {};
+
+  static create(value: string) {
+    return new StringLiteralNode(value);
+  }
 }
 
-export const NullTokenNode = () => {
-  return { type: 'null' };
+export class NullTokenNode {
+  public readonly type = 'null';
 }
 
-export const ConditionalContentNode = (conditions, content?) => {
-  return { type: 'conditional_content', conditions, content };
+export class ConditionalContentNode {
+  public readonly type = 'conditional_content';
+  constructor (public conditions: OperandNode, public content?: any) {}; // TODO replace any with something
 }
 
-export const ActionContentNode = (action, content?) => {
-  return { type: 'action_content', action, content };
+export class ActionContentNode {
+  public readonly type = 'action_content';
+  constructor (public action: EventsNode | AssignmentsNode, public content?: any) {}; // TODO replace any with something
 }
 
-export const ExpressionNode = (name, elements) => {
-  return { type: 'expression', name, elements };
+export class ExpressionNode {
+  public readonly type = 'expression';
+  constructor(public name: string, public elements: OperandNode[]) {};
 }
 
-export const AssignmentsNode = (assignments) => {
-  return { type: 'assignments', assignments };
+export class AssignmentsNode {
+  public type = 'assignments';
+  constructor (public assignments: (AssignmentNode| VariableNode)[]) {}; // TODO variable node is temporary until { set banana } is fixed
 }
 
-export const AssignmentNode = (variable, operation, value) => {
-  return { type: 'assignment', variable, operation, value };
+export class AssignmentNode {
+  public type = 'assignment';
+  constructor (public variable: VariableNode, public operation: string, public value: OperandNode | AssignmentNode) {};
 }
 
-export const EventsNode = (events) => {
-  return { type: 'events', events };
+export class EventsNode {
+  public type = 'events';
+  constructor (public events: EventNode[]) {};
 }
 
-export const EventNode = (name) => {
-  return { type: 'event', name };
+export class EventNode {
+  public type = 'event';
+  constructor (public name: string) {};
 }
+
+export type LogicBlockNode = ConditionalContentNode | ActionContentNode;
+
