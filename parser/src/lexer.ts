@@ -106,7 +106,7 @@ export type Token = {
 
 interface TokenList {
   getAll(): Token[];
-  next(): Token | undefined;
+  next(): Token;
 }
 
 export type TokenHandlerReturn = Token | Token[] | void;

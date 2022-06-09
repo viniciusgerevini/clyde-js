@@ -69,21 +69,21 @@ export default function parse(doc: string): ClydeDocumentRoot {
   // console.log(tokenize(doc).getAll());
   // console.log(JSON.stringify(test.getAll()));
   let currentToken: Token;
-  let lookaheadTokens = [];
+  let lookaheadTokens: Token[] = [];
   let isMultilineEnabled = true;
 
   const wrongTokenError = (token: Token, expected: string[]) => {
     throw new Error(`Unexpected token "${getTokenFriendlyHint(token.token)}" on line ${token.line+1} column ${token.column+1}. Expected ${expected.map(getTokenFriendlyHint).join(', ')} `);
   }
 
-  const consume = (expected: string[]) => {
+  const consume = (expected: string[]): Token => {
     if (!lookaheadTokens.length) {
       lookaheadTokens.push(tokens.next());
     }
 
-    const lookahead = lookaheadTokens.shift();
+    const lookahead = lookaheadTokens.shift()!;
 
-    if (expected && (!lookahead || !expected.includes(lookahead.token))) {
+    if (expected && !expected.includes(lookahead.token)) {
       wrongTokenError(lookahead, expected);
     }
 
@@ -91,7 +91,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
     return currentToken;
   };
 
-  const peek = (expected?: string[], offset = 0) => {
+  const peek = (expected?: string[], offset = 0): Token | undefined => {
     while (lookaheadTokens.length < (offset + 1)) {
       const token = tokens.next();
       lookaheadTokens.push(token);
@@ -119,7 +119,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
       TOKENS.BRACKET_OPEN,
       TOKENS.BRACE_OPEN,
     ];
-    const next = peek();
+    const next = peek()!;
 
     switch (next.token) {
       case TOKENS.EOF:
