@@ -1,6 +1,6 @@
 export const APP_LOCAL_STORAGE_KEY = 'clyde_editor_data';
 
-export const saveState =(state) => {
+export const saveState =(state: any) => {
   try {
     localStorage.setItem(APP_LOCAL_STORAGE_KEY, JSON.stringify(state));
   } catch (_e) {

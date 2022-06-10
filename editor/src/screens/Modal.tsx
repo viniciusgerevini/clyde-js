@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 
 const ModalWrapper = styled.div`
@@ -51,7 +50,7 @@ const ModalAction = styled.button`
   }
 `;
 
-export default function Modal(props) {
+export default function Modal(props: any) {
   const {
     title,
     actions,
@@ -64,7 +63,7 @@ export default function Modal(props) {
         <ModalHeader>{title}</ModalHeader>
         <ModalContent>{children}</ModalContent>
         <ModalFooter>
-          {actions.map((action, key) => {
+          {actions.map((action: any, key: number) => {
             return <ModalAction key={key} onClick={action.onClick}>{action.label}</ModalAction>
           })}
         </ModalFooter>

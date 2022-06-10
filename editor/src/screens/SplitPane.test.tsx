@@ -93,7 +93,7 @@ describe('SplitPane', () => {
       <div data-testid="child2"/>
     </SplitPane>);
 
-    expect(window.getComputedStyle(container.firstChild).flexDirection).toEqual('column');
+    expect(window.getComputedStyle(container.firstChild as Element).flexDirection).toEqual('column');
   });
 
   it('use vertical as default direction', () => {
@@ -101,7 +101,7 @@ describe('SplitPane', () => {
       <div data-testid="child"/>
     </SplitPane>);
 
-    expect(window.getComputedStyle(container.firstChild).flexDirection).toEqual('row');
+    expect(window.getComputedStyle(container.firstChild as Element).flexDirection).toEqual('row');
   });
 
   it('create gutters when multiple items', () => {
@@ -111,13 +111,13 @@ describe('SplitPane', () => {
       <div data-testid="child3"/>
     </SplitPane>);
 
-    const children = container.firstChild.childNodes;
+    const children = container.firstChild!.childNodes;
     expect(children.length).toBe(5);
-    expect(children[0].getAttribute('data-testid')).toEqual('child');
-    expect(window.getComputedStyle(children[1]).cursor).toEqual('col-resize');
-    expect(children[2].getAttribute('data-testid')).toEqual('child2');
-    expect(window.getComputedStyle(children[3]).cursor).toEqual('col-resize');
-    expect(children[4].getAttribute('data-testid')).toEqual('child3');
+    expect((children[0] as Element).getAttribute('data-testid')).toEqual('child');
+    expect(window.getComputedStyle(children[1] as Element).cursor).toEqual('col-resize');
+    expect((children[2] as Element).getAttribute('data-testid')).toEqual('child2');
+    expect(window.getComputedStyle(children[3] as Element).cursor).toEqual('col-resize');
+    expect((children[4] as Element).getAttribute('data-testid')).toEqual('child3');
   });
 
   it('create gutters for horizontal mode when multiple items', () => {
@@ -127,12 +127,12 @@ describe('SplitPane', () => {
       <div data-testid="child3"/>
     </SplitPane>);
 
-    const children = container.firstChild.childNodes;
+    const children = container.firstChild!.childNodes;
     expect(children.length).toBe(5);
-    expect(children[0].getAttribute('data-testid')).toEqual('child');
-    expect(window.getComputedStyle(children[1]).cursor).toEqual('row-resize');
-    expect(children[2].getAttribute('data-testid')).toEqual('child2');
-    expect(window.getComputedStyle(children[3]).cursor).toEqual('row-resize');
-    expect(children[4].getAttribute('data-testid')).toEqual('child3');
+    expect((children[0] as Element).getAttribute('data-testid')).toEqual('child');
+    expect(window.getComputedStyle(children[1] as Element).cursor).toEqual('row-resize');
+    expect((children[2] as Element).getAttribute('data-testid')).toEqual('child2');
+    expect(window.getComputedStyle(children[3] as Element).cursor).toEqual('row-resize');
+    expect((children[4] as Element).getAttribute('data-testid')).toEqual('child3');
   });
 });

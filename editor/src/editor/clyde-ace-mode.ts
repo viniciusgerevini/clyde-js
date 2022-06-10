@@ -1,3 +1,4 @@
+// @ts-nocheck
 export default function setupClydeMode(ace) {
 
   ace.define('ace/mode/clyde_highlight_rules', ['require', 'exports', 'ace/lib/oop', 'ace/mode/text_highlight_rules'], (acequire, exports) => {

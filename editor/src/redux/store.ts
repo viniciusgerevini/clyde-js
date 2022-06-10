@@ -1,13 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { Provider } from 'react-redux';
-
 import throttle from 'lodash/throttle';
 
-import reducer from './redux/reducers';
-import MainPanelsContainer from './screens/MainPanelsContainer';
+import reducer from './reducers';
 
-import { createEmptyState as createEmptyEditorState } from './redux/editor';
-import { loadState, saveState } from './storage/local-storage';
+import { createEmptyState as createEmptyEditorState } from './editor';
+import { loadState, saveState } from '../storage/local-storage';
 
 const EDITOR_DEFAULT_VALUE = `--
 --
@@ -94,7 +91,7 @@ const load = () => {
   };
 };
 
-const store = configureStore({
+export const store = configureStore({
   reducer,
   devTools: process.env.NODE_ENV !== 'production',
   preloadedState: load(),
@@ -123,13 +120,6 @@ store.subscribe(throttle(() => {
   });
 }, 1000));
 
+export type RootState = ReturnType<typeof store.getState>;
 
-function App() {
-  return (
-    <Provider store={store}>
-      <MainPanelsContainer />
-    </Provider>
-  );
-}
-
-export default App;
+export type AppDispatch = typeof store.dispatch;

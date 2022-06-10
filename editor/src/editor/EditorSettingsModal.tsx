@@ -18,22 +18,28 @@ const Preference = styled.div`
   }
 `;
 
-export default function EditorSettingsModal(props) {
+export interface EditorSettingsModalParams {
+  onCloseClick: Function;
+  updatePreference: Function;
+  preferences: { [key: string]: any };
+}
+
+export default function EditorSettingsModal(props: EditorSettingsModalParams) {
   const {
     onCloseClick,
     updatePreference,
     preferences,
   } = props;
 
-  const update = (item) => {
+  const update = (item: React.ChangeEvent<HTMLInputElement>) => {
     updatePreference(item.target.name, item.target.checked);
   };
 
-  const updateNumber = (item) => {
+  const updateNumber = (item: React.ChangeEvent<HTMLInputElement>) => {
     updatePreference(item.target.name, Number(item.target.value));
   };
 
-  const updateTheme = (item) => {
+  const updateTheme = (item: React.ChangeEvent<HTMLSelectElement>) => {
     updatePreference(item.target.name, item.target.value);
   };
 

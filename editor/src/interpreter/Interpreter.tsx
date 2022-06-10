@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import PropTypes from 'prop-types';
+import { useState } from "react";
 import styled from 'styled-components';
 
-import { Interpreter as ClydeInterpreter } from '@clyde-lang/interpreter';
+import { Interpreter as ClydeInterpreter, EventType } from '@clyde-lang/interpreter';
 import { parse } from '@clyde-lang/parser';
 
 import { InfoBubble, ErrorBubble } from './Bubbles';
@@ -18,7 +17,32 @@ const Wrapper = styled.div`
   height: 100%;
 `;
 
-export default function Interpreter(p) {
+
+interface InterpreterProps {
+  content: any;
+  currentBlock: string,
+  timeline: any[],
+  shouldShowExtraMetadata: boolean;
+  shouldShowDebugPane: boolean;
+  singleBubblePresentation: boolean;
+  clydeDocument: string;
+  setBlock: Function;
+  addDialogueLine: Function;
+  clearTimeline: Function;
+  showExtraMetadata: Function;
+  hideExtraMetadata: Function;
+  showDebugPane: Function;
+  hideDebugPane: Function;
+  enableSingleBubbleDialogue: Function;
+  disableSingleBubbleDialogue: Function;
+  debugPaneDirection?: "horizontal" | "vertical";
+  chooseOption: Function;
+  notifyEvent: Function;
+  clearEvents: Function;
+  events: any;
+};
+
+export default function Interpreter(p: InterpreterProps) {
   const {
     content,
     currentBlock,
@@ -44,19 +68,19 @@ export default function Interpreter(p) {
     ...props } = p;
   const [lastContent, setLastContent] = useState('');
   const [persistedDialogue, setDialogue] = useState();
-  let dialogue = persistedDialogue;
+  let dialogue: any = persistedDialogue;
   let doc;
   let errorMessage;
 
-  const updateEventInfo = (data) => {
+  const updateEventInfo = (data: React.ChangeEvent<HTMLInputElement>) => {
     updateDebugInfo('event', data);
   };
 
-  const updateVariableInfo = (data) => {
+  const updateVariableInfo = (data: React.ChangeEvent<HTMLInputElement>) => {
     updateDebugInfo('variable', data);
   };
 
-  const updateDebugInfo = (type, data) => {
+  const updateDebugInfo = (type: string, data: any) => {
     notifyEvent({ type, data, eventTime: Date.now() });
   };
 
@@ -72,10 +96,10 @@ export default function Interpreter(p) {
       }
       setDialogue(dialogue);
 
-      dialogue.on(dialogue.events.VARIABLE_CHANGED, updateVariableInfo);
-      dialogue.on(dialogue.events.EVENT_TRIGGERED, updateEventInfo);
+      dialogue.on(EventType.VARIABLE_CHANGED, updateVariableInfo);
+      dialogue.on(EventType.EVENT_TRIGGERED, updateEventInfo);
     }
-  } catch (e) {
+  } catch (e: any) {
     errorMessage = e.message;
     doc = parse(`${lastContent || ''}`);
   }
@@ -129,21 +153,3 @@ export default function Interpreter(p) {
     </Wrapper>
   );
 }
-
-Interpreter.propTypes = {
-  currentBlock: PropTypes.string,
-  timeline: PropTypes.array,
-  shouldShowExtraMetadata: PropTypes.bool,
-  shouldShowDebugPane: PropTypes.bool,
-  singleBubblePresentation: PropTypes.bool,
-  clydeDocument: PropTypes.string,
-  setBlock: PropTypes.func,
-  addDialogueLine: PropTypes.func,
-  clearTimeline: PropTypes.func,
-  showExtraMetadata: PropTypes.func,
-  hideExtraMetadata: PropTypes.func,
-  showDebugPane: PropTypes.func,
-  hideDebugPane: PropTypes.func,
-  enableSingleBubbleDialogue: PropTypes.func,
-  disableSingleBubbleDialogue: PropTypes.func,
-};

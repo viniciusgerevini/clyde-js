@@ -1,4 +1,3 @@
-import React from 'react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { render, fireEvent } from '@testing-library/react';
@@ -42,6 +41,7 @@ describe('MainPanelsContainer', () => {
     const interpreterState = createInterpreterEmptyState();
     return mockStore({
       interfaceConfig: { ...interfaceState, ...customInterfaceState },
+      //@ts-ignore
       editor: { currentValue: 'hi\n', ...editorState, ...customEditorState },
       interpreter: { ...interpreterState, ...customInterpreterState },
     });
@@ -131,7 +131,7 @@ describe('MainPanelsContainer', () => {
 
     fireEvent.click(getByLabelText(/Toggle settings menu/i));
     fireEvent.click(getByLabelText(/Editor preferences/i));
-    fireEvent.click(container.querySelector(`input[name="showInvisibles"]`));
+    fireEvent.click(container.querySelector(`input[name="showInvisibles"]`)!);
 
     const action = store.getActions()[0];
 
@@ -191,7 +191,7 @@ describe('MainPanelsContainer', () => {
         { currentValue:'Hi\n' },
         { timeline: [], shouldShowDebugPane: false }
       );
-      const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+      const { getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
 
       fireEvent.click(getByText(/Show debug pane/i));
 
@@ -206,7 +206,7 @@ describe('MainPanelsContainer', () => {
         { currentValue:'Hi\n' },
         { timeline: [], shouldShowDebugPane: true }
       );
-      const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+      const { getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
 
       fireEvent.click(getByText(/Hide debug pane/i));
 
@@ -251,7 +251,7 @@ describe('MainPanelsContainer', () => {
         { currentValue:'Hi\n' },
         { timeline: [], shouldShowExtraMetadata: false }
       );
-      const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+      const { getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
 
       fireEvent.click(getByText(/Show metadata/i));
 
@@ -266,7 +266,7 @@ describe('MainPanelsContainer', () => {
         { currentValue:'Hi\n' },
         { timeline: [], shouldShowExtraMetadata: true }
       );
-      const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+      const { getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
 
       fireEvent.click(getByText(/Hide metadata/i));
 

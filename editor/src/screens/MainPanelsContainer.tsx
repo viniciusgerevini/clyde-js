@@ -28,7 +28,9 @@ import {
   updatePreference
 } from '../redux/editor';
 
-const mapStateToProps = (state, props) => ({
+import { RootState, AppDispatch } from '../redux/store';
+
+const mapStateToProps = (state: RootState, props: any) => ({
   ...state.interfaceConfig,
   editorDefaultValue: state.editor.currentValue,
   editorPreferences: state.editor.preferences,
@@ -36,20 +38,20 @@ const mapStateToProps = (state, props) => ({
   ...props
 });
 
-const mapDispatchToProps = dispatch => ({
-  toggleEditor: (state) => {
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  toggleEditor: (state: RootState) => {
     dispatch(toggleEditor({state}));
   },
-  toggleInterpreter: (state) => {
+  toggleInterpreter: (state: RootState) => {
     dispatch(toggleInterpreter({state}));
   },
-  changeInterpreterSplitDirection: (direction) => {
+  changeInterpreterSplitDirection: (direction: string) => {
     dispatch(changeInterpreterSplitDirection({direction}));
   },
-  setBlock: (blockName) => {
+  setBlock: (blockName: string) => {
     dispatch(setBlock(blockName));
   },
-  addDialogueLine: (line) => {
+  addDialogueLine: (line: any) => {
     dispatch(addDialogueLine(line));
   },
   clearTimeline: () => {
@@ -73,19 +75,19 @@ const mapDispatchToProps = dispatch => ({
   disableSingleBubbleDialogue: () => {
     dispatch(disableSingleBubbleDialogue());
   },
-  chooseOption: (optionIndex) => {
+  chooseOption: (optionIndex: number) => {
     dispatch(chooseOption(optionIndex));
   },
-  setDocumentContent: (content) => {
+  setDocumentContent: (content: string) => {
     dispatch(setDocumentContent(content));
   },
-  notifyEvent: (event) => {
+  notifyEvent: (event: any) => {
     dispatch(notifyEvent(event));
   },
   clearEvents: () => {
     dispatch(clearEvents());
   },
-  updateEditorPreference: (name, value) => {
+  updateEditorPreference: (name: string, value: any) => {
     dispatch(updatePreference({ name, value }));
   },
 });

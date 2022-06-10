@@ -1,4 +1,3 @@
-import React from "react";
 import AceEditor from "react-ace";
 import useResizeObserver from "use-resize-observer";
 import styled from 'styled-components';
@@ -30,14 +29,22 @@ const defaultConfig = {
   scrollPastEnd: false
 };
 
-export default function Editor({ defaultValue, setDocumentContent, notifyChange, preferences = defaultConfig, ...props}) {
+interface EditorParams {
+  defaultValue: string;
+  setDocumentContent: Function;
+  notifyChange: Function;
+  preferences: {[key: string]: any};
+  props?: any[];
+}
+
+export default function Editor({ defaultValue, setDocumentContent, notifyChange, preferences = defaultConfig, ...props}: EditorParams) {
   const { ref, width = 500, height = 500 } = useResizeObserver();
 
-  const onBeforeLoad = (editor) => {
+  const onBeforeLoad = (editor: any) => {
     ClydeMode(editor);
   };
 
-  const onChange = (value) => {
+  const onChange = (value: string) => {
     setDocumentContent(value);
     if (value !== defaultValue) {
       notifyChange({ text: '<DIALOGUE_CHANGED>'});

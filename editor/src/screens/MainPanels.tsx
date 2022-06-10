@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -40,7 +39,42 @@ const IconWrapper = styled.span`
   position: relative;
 `;
 
-export default function MainPanels(props) {
+export interface MainPanelsParams {
+  // interface
+  isEditorEnabled?: boolean;
+  isInterpreterEnabled?: boolean;
+  toggleEditor: Function;
+  toggleInterpreter: Function;
+  interpreterSplitDirection?: "horizontal" | "vertical";
+  changeInterpreterSplitDirection: Function;
+  // editor
+  editorDefaultValue: any;
+  setDocumentContent: Function;
+  updateEditorPreference: Function;
+  editorPreferences: {[key: string]: any};
+  // interpreter
+  currentBlock: any;
+  timeline: any;
+  shouldShowExtraMetadata: boolean;
+  shouldShowDebugPane: boolean;
+  singleBubblePresentation: boolean;
+  document: any;
+  setBlock: any;
+  addDialogueLine: any;
+  clearTimeline: any;
+  showExtraMetadata: any;
+  hideExtraMetadata: any;
+  showDebugPane: any;
+  hideDebugPane: any;
+  enableSingleBubbleDialogue: any;
+  disableSingleBubbleDialogue: any;
+  chooseOption: any;
+  events: any;
+  notifyEvent: any;
+  clearEvents: any;
+}
+
+export default function MainPanels(props: MainPanelsParams) {
   const {
     // interface
     isEditorEnabled = true,
@@ -99,7 +133,7 @@ export default function MainPanels(props) {
      <Wrapper>
        <Header>
          <IconWrapper>
-           <FontAwesomeIcon icon={faCog} onClick={toggleMenu} aria-label="Toggle settings menu"/>
+           <FontAwesomeIcon icon={faCog as any} onClick={toggleMenu} aria-label="Toggle settings menu"/>
            { isMenuVisible ? (
               <DropDownMenu onClick={toggleMenu}>
                 <DropDownItem
@@ -179,34 +213,4 @@ export default function MainPanels(props) {
   );
 };
 
-MainPanels.propTypes = {
-  isEditorEnabled: PropTypes.bool,
-  isInterpreterEnabled: PropTypes.bool,
-  toggleProjectTree: PropTypes.func,
-  toggleEditor: PropTypes.func,
-  toggleInterpreter: PropTypes.func,
-  interpreterSplitDirection: PropTypes.string,
-  editorDefaultValue: PropTypes.string,
-  setDocumentContent: PropTypes.func,
-
-  currentBlock: PropTypes.string,
-  timeline: PropTypes.array,
-  shouldShowExtraMetadata: PropTypes.bool,
-  shouldShowDebugPane: PropTypes.bool,
-  singleBubblePresentation: PropTypes.bool,
-  clydeDocument: PropTypes.string,
-
-  setBlock: PropTypes.func,
-  addDialogueLine: PropTypes.func,
-  clearTimeline: PropTypes.func,
-  showExtraMetadata: PropTypes.func,
-  hideExtraMetadata: PropTypes.func,
-  showDebugPane: PropTypes.func,
-  hideDebugPane: PropTypes.func,
-  enableSingleBubbleDialogue: PropTypes.func,
-  disableSingleBubbleDialogue: PropTypes.func,
-
-  notifyEvent: PropTypes.func,
-  clearEvents: PropTypes.func,
-};
 

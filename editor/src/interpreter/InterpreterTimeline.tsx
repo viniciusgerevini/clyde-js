@@ -1,4 +1,5 @@
-import React, { useRef, useEffect } from "react";
+// @ts-nocheck
+import { useRef, useEffect } from "react";
 import styled from 'styled-components';
 
 import { InfoBubble } from './Bubbles';

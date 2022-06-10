@@ -1,8 +1,6 @@
+// @ts-nocheck
 import { render, fireEvent } from '@testing-library/react';
-import {notifyEvent} from '../redux/interpreter';
 import Interpreter from './Interpreter';
-
-
 
 describe('Interpreter component', () => {
   it('shows nothing when content is empty', () => {
