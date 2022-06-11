@@ -71,4 +71,31 @@ describe('MainPanels component', () => {
 
     expect(stubDirectionChange).toHaveBeenCalledWith('vertical');
   });
+
+  it('shows settings modals', () => {
+    const params = {...fakeParams, editorPreferences: {} };
+    const { getByText, getByLabelText, queryByLabelText } = render(<MainPanels {...params} />);
+
+    expect(queryByLabelText(/Editor preferences/i)).not.toBeInTheDocument();
+
+    fireEvent.click(getByLabelText(/Toggle settings menu/i));
+    fireEvent.click(getByLabelText(/Editor preferences/i));
+
+    expect(getByText(/Editor preferences/i)).toBeInTheDocument();
+  });
+
+  it('hides settings modals on clicking close', () => {
+    const params = {...fakeParams, editorPreferences: {} };
+    const { getByText, getByLabelText, queryByLabelText } = render(<MainPanels {...params} />);
+
+    fireEvent.click(getByLabelText(/Toggle settings menu/i));
+    fireEvent.click(getByLabelText(/Editor preferences/i));
+
+    expect(getByText(/Editor preferences/i)).toBeInTheDocument();
+
+    const closeButton = getByText(/Editor preferences/i).parentElement!.querySelector('button[title="Close"]');
+    fireEvent.click(closeButton!);
+
+    expect(queryByLabelText(/Editor preferences/i)).not.toBeInTheDocument();
+  });
 });

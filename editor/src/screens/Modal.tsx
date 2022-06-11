@@ -64,7 +64,7 @@ export default function Modal(props: any) {
         <ModalContent>{children}</ModalContent>
         <ModalFooter>
           {actions.map((action: any, key: number) => {
-            return <ModalAction key={key} onClick={action.onClick}>{action.label}</ModalAction>
+            return <ModalAction key={key} onClick={action.onClick} title={action.label}>{action.label}</ModalAction>
           })}
         </ModalFooter>
       </ModalInnerWrapper>

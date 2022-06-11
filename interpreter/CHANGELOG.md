@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## WIP
 
+## Breaking Changes
+
+event type constant are now exposed via `EventTypes` and not as `interpreter.events` anymore.
+
 ### Fixed
 
 - Standalone `{set a}` would pass parser, but break on interpreter. Now, this resolves to `a = true`.
