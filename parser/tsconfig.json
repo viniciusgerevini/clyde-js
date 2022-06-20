@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig-base.json",
+  "exclude": ["**/*.test.*", "**/*.spec.*", "**/__mocks__/*", "**/__tests__/*"],
+  "compilerOptions": {
+    "module": "esnext",
+    "outDir": "dist/mjs",
+    "target": "esnext"
+  }
+}

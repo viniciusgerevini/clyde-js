@@ -1,32 +1,37 @@
 {
   "name": "@clyde-lang/interpreter",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Interpreter for Clyde dialogue language",
-  "main": "./cjs/index.js",
-  "types": "./types/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/mjs/index.d.ts",
   "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "create-types": "npx typescript src/index.js --declaration --allowJs --emitDeclarationOnly --outDir types",
-    "build": "npm run cjs",
-    "cjs": "mkdir -p cjs && ascjs src cjs",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage"
+    "prepublish": "npm run build",
+    "build": "rm -rf dist/* && tsc -p tsconfig.json && tsc-esm-fix --target dist/mjs && tsc -p tsconfig-cjs.json && ./configure_dist_modules",
+    "test": "jest --coverage"
   },
   "devDependencies": {
-    "@clyde-lang/parser": "^2.0.1",
-    "ascjs": "^4.0.3",
-    "jest": "^27.2.4"
+    "@types/jest": "^28.1.1",
+    "jest": "^28.1.1",
+    "ts-jest": "^28.0.4",
+    "tsc-esm-fix": "^2.18.0",
+    "typescript": "^4.7.3"
   },
-  "module": "./src/index.js",
+  "module": "./dist/mjs/index.js",
   "type": "module",
   "exports": {
     ".": {
-      "import": "./src/index.js",
-      "default": "./cjs/index.js"
+      "import": "./dist/mjs/index.js",
+      "default": "./dist/cjs/index.js"
     },
     "./package.json": "./package.json"
   },
   "jest": {
-    "transform": {}
+    "preset": "ts-jest",
+    "testEnvironment": "node"
+  },
+  "dependencies": {
+    "@clyde-lang/parser": "^2.0.2"
   }
 }

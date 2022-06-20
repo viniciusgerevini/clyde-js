@@ -2,6 +2,16 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## 2.0.2 (2022-06-20)
+
+### Fixed
+
+- Standalone `{set a}` would pass parsing, but break on interpreting. Now, this resolves to `{ set a = true }`.
+
+### Changed
+
+- TypeScript rewrite to improve tooling. Better types.
+
 ## 2.0.1 (2021-11-21)
 
 ### Fixed

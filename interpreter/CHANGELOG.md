@@ -2,6 +2,21 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## 3.0.0 (2022-06-20)
+
+## Breaking Changes
+
+event type constant are now exposed via `EventTypes` and not as `interpreter.events` anymore.
+
+### Changed
+
+- Update `@clyde-lang/parser` to `2.0.2`.
+- TypeScript rewrite to improve tooling. Better types.
+
+### Fixed
+
+- Standalone `{set a}` would pass parser, but break on interpreter. Now, this resolves to `a = true`.
+
 ## 2.0.1 (2021-11-21)
 
 ### Fixed

@@ -4,14 +4,22 @@
   "private": true,
   "homepage": "https://viniciusgerevini.github.io/clyde",
   "dependencies": {
-    "@clyde-lang/interpreter": "^2.0.1",
-    "@clyde-lang/parser": "^2.0.1",
+    "@clyde-lang/interpreter": "3.0.0",
+    "@clyde-lang/parser": "2.0.2",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@reduxjs/toolkit": "^1.5.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
+    "@types/jest": "^28.1.1",
+    "@types/lodash.throttle": "^4.1.7",
+    "@types/node": "^17.0.41",
+    "@types/react": "^18.0.12",
+    "@types/react-dom": "^18.0.5",
+    "@types/react-redux": "^7.1.24",
+    "@types/redux-mock-store": "^1.0.3",
+    "@types/styled-components": "^5.1.25",
     "ace-builds": "^1.4.12",
     "lodash": "^4.17.20",
     "prop-types": "^15.7.2",
@@ -22,6 +30,7 @@
     "react-scripts": "5.0.1",
     "react-split": "^2.0.9",
     "styled-components": "^5.2.1",
+    "typescript": "^4.7.3",
     "use-resize-observer": "^7.0.0",
     "web-vitals": "^0.2.4"
   },
@@ -54,8 +63,8 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "src/**/*.{js,jsx}",
-      "!src/index.js"
+      "src/**/*.{ts,tsx}",
+      "!src/index.tsx"
     ]
   }
 }

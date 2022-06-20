@@ -2,6 +2,25 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## 2.0.4 (2022-06-20)
+
+### Fixed
+
+- Re-introducing shebang definition. :coneofshame:
+
+## 2.0.3 (2022-06-20)
+
+### Fixed
+
+- This version fixes previous broken CLI alias.
+
+## 2.0.2 (2022-06-20) (BROKEN, update to next version)
+
+### Changed
+
+- Updated @clyde-lang/parser to v2.0.2 and @clyde-lang/interpreter to v3.0.0.
+- TypeScript rewrite to improve tooling.
+
 ## 2.0.1 (2021-11-21)
 
 ### Changed
