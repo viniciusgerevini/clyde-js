@@ -23,9 +23,12 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install and Build
+      # using workspace as yarn workspaces only geenrate lock files in the root
       run: |
-        npm install
-        npm run build
+        yarn install
+        yarn workspace @clyde-lang/parser build
+        yarn workspace @clyde-lang/interpreter build
+        yarn workspace clyde-editor build
 
     - name: Deploy  🚀
       uses: peaceiris/actions-gh-pages@v3
