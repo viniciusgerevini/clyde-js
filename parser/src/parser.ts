@@ -24,7 +24,7 @@ import {
   OperandNode,
   LogicBlockNode,
   ActionableNode,
-} from './nodes.js';
+} from './nodes';
 
 const variationsModes = ['sequence', 'once', 'cycle', 'shuffle', 'shuffle sequence', 'shuffle once', 'shuffle cycle' ];
 const operators = {

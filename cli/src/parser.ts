@@ -1,11 +1,24 @@
 import fs from 'fs';
 import path from 'path';
 import { parse } from '@clyde-lang/parser';
+import yargs from 'yargs';
 
-export function buildParserArgsParser(yargs) {
+interface ParserCliArgs {
+  input: string;
+  output?: string;
+  batch?: string[];
+  batchOutput?: string[];
+  dryRun: boolean;
+  _: any;
+  folderInput?: string;
+  folderOutput?: string;
+}
+
+export function buildParserArgsParser(yargs: yargs.Argv) {
   return yargs
     .usage(`Usage:\n$0 parse <source file path> <output file path>\n$0 parse -i <input> -o <output>`)
-    .check((argv, _options) => {
+    .check((a: any, _options) => {
+      const argv = a as ParserCliArgs;
       if (argv.batch) {
         if (argv.batchOutput) {
           if (argv.batchOutput.length !== argv.batch.length) {
@@ -98,22 +111,22 @@ export function buildParserArgsParser(yargs) {
     .help()
 }
 
-export function executeParser(argv, exitCallback) {
+export function executeParser(argv: ParserCliArgs, exitCallback: Function): void {
   try {
     if (argv.batch) {
       argv.batch.forEach((input, i) => {
-        parseFile(input, argv.batchOutput[i], argv.d);
+        parseFile(input, argv.batchOutput[i], argv.dryRun);
       });
     } else if(argv.folderInput) {
       fs.readdirSync(argv.folderInput).forEach(file => {
         if ((file.match(/\.clyde$/) || []).length > 0) {
           const input = path.resolve(argv.folderInput, file);
           const output = path.resolve(argv.folderOutput, outputFilename(file));
-          parseFile(input, output, argv.d);
+          parseFile(input, output, argv.dryRun);
         }
       });
     } else {
-      parseFile(argv.input, argv.output, argv.d);
+      parseFile(argv.input, argv.output, argv.dryRun);
     }
     exitCallback();
   } catch (e) {
@@ -122,7 +135,7 @@ export function executeParser(argv, exitCallback) {
   }
 };
 
-const outputFilename = (input) => {
+const outputFilename = (input: string): string => {
   let output = input.replace(/\.clyde$/, '.json');
   if (input === output) {
     output += '.json';
@@ -130,7 +143,7 @@ const outputFilename = (input) => {
   return output;
 }
 
-const parseFile = (path, output, isDryRun) => {
+const parseFile = (path: string, output: string, isDryRun: boolean): void => {
   const content = parse(fs.readFileSync(path, 'utf8'));
   if (!isDryRun) {
     fs.writeFileSync(output, JSON.stringify(content));

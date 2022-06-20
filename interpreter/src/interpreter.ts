@@ -54,14 +54,95 @@ export type DialogueOption = {
 
 type ContentReturnType = DialogueLine | DialogueOptions | undefined;
 
-type Dictionary = {
+export type Dictionary = {
   [key: string]: string,
 };
+
+export interface InterpreterInstance {
+  /**
+   * Add event listener
+   *
+   * @param eventName - Event name
+   * @param callback - Callback
+   * @return callback
+   */
+  on(eventName: EventType, callback: Function): Function;
+
+  /**
+   * Remove event listener
+   *
+   * @param eventName - Event name
+   * @param callback - Callback provided when adding the listener
+   */
+  off(eventName: EventType, callback: Function): void;
+
+  /**
+   * Get internal data
+   *
+   * @return data
+   */
+  getData(): InternalMemory;
+
+  /**
+   * Load internal data
+   *
+   * @param data
+   */
+  loadData(data: InternalMemory): void;
+
+  /**
+   * Clear all internal data
+   */
+  clearData(): void;
+
+  /**
+   * Load translation object.
+   *
+   * @param dictionary
+   */
+  loadDictionary(dictionary: Dictionary): void;
+
+  /**
+   * Get next dialogue content
+   *
+   * @return Content. Line, Option list or undefined.
+   */
+  getContent(): DialogueLine | DialogueOptions | undefined;
+
+  /**
+   * Choose option by index. Option's index start in 0.
+   *
+   * @param index - Option index
+   */
+  choose(index: number): void;
+
+  /**
+   * set variable
+   *
+   * @param name - Variable name
+   * @param value - Value
+   */
+  setVariable(name: string, value: any): void;
+
+  /**
+   * Return variable value
+   * @param name - Variable name
+   * @return variable value
+   */
+  getVariable(name: string): any;
+
+  /**
+   * Start dialogue from the begining
+   *
+   * @param [blockName] - Dialogue block to use
+   */
+  start(blockName?: string): void;
+}
 
 /**
  * Clyde Interpreter
  */
-export function Interpreter(clydeDoc: ClydeDocumentRoot, data?: any, dictionary: Dictionary  = {}) {
+export function Interpreter(clydeDoc: ClydeDocumentRoot, data?: any, dictionary: Dictionary  = {}): InterpreterInstance {
   const doc: ClydeDocumentRoot & WorkingNode = clydeDoc;
   let textDictionary = dictionary;
   const anchors: {[name: string]: any} = {
@@ -445,107 +526,47 @@ export function Interpreter(clydeDoc: ClydeDocumentRoot, data?: any, dictionary:
 
   initializeStack();
 
-  /**
-   * Interpreter instance
-   */
   return {
-    /**
-     * Add event listener
-     *
-     * @param eventName - Event name
-     * @param callback - Callback
-     * @return callback
-     */
     on(eventName: EventType, callback: Function): Function {
       return listeners.addListener(eventName, callback);
     },
 
-    /**
-     * Remove event listener
-     *
-     * @param eventName - Event name
-     * @param callback - Callback provided when adding the listener
-     */
-    off(eventName: EventType, callback: Function) {
+    off(eventName: EventType, callback: Function): void {
       listeners.removeListener(eventName, callback);
     },
 
-    /**
-     * Get internal data
-     *
-     * @return data
-     */
     getData(): InternalMemory {
       return mem.getAll();
     },
 
-    /**
-     * Load internal data
-     *
-     * @param data
-     */
     loadData(data: InternalMemory) {
       mem.load(data);
     },
 
-    /**
-     * Clear all internal data
-     */
     clearData(): void {
       mem.clear();
     },
 
-    /**
-     * Load translation object.
-     *
-     * @param dictionary
-     */
     loadDictionary(dictionary: Dictionary) {
       textDictionary = dictionary;
     },
 
-    /**
-     * Get next dialogue content
-     *
-     * @return Content. Line, Option list or undefined.
-     */
     getContent(): DialogueLine | DialogueOptions | undefined {
       return handleNextNode(stackHead().current)
     },
 
-    /**
-     * Choose option by index. Option's index start in 0.
-     *
-     * @param index - Option index
-     */
     choose(index: number): void {
       selectOption(index)
     },
 
-    /**
-     * set variable
-     *
-     * @param name - Variable name
-     * @param value - Value
-     */
     setVariable(name: string, value: any): void {
       mem.setVariable(name, value);
     },
 
-    /**
-     * Return variable value
-     * @param name - Variable name
-     * @return variable value
-     */
     getVariable(name: string): any {
       return mem.getVariable(name);
     },
 
-    /**
-     * Start dialogue from the begining
-     *
-     * @param [blockName] - Dialogue block to use
-     */
     start(blockName?: string): void {
       if (blockName) {
         initializeStack(anchors[blockName]);

@@ -276,7 +276,7 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.12.5", "@babel/parser@^7.14.7", "@babel/parser@^7.16.7", "@babel/parser@^7.18.0":
+"@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.16.7", "@babel/parser@^7.18.0":
   version "7.18.4"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.18.4.tgz#6774231779dd700e0af29f6ad8d479582d7ce5ef"
   integrity sha512-FDge0dFazETFcxGw/EXzOkN8uJp0PC7Qbm+Pe9T+av2zlBpOgunFHkQPPn+eRuClU73JF+98D531UgayY89tow==
@@ -2397,7 +2397,7 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@types/yargs@^17.0.8":
+"@types/yargs@^17.0.10", "@types/yargs@^17.0.8":
   version "17.0.10"
   resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-17.0.10.tgz#591522fce85d8739bca7b8bb90d048e4478d186a"
   integrity sha512-gmEaFwpj/7f/ROdtIlci1R1VYU1J4j95m8T+Tj3iBgiBFKg1foE/PSl93bBd5T9LDXNPo8UlNN6W0qwD8O5OaA==
@@ -2886,13 +2886,6 @@ asap@~2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
   integrity sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==
-
-ascjs@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/ascjs/-/ascjs-4.0.3.tgz#f94958a6d33c357c59e8be231445f6a3187e5888"
-  integrity sha512-/7SR1DegZHIx0CCL130D/jpgyjBffRzdt0YDtMO8uLcNnXDeEplffmRxP4bw4+ieNzNsWHaG40KEe1SVC3EKcA==
-  dependencies:
-    "@babel/parser" "^7.12.5"
 
 ast-types-flow@^0.0.7:
   version "0.0.7"
@@ -6436,7 +6429,7 @@ jest-worker@^28.1.1:
     merge-stream "^2.0.0"
     supports-color "^8.0.0"
 
-jest@^27.2.4, jest@^27.4.3:
+jest@^27.4.3:
   version "27.5.1"
   resolved "https://registry.yarnpkg.com/jest/-/jest-27.5.1.tgz#dadf33ba70a779be7a6fc33015843b51494f63fc"
   integrity sha512-Yn0mADZB89zTtjkPJEXwrac3LHudkQMR+Paqa8uxJHCBr9agxztUifWCyiYrjhMPBoUVBjyny0I7XH6ozDr7QQ==

@@ -1,9 +1,9 @@
 import yargs from 'yargs';
-import { buildParserArgsParser, executeParser } from './parser.js';
-import { buildInterpreterArgsParser, executeInterpreter } from './interpreter.js';
+import { buildParserArgsParser, executeParser } from './parser';
+import { buildInterpreterArgsParser, executeInterpreter } from './interpreter';
 
 
-export function execute(args) {
+export function execute(args: string[]) {
    yargs(args)
     .command(
       'run',
@@ -15,7 +15,7 @@ export function execute(args) {
       'parse',
       'Transforms *.clyde files to *.json',
       (yargs) => buildParserArgsParser(yargs),
-      (argv) => executeParser(argv, process.exit)
+      (argv) => executeParser(argv as any, process.exit)
     )
     .demandCommand()
     .help()

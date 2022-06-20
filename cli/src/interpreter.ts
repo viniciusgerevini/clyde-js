@@ -2,9 +2,17 @@ import fs from 'fs';
 import readline from 'readline';
 import yargs from 'yargs';
 import { parse } from '@clyde-lang/parser';
-import { Interpreter } from '@clyde-lang/interpreter';
+import {
+  DialogueLine,
+  DialogueOption,
+  DialogueOptions,
+  Dictionary,
+  EventType,
+  Interpreter,
+  InterpreterInstance,
+} from '@clyde-lang/interpreter';
 
-export async function executeInterpreter(args, exitCallback = process.exit, commandName) {
+export async function executeInterpreter(args: string[], exitCallback = process.exit, commandName?: string) {
   const argv = parseArguments(commandName, args);
   const filename = argv.file;
   const events = [];
@@ -16,8 +24,8 @@ export async function executeInterpreter(args, exitCallback = process.exit, comm
 
   dialogue.start(argv.block);
 
-  dialogue.on(dialogue.events.VARIABLE_CHANGED, trackInternalChanges('variable', events));
-  dialogue.on(dialogue.events.EVENT_TRIGGERED, trackInternalChanges('event', events));
+  dialogue.on(EventType.VARIABLE_CHANGED, trackInternalChanges('variable', events));
+  dialogue.on(EventType.EVENT_TRIGGERED, trackInternalChanges('event', events));
 
   const rl = readline.createInterface({
       input: process.stdin,
@@ -44,9 +52,9 @@ export async function executeInterpreter(args, exitCallback = process.exit, comm
   });
 }
 
-const inputHandlers = (dialogue, args, events, exitCallback) => {
+const inputHandlers = (dialogue: InterpreterInstance, args: InterpreterCliArgs, events: any[], exitCallback: Function) => {
   const argv = args;
-  let currentOptions;
+  let currentOptions: DialogueOption[] | undefined;
 
   const saveIfRequired = () => {
     if (argv['save-data']) {
@@ -54,7 +62,7 @@ const inputHandlers = (dialogue, args, events, exitCallback) => {
     }
   };
 
-  const printContent = (content) => {
+  const printContent = (content: DialogueLine | DialogueOptions | undefined) => {
     if (content === undefined) {
       console.log('-- END');
       if (argv.debug) {
@@ -77,7 +85,7 @@ const inputHandlers = (dialogue, args, events, exitCallback) => {
     }
   };
 
-  const handleChoice = (options, input, dialogue) => {
+  const handleChoice = (options: DialogueOption[], input: any, dialogue: InterpreterInstance) => {
     if (isNaN(input) || Number(input) > options.length || Number(input) < 1) {
       console.log(`Your answer needs to be between 1 and ${options.length}.`)
       return false;
@@ -105,7 +113,7 @@ const inputHandlers = (dialogue, args, events, exitCallback) => {
       this.default();
     },
 
-    default(input, untilOption = false) {
+    default(input: any | undefined, untilOption = false) {
       if (argv.clearScreen) {
         clearScreen();
       }
@@ -128,7 +136,7 @@ const inputHandlers = (dialogue, args, events, exitCallback) => {
       this.default(undefined, true);
     },
 
-    auto(input) {
+    auto(input: any) {
       this.default(input, true);
 
       if (currentOptions) {
@@ -140,11 +148,21 @@ const inputHandlers = (dialogue, args, events, exitCallback) => {
   };
 };
 
-const parseArguments = (commandName, args) => {
-  return buildInterpreterArgsParser(yargs(args), commandName).argv
+interface InterpreterCliArgs {
+  block: string;
+  file: string;
+  translation: string;
+  saveData: string;
+  clearScreen: boolean;
+  debug: boolean;
+  verbose: boolean;
+}
+
+const parseArguments = (commandName: string, args: string[]): InterpreterCliArgs => {
+  return buildInterpreterArgsParser(yargs(args), commandName).argv as any;
 };
 
-export const buildInterpreterArgsParser = (yargs, commandName = '$0') => {
+export const buildInterpreterArgsParser = (yargs: yargs.Argv, commandName = '$0') => {
   return yargs
     .usage(`Usage: ${commandName} [options] <file path>`)
     .check((argv, _options) => {
@@ -204,30 +222,30 @@ export const buildInterpreterArgsParser = (yargs, commandName = '$0') => {
     .version();
 };
 
-const printLine = (line, verbose) => {
+const printLine = (line: DialogueLine, verbose: boolean) => {
   const speaker = line.speaker ? `${line.speaker}: ` : '';
   const info = verbose ? extras(line) : '';
   console.log(breakText(`${speaker}${line.text}${info}`));
 };
 
-const printOptions = (content, verbose) => {
+const printOptions = (content: DialogueOptions, verbose: boolean) => {
   const speaker = content.speaker ? `${content.speaker}: ` : '';
   const text = content.name ? `${content.name}` : '';
   const info = verbose ? extras(content) : '';
   console.log(breakText(`${speaker}${text}${info}\n`));
-  content.options.forEach( (option, index) => {
+  content.options.forEach( (option: DialogueOption, index: number) => {
     console.log(breakText(`\t${index + 1} - ${option.label} ${verbose ? extras(option) : ''}`));
   });
   console.log('');
 };
 
-const extras = (content) => {
+const extras = (content: DialogueLine | DialogueOption | DialogueOptions) => {
   const id = content.id ? ` | id: ${content.id}` : '';
   const tags = content.tags ? ` | tags: [${content.tags.join(', ')}]` : '';
   return `${id}${tags}`;
 };
 
-const printDebugInfo = (events) => {
+const printDebugInfo = (events: any[]) => {
   console.log('\n');
   separator();
   console.log('Debug:');
@@ -235,7 +253,7 @@ const printDebugInfo = (events) => {
   separator();
 };
 
-function getContent(filename) {
+function getContent(filename: string) {
   const extension = filename.split('.').pop();
   const file = fs.readFileSync(filename, 'utf8');
 
@@ -248,7 +266,7 @@ function getContent(filename) {
   }
 }
 
-function getTranslationDictionary(file) {
+function getTranslationDictionary(file: string): Promise<Dictionary> {
   return new Promise((resolve, _reject) => {
     let dictionary = {};
     const lineReader = readline.createInterface({
@@ -268,22 +286,22 @@ function getTranslationDictionary(file) {
   });
 }
 
-function loadSaveFile(saveFile) {
+function loadSaveFile(saveFile: string) {
   if (fs.existsSync(saveFile)) {
-    return JSON.parse(fs.readFileSync(saveFile));
+    return JSON.parse(fs.readFileSync(saveFile) as any);
   }
 }
 
-function saveState(filename, dialogue) {
+function saveState(filename: string, dialogue: InterpreterInstance) {
   fs.writeFileSync(filename, JSON.stringify(dialogue.getData()));
 }
 
-function clearScreen() {
+function clearScreen(): void {
   readline.cursorTo(process.stdout, 0, 0);
   readline.clearScreenDown(process.stdout);
 }
 
-function printInputInstructions() {
+function printInputInstructions(): void {
   console.log(`Press ENTER for next line.
 Type "exit" to quit.
 Type "restart" to restart dialogue without reseting variables.
@@ -292,11 +310,11 @@ Type "auto" to trigger Poltergeist mode (auto selection).
 Type "help" to show this message again.`)
 }
 
-function separator() {
+function separator(): void {
   console.log(Array(process.stdout.columns).join('-'));
 }
 
-function breakText(text) {
+function breakText(text: string): string {
   const columns = process.stdout.columns - 5;
   if (text.length > columns) {
     let replacement = text;
@@ -310,16 +328,16 @@ function breakText(text) {
   return text;
 }
 
-function setCharAt(str, index, chr) {
+function setCharAt(str: string, index: number, chr: string): string {
     if(index > str.length-1) {
       return str;
     }
     return str.substring(0,index) + chr + str.substring(index+1);
 }
 
-function trackInternalChanges(dataType, events) {
-  return (data) => {
-    let record = events.find((e) => e.name === data.name && e.type === dataType);
+function trackInternalChanges(dataType: string, events: any): Function {
+  return (data: any) => {
+    let record = events.find((e: any) => e.name === data.name && e.type === dataType);
     if (!record) {
       record = data;
       events.push(record);
