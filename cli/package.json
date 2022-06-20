@@ -1,6 +1,6 @@
 {
   "name": "@clyde-lang/cli",
-  "version": "2.0.1",
+  "version": "2.0.4",
   "description": "CLI tool for executing, parsing and debugging Clyde dialogue files",
   "main": "./dist/cjs/index.js",
   "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
@@ -12,11 +12,11 @@
     "start": "node ./dist/cjs/cli.js"
   },
   "bin": {
-    "clyde": "./src/cli.js"
+    "clyde": "./dist/cjs/cli.js"
   },
   "dependencies": {
-    "@clyde-lang/interpreter": "^2.0.1",
-    "@clyde-lang/parser": "^2.0.1",
+    "@clyde-lang/interpreter": "3.0.0",
+    "@clyde-lang/parser": "2.0.2",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
