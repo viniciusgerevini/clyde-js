@@ -2,11 +2,11 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
-## WIP
+## 2.0.2 (2022-06-20)
 
 ### Fixed
 
-- Standalone `{set a}` would pass parser, but break on interpreter. Now, this resolves to `a = true`.
+- Standalone `{set a}` would pass parsing, but break on interpreting. Now, this resolves to `{ set a = true }`.
 
 ### Changed
 

@@ -1,6 +1,6 @@
 {
   "name": "@clyde-lang/parser",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Parser for Clyde dialogue language",
   "main": "./dist/cjs/index.js",
   "types": "./dist/mjs/index.d.ts",
