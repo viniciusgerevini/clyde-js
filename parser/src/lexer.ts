@@ -255,7 +255,6 @@ export function tokenize(input: string): TokenList {
     while (position < input.length) {
       const currentChar = input[position];
 
-
       if (currentChar === currentQuote) {
         break;
       }
@@ -265,6 +264,10 @@ export function tokenize(input: string): TokenList {
         position += 2;
         column += 2;
         continue;
+      }
+
+      if (currentChar === '\n') {
+        line += 1;
       }
 
       value.push(currentChar);
