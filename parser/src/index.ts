@@ -26,3 +26,5 @@ export {
   LogicBlockNode,
   ActionableNode,
 } from './nodes';
+
+export { addIds } from './id_generator';

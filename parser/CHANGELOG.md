@@ -2,6 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## 2.1.0 (2022-06-xx) (unreleased)
+
+### Added
+
+- Implemented `addIds` function, to assign ids to every text line.
+
 ## 2.0.2 (2022-06-20)
 
 ### Fixed
