@@ -13,7 +13,13 @@ export function addIds(clydeDocument: string, options: AddIdsOptions = {}) {
     const token = tokens[i];
     let idPosition: IdPosition;
     if ([TOKENS.OPTION, TOKENS.STICKY_OPTION, TOKENS.FALLBACK_OPTION].includes(token.token)) {
-      idPosition = findPositionForId(tokens, i + 1, false)
+      let offset = i + 1;
+      for (;offset < tokens.length; offset++) {
+        if (tokens[offset].token === TOKENS.TEXT) {
+          break;
+        }
+      }
+      idPosition = findPositionForId(tokens, offset, false)
     } else if (token.token === TOKENS.TEXT) {
       idPosition = findPositionForId(tokens, i);
     }
