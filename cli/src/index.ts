@@ -1,6 +1,7 @@
 import yargs from 'yargs';
 import { buildParserArgsParser, executeParser } from './parser';
 import { buildInterpreterArgsParser, executeInterpreter } from './interpreter';
+import { buildAutoIdArgsParser, executeIdGenerator } from './autoid';
 
 
 export function execute(args: string[]) {
@@ -16,6 +17,12 @@ export function execute(args: string[]) {
       'Transforms *.clyde files to *.json',
       (yargs) => buildParserArgsParser(yargs),
       (argv) => executeParser(argv as any, process.exit)
+    )
+    .command(
+      'autoid',
+      'Auto-generate line ids',
+      (yargs) => buildAutoIdArgsParser(yargs),
+      (argv) => executeIdGenerator(argv as any, process.exit)
     )
     .demandCommand()
     .help()

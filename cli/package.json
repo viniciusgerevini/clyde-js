@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@clyde-lang/interpreter": "3.0.0",
-    "@clyde-lang/parser": "2.0.2",
+    "@clyde-lang/parser": "2.1.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {

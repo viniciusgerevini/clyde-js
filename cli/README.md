@@ -12,8 +12,10 @@ CLI tool for executing, parsing and debugging [Clyde](https://github.com/viniciu
 clyde <command>
 
 Commands:
-  clyde run    Command line interpreter
-  clyde parse  Transforms *.clyde files to *.json
+  clyde run     Command line interpreter
+  clyde parse   Transforms *.clyde files to *.json
+  clyde autoid  Auto-generate line ids
+
 
 Options:
   --version  Show version number                                       [boolean]
@@ -44,7 +46,6 @@ clyde parse <source file path> <output file path>
 clyde parse -i <input> -o <output>
 
 Options:
-      --version       Show version number                              [boolean]
   -i, --input         Path to .clyde dialogue file                      [string]
   -o, --output        Path to output .json file. Default: <input>.json  [string]
   -b, --batch         Parse multiple files at same time                  [array]
@@ -55,6 +56,23 @@ Options:
       --help          Show help                                        [boolean]
 ```
 
+autoid:
+``` 
+clyde autoid <input file> [output file]
+clyde autoid -i <input> -o <output>
+
+Options:
+  -i, --input         Path to .clyde dialogue file or directory.        [string]
+  -o, --output        Path to output .clyde file or directory. If not provided,
+                      result is printed to stdout or original file is
+                      overwritten if --replace flag is provided.        [string]
+  -b, --batch         Parse multiple files at same time                  [array]
+      --batch-output  Path output names for batched files result. Should have
+                      same number of arguments as in --batch.            [array]
+  -r, --replace       Ovewrite input file instead of printing to stdout.
+                                                                       [boolean]
+      --help          Show help                                        [boolean]
+```
 
 ## Instalation
 
