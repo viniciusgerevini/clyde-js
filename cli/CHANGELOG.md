@@ -2,13 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
-## 2.1.0 (2022-06-xx) (Unreleased)
+## 2.1.0 (Unreleased)
 
 ## Added
 
 - Auto id command to fill up missing line ids.
   `clyde tool autoid <input>`
-
 
 ## 2.0.4 (2022-06-20)
 

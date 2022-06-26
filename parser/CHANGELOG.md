@@ -2,7 +2,7 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
-## 2.1.0 (2022-06-xx) (unreleased)
+## 2.1.0 (unreleased)
 
 ### Added
 
