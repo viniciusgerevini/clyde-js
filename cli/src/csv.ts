@@ -16,7 +16,7 @@ interface CsvCLIArgs {
   folderOutput?: string;
   header?: string;
   separator?: string;
-  // TODO merge option
+  withMetadata?: boolean;
 }
 
 export function buildCsvArgsParser(yargs: yargs.Argv) {
@@ -67,7 +67,6 @@ export function buildCsvArgsParser(yargs: yargs.Argv) {
           throw new Error(`ERROR: output folder ${argv.folderOutput} does not exist.`);
         }
 
-        // TODO if not a folder, files will be cocatenated
         const outputStats = fs.statSync(argv.folderOutput);
         if (!outputStats.isDirectory()) {
           throw new Error('ERROR: output must be a folder when input is a folder.');
@@ -112,7 +111,7 @@ export function buildCsvArgsParser(yargs: yargs.Argv) {
     .option('header', {
       alias: 'h',
       type: 'string',
-      description: 'CSV file first line'
+      description: 'CSV file first line. Default: "id;text"'
     })
 
     .option('separator', {
@@ -121,10 +120,16 @@ export function buildCsvArgsParser(yargs: yargs.Argv) {
       description: 'CSV file separator. Default: ; (semicolon)'
     })
 
+    .option('with-metadata', {
+      alias: 'm',
+      type: 'boolean',
+      description: 'Include metadata column with extra info (speaker, tags, etc)'
+    })
+
     .option('dry-run', {
       alias: 'd',
       type: 'boolean',
-      description: 'Do not generate output file. Only check for syntax errors.'
+      description: 'Do not generate output file. Prints to stdout.'
     })
     .help()
 }
@@ -163,7 +168,7 @@ const outputFilename = (input: string): string => {
 
 const parseFile = (path: string, output: string, argv: CsvCLIArgs): void => {
   const content = parse(fs.readFileSync(path, 'utf8'));
-  const csv = csvConverter(content, { separator: argv.separator, header: argv.header});
+  const csv = csvConverter(content, { separator: argv.separator, header: argv.header, withMetadata: argv.withMetadata });
   if (!argv.dryRun) {
     fs.writeFileSync(output, csv);
   } else {

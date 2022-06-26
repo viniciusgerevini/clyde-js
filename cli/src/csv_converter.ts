@@ -10,27 +10,31 @@ interface ConverterOptions {
   header?: string;
   separator?: string;
   noHeader?: boolean;
+  withMetadata?: boolean;
 }
 
 interface NodeOptions {
   separator: string;
+  withMetadata: boolean;
 }
 
 export function csvConverter(clydeDocument: ClydeDocumentRoot, options: ConverterOptions = {}): string {
   const separator = options.separator ? options.separator : ';';
   const noHeader = options.noHeader === true;
+  const withMetadata = options.withMetadata;
   let header = '';
 
   if (!noHeader) {
-    header = options.header ? options.header + '\n' : `id${separator}text\n`;
+    const metadata = withMetadata ? `${separator}metadata`: '';
+    header = options.header ? options.header + '\n' : `id${separator}text${metadata}\n`;
   }
 
   let csvLines = clydeDocument.content.reduce((acc, next) => {
-    return acc.concat(parseContent(next, { separator }));
+    return acc.concat(parseContent(next, { separator, withMetadata }));
   }, []);
 
   csvLines = csvLines.concat(clydeDocument.blocks.reduce((acc, next) => {
-    return acc.concat(parseContent(next.content, { separator }));
+    return acc.concat(parseContent(next.content, { separator, withMetadata }));
   }, []));
 
   return header + csvLines.join('\n');
@@ -78,13 +82,13 @@ function parseNextNode(next: any, cfg: NodeOptions): string[] {
 }
 
 function parseLineNode(line: LineNode, cfg: NodeOptions): string {
-  return csvLine(line.id, line.value, cfg);
+  return csvLine(line.id, line.value, line.speaker, line.tags, cfg);
 }
 
 function parseOptionsNode(options: OptionsNode, cfg: NodeOptions): string[] {
   const result = [];
   if (options.name) {
-    result.push(csvLine(options.id, options.name, cfg));
+    result.push(csvLine(options.id, options.name, options.speaker, options.tags, cfg));
   }
 
   return result.concat(parseNextNode(options.content, cfg));
@@ -95,14 +99,25 @@ function parseOptionNode(option: OptionNode, cfg: NodeOptions): string[] {
 
   // handle display only options
   if (!option.content.content?.length || (option.content.content[0].id !== option.id || (!option.id && option.name !== option.content.content[0].value))) {
-    result.push(csvLine(option.id, option.name, cfg));
+    result.push(csvLine(option.id, option.name, option.speaker, option.tags, cfg));
   }
 
   return result.concat(parseContent(option.content, cfg));
 }
 
-function csvLine(id: string, text: string, cfg: NodeOptions) {
-  return `${id || ''}${cfg.separator}${sanitizeText(text, cfg)}`;
+function csvLine(id: string, text: string, speaker: string, tags: string[], cfg: NodeOptions) {
+  let metadata: string[] = [];
+
+  if (cfg.withMetadata) {
+    if (speaker) {
+      metadata.push(`speaker: ${speaker}`);
+    }
+    if (tags && tags.length) {
+      metadata.push("tags: " + tags.map(t => `#${t}`).join(" "));
+    }
+  }
+
+  return `${id || ''}${cfg.separator}${sanitizeText(text, cfg)}${cfg.withMetadata ? cfg.separator + metadata.join(" "): ''}`;
 }
 
 function sanitizeText(text: string, cfg: NodeOptions) {

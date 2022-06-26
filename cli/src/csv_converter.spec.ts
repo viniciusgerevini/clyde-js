@@ -131,5 +131,32 @@ id4;in variations`
     );
   });
 
-  // TODO metadata column (tags)
+  it('include metadata option', () => {
+    const doc = parse(`
+* option 1 $id1 #tag1
+  text 1 $id2
++ npc: option 2 $id3 #tag3
+  npc2: text 2 $id4 #tag2 #tag21
+>= option 3 $id5
+
+another list $id6
+  * option 4 $id7
+  * option 5 $id8
+  * option 6
+    text 3 #tag4
+`);
+    const result = csvConverter(doc, { withMetadata: true });
+    expect(result).toEqual(`id;text;metadata
+id1;option 1;tags: #tag1
+id2;text 1;
+id3;option 2;speaker: npc tags: #tag3
+id4;text 2;speaker: npc2 tags: #tag2 #tag21
+id5;option 3;
+id6;another list;
+id7;option 4;
+id8;option 5;
+;option 6;
+;text 3;tags: #tag4`
+    );
+  });
 });
