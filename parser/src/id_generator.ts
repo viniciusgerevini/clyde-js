@@ -1,18 +1,22 @@
 import { TOKENS, Token, tokenize } from './lexer';
 
 export interface AddIdsOptions {
+  // Custom id generation function
   idGenerator?: Function;
+  // Text to be added to the start of the id
+  idPrefix?: string;
 }
 
 export function addIds(clydeDocument: string, options: AddIdsOptions = {}) {
   const idGenerator = options.idGenerator || generateSimpleId;
+  const idPrefix = options.idPrefix || '';
   const tokens = tokenize(clydeDocument).getAll();
   const lines = clydeDocument.split("\n");
 
   const existingIds = tokens.filter(t => t.token === TOKENS.LINE_ID).map(t => t.value);
 
   const generateUniqueId = () => {
-    const id = idGenerator();
+    const id = idPrefix + idGenerator();
     if (existingIds.includes(id)) {
       return generateUniqueId();
     }

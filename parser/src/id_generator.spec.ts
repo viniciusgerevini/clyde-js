@@ -232,6 +232,19 @@ still counts $abc1
     `);
   });
 
+  it('uses id prefix', () => {
+    const clydeContent = `
+This is the first line
+This is the second line $abc1
+This is the third line
+    `;
+    expect(addIds(clydeContent, { idGenerator: fakeIdfunction, idPrefix: 'MY_PREFIX_' })).toEqual(`
+This is the first line $MY_PREFIX_abc0
+This is the second line $abc1
+This is the third line $MY_PREFIX_abc1
+    `);
+  });
+
   it("test with real file", () => {
     const clydeContent = `-- Pulp Fiction: Jules and Vincent first car scene.
 -- adapted for showing off features.
