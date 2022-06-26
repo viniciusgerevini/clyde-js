@@ -2,6 +2,7 @@ import yargs from 'yargs';
 import { buildParserArgsParser, executeParser } from './parser';
 import { buildInterpreterArgsParser, executeInterpreter } from './interpreter';
 import { buildAutoIdArgsParser, executeIdGenerator } from './autoid';
+import { buildCsvArgsParser, executeCsvConverter } from './csv';
 
 
 export function execute(args: string[]) {
@@ -23,6 +24,12 @@ export function execute(args: string[]) {
       'Auto-generate line ids',
       (yargs) => buildAutoIdArgsParser(yargs),
       (argv) => executeIdGenerator(argv as any, process.exit)
+    )
+    .command(
+      'csv',
+      'Extract lines from Clyde Dialogue as CSV',
+      (yargs) => buildCsvArgsParser(yargs),
+      (argv) => executeCsvConverter(argv as any, process.exit)
     )
     .demandCommand()
     .help()
