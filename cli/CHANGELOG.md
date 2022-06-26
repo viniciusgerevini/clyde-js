@@ -2,6 +2,15 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## 2.1.0 (2022-06-26)
+
+### Added
+
+- Auto id command to fill up missing line ids.
+  `clyde autoid <input>`
+- CSV command to extract dialogue lines as CSV files.
+  `clyde csv <input.clyde>`
+
 ## 2.0.4 (2022-06-20)
 
 ### Fixed

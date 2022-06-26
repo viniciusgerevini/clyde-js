@@ -5,7 +5,7 @@
   "homepage": "https://viniciusgerevini.github.io/clyde",
   "dependencies": {
     "@clyde-lang/interpreter": "3.0.0",
-    "@clyde-lang/parser": "2.0.2",
+    "@clyde-lang/parser": "2.1.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.14",

@@ -12,6 +12,7 @@ import {
 import {
   createEmptyState as createEmptyEditorState,
   updatePreference,
+  setDocumentContent,
 } from '../redux/editor';
 
 import {
@@ -137,6 +138,22 @@ describe('MainPanelsContainer', () => {
 
     expect(action.type).toEqual(updatePreference.toString());
     expect(action.payload).toEqual({ name: 'showInvisibles', value: true });
+  });
+
+  it('triggers auto id', () => {
+    const store = createMockStore(
+      {},
+      { currentValue:'Hi\nHello\n', preferences: {} },
+      { timeline: [] }
+    );
+    const { getByTitle } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
+
+    fireEvent.click(getByTitle(/Auto-generate line ids/i));
+
+    const action = store.getActions()[0];
+
+    expect(action.type).toEqual(setDocumentContent.toString());
+    expect(action.payload).toMatch(/Hi \$[A-z|0-9]{9}\nHello \$[A-z|0-9]{9}\n/);
   });
 
   describe('interpreter', () => {

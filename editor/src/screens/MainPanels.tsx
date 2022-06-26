@@ -1,3 +1,4 @@
+import { addIds } from '@clyde-lang/parser';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -7,6 +8,7 @@ import {
   faCode,
   faEye,
   faSlidersH,
+  faHighlighter,
 } from '@fortawesome/free-solid-svg-icons'
 
 import SplitPane from './SplitPane';
@@ -37,6 +39,7 @@ const Header = styled.div`
 const IconWrapper = styled.span`
   cursor: pointer;
   position: relative;
+  margin-right: 10px;
 `;
 
 export interface MainPanelsParams {
@@ -129,6 +132,11 @@ export default function MainPanels(props: MainPanelsParams) {
     setEditorSettingsVisibility(true);
   };
 
+  const autoId = () => {
+    const doc = addIds(editorDefaultValue);
+    setDocumentContent(doc);
+  };
+
   return (
      <Wrapper>
        <Header>
@@ -169,6 +177,10 @@ export default function MainPanels(props: MainPanelsParams) {
              ) : ''
            }
          </IconWrapper>
+
+          <IconWrapper>
+            <FontAwesomeIcon icon={faHighlighter as any} title="Auto-generate line ids" onClick={autoId}/>
+          </IconWrapper>
         </Header>
        <SplitPane
          direction={interpreterSplitDirection}

@@ -54,7 +54,7 @@ export default function Editor({ defaultValue, setDocumentContent, notifyChange,
   return (
     <EditorWrapper ref={ref} {...props} aria-label="Text editor">
       <AceEditor
-        defaultValue={defaultValue}
+        value={defaultValue}
         mode="clyde"
         theme={preferences.theme}
         onBeforeLoad={onBeforeLoad}

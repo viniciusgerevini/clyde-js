@@ -94,6 +94,25 @@ describe('Lexer', () => {
     ]);
   });
 
+  it('count line correctly in quotted text with line breaks', () => {
+    const tokens = tokenize('"this is a line with\nline break"\nthis should be on line 2').getAll();
+    expect(tokens).toEqual([
+      {
+        token: TOKENS.TEXT,
+        value: 'this is a line with\nline break',
+        line: 0,
+        column: 1,
+      },
+      {
+        token: TOKENS.TEXT,
+        value: 'this should be on line 2',
+        line: 2,
+        column: 0,
+      },
+      { token: TOKENS.EOF, line: 2, column: 24, },
+    ]);
+  });
+
   it('ignores comments', () => {
     const tokens = tokenize(`-- this is a comment
 -- this is another comment
