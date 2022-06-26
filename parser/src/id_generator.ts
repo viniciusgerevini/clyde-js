@@ -9,6 +9,17 @@ export function addIds(clydeDocument: string, options: AddIdsOptions = {}) {
   const tokens = tokenize(clydeDocument).getAll();
   const lines = clydeDocument.split("\n");
 
+  const existingIds = tokens.filter(t => t.token === TOKENS.LINE_ID).map(t => t.value);
+
+  const generateUniqueId = () => {
+    const id = idGenerator();
+    if (existingIds.includes(id)) {
+      return generateUniqueId();
+    }
+    existingIds.push(id);
+    return id;
+  };
+
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
     let idPosition: IdPosition;
@@ -38,7 +49,7 @@ export function addIds(clydeDocument: string, options: AddIdsOptions = {}) {
           }
         }
 
-        lines[idPosition.line] = addAt(line, ` $${idGenerator()}`, idPosition.column);
+        lines[idPosition.line] = addAt(line, ` $${generateUniqueId()}`, idPosition.column);
       }
       i = idPosition.index;
     }
