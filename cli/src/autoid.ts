@@ -12,6 +12,7 @@ interface IdGeneratorArgs {
   folderInput?: string;
   folderOutput?: string;
   replace?: boolean;
+  prefix?: string;
 }
 
 export function buildAutoIdArgsParser(yargs: yargs.Argv) {
@@ -103,6 +104,12 @@ $0 autoid -i <input> -o <output>`)
       type: 'boolean',
       description: 'Ovewrite input file instead of printing to stdout.'
     })
+
+    .option('prefix',{
+      alias: 'p',
+      type: 'string',
+      description: 'Prefix to be added to ids'
+    })
     .help().argv;
 }
 
@@ -110,18 +117,18 @@ export function executeIdGenerator(argv: IdGeneratorArgs, exitCallback: Function
   try {
     if (argv.batch) {
       argv.batch.forEach((input, i) => {
-        generateIds(input, argv.batchOutput && argv.batchOutput[i], argv.replace);
+        generateIds(input, argv.batchOutput && argv.batchOutput[i], argv.replace, argv.prefix);
       });
     } else if(argv.folderInput) {
       fs.readdirSync(argv.folderInput).forEach(file => {
         if ((file.match(/\.clyde$/) || []).length > 0) {
           const input = path.resolve(argv.folderInput, file);
           const output = argv.folderOutput ? path.resolve(argv.folderOutput, file) : undefined;
-          generateIds(input, output, argv.replace);
+          generateIds(input, output, argv.replace, argv.prefix);
         }
       });
     } else {
-      generateIds(argv.input, argv.output, argv.replace);
+      generateIds(argv.input, argv.output, argv.replace, argv.prefix);
     }
     exitCallback();
   } catch (e) {
@@ -130,8 +137,8 @@ export function executeIdGenerator(argv: IdGeneratorArgs, exitCallback: Function
   }
 };
 
-const generateIds = (path: string, output: string, replace: boolean): void => {
-  const content = addIds(fs.readFileSync(path, 'utf8'));
+const generateIds = (path: string, output: string, replace: boolean, idPrefix: string): void => {
+  const content = addIds(fs.readFileSync(path, 'utf8'), { idPrefix });
 
   if (output) {
     console.log(`Auto-generating line ids for ${path}`);
