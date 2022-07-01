@@ -265,6 +265,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
         options.id = line.id;
         options.name = line.value;
         options.tags = line.tags;
+        options.id_suffixes = line.id_suffixes;
         line = options;
       } else {
         while (!peek([TOKENS.DEDENT, TOKENS.EOF])) {
@@ -273,6 +274,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
           line.value += ` ${nextLine.value}`;
           if (nextLine.id) {
             line.id = nextLine.id;
+            line.id_suffixes = nextLine.id_suffixes;
           }
 
           if (nextLine.tags) {
@@ -297,14 +299,29 @@ export default function parse(doc: string): ClydeDocumentRoot {
 
   const LineWithId = (): LineNode => {
     const { value } = currentToken;
-    const next = peek([TOKENS.TAG]);
-    if (next) {
+    let suffixes: undefined | string[];
+
+    if (peek([TOKENS.ID_SUFFIX])) {
+      suffixes = IdSuffixes();
+    }
+
+    if (peek([TOKENS.TAG])) {
       consume([TOKENS.TAG]);
       const line = LineWithTags();
       line.id = value;
+      line.id_suffixes = suffixes;
       return line;
     }
-    return new LineNode(undefined, undefined, value);
+    return new LineNode(undefined, undefined, value, undefined, suffixes);
+  };
+
+  const IdSuffixes = (): string[] => {
+    const suffixes = [];
+    while (peek([TOKENS.ID_SUFFIX])) {
+      const token = consume([TOKENS.ID_SUFFIX]);
+      suffixes.push(token.value);
+    }
+    return suffixes;
   };
 
   const LineWithTags = (): LineNode => {
@@ -413,6 +430,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
       mainItem.id,
       mainItem.speaker,
       mainItem.tags,
+      mainItem.id_suffixes,
     );
 
     if (root) {

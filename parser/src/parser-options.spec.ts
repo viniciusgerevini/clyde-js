@@ -11,6 +11,8 @@ npc: what do you want to talk about?
 * Everything else... #some_tag
   player: What about everything else?
   npc: I don't have time for this...
+* one more thing $abc&whatever
+  npc: one
 `);
     const expected = {
       type: 'document',
@@ -46,6 +48,19 @@ npc: what do you want to talk about?
                   ],
                 },
                 tags: [ 'some_tag', ],
+              },
+              {
+                type: 'option',
+                name: 'one more thing',
+                mode: 'once',
+                content: {
+                  type: 'content',
+                  content: [
+                    { type: 'line', value: 'one', speaker: 'npc', },
+                  ],
+                },
+                id: 'abc',
+                id_suffixes: [ 'whatever' ],
               },
             ],
           },
@@ -220,7 +235,8 @@ npc: what do you want to talk about?
   life
   player: I want to talk about life!
   npc: Well! That's too complicated...
-
+*
+  the universe #tag $id&suffix
 `);
     const expected = {
       type: 'document',
@@ -243,6 +259,20 @@ npc: what do you want to talk about?
                   ],
                 },
               },
+              {
+                type: 'option',
+                mode: 'once',
+                name: 'the universe',
+                id: 'id',
+                tags: ['tag'],
+                id_suffixes: ['suffix'],
+                content: {
+                  type: 'content',
+                  content: [
+                    { type: 'line', value: 'the universe', id: 'id', tags: ['tag'], id_suffixes: ['suffix'] },
+                  ],
+                },
+              },
             ],
           },
         ],
@@ -255,7 +285,7 @@ npc: what do you want to talk about?
 
   it('use previous line as label', () => {
     const result = parse(`
-spk: this line will be the label $some_id #some_tag
+spk: this line will be the label $some_id&some_suffix #some_tag
   * life
     player: I want to talk about life!
     npc: Well! That's too complicated...
@@ -274,6 +304,7 @@ spk: second try
             speaker: 'spk',
             id: 'some_id',
             tags: ['some_tag'],
+            id_suffixes: ['some_suffix'],
             name: 'this line will be the label',
             content: [
               {

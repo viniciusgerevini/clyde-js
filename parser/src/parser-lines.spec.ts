@@ -27,7 +27,7 @@ describe('parse: lines', () => {
     const result = parse(`
 jules: say what one more time! $first #yelling #mad
 just text
-just id $another
+just id $another&var1&var2
 just tags #tag
 speaker: just speaker
 id last #tag #another_tag $some_id
@@ -39,7 +39,7 @@ id last #tag #another_tag $some_id
         content: [
           { type: 'line', value: 'say what one more time!', id: 'first', speaker: 'jules', tags: [ 'yelling', 'mad' ] },
           { type: 'line', value: 'just text' },
-          { type: 'line', value: 'just id', id: 'another' },
+          { type: 'line', value: 'just id', id: 'another', id_suffixes: [ 'var1', 'var2'] },
           { type: 'line', value: 'just tags', tags: [ 'tag' ] },
           { type: 'line', value: 'just speaker', speaker: 'speaker' },
           { type: 'line', value: 'id last', id: 'some_id', tags: [ 'tag', 'another_tag' ] },
@@ -54,8 +54,8 @@ id last #tag #another_tag $some_id
   it('parse multiline', () => {
     const result = parse(`
 jules: say what one more time!
-     Just say it $some_id #tag
-hello! $id_on_first_line #and_tags
+     Just say it $some_id&suffix #tag
+hello! $id_on_first_line&suffix #and_tags
     Just talking.
 `);
     const expected = {
@@ -63,8 +63,8 @@ hello! $id_on_first_line #and_tags
       content: [{
         type: 'content',
         content: [
-          { type: 'line', value: 'say what one more time! Just say it', id: 'some_id', speaker: 'jules', tags: [ 'tag' ] },
-          { type: 'line', value: 'hello! Just talking.', id: 'id_on_first_line', tags: [ 'and_tags' ] },
+          { type: 'line', value: 'say what one more time! Just say it', id: 'some_id', speaker: 'jules', tags: [ 'tag' ], id_suffixes: ['suffix'] },
+          { type: 'line', value: 'hello! Just talking.', id: 'id_on_first_line', tags: [ 'and_tags' ], id_suffixes: ['suffix'] },
         ]
       }],
       blocks: []
