@@ -183,6 +183,37 @@ Output:
 
 IDs are useful for localisation, where you can organise your translations in files with key values (json, csv) and use them to replace dialogue lines with their translated equivalents.
 
+#### ID suffixes
+
+Append `&` + `[A-Za-z0-9_]` to a line id to set suffixes.
+
+Id Suffixes aim to improve translations and dynamic lines. They allow you to use
+different keys from a dictionary based on values from variables in runtime.
+
+Here is an example. For the given dialogue:
+```
+Hello, sister! $line001&player_pronoun
+```
+
+If the variable `player_pronoun` is set as `F`, the translation lookup will happen in this order: `line001&F`, `line001` and then it falls back to the default line. Multiple suffixes can be set by chaining the variables: `$line001&variable_1&variable_2`.
+
+This can also be used to simplify dialogue files. If you have a dictionary like this:
+```
+LINE_001;Hello, friend.
+LINE_001&F;Hello, sister.
+LINE_001&M;Hello, brother.
+```
+You could change your dialogue from this:
+```
+Hello, sister.  $LINE_001 { when pronoun is "F" }
+Hello, brother. $LINE_002 { when pronoun is "M" }
+Hello, friend.  $LINE_003 { when not pronoun }
+```
+To this:
+```
+Hello, sister. $LINE_001&pronoun
+```
+
 ### Tags
 
 Use `#` + `[A-Za-z0-9_]` to set line tags:

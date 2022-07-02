@@ -2,9 +2,16 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## Unreleased
+
+### Added
+
+- Implemented support for id suffixes. `dialogue line $id&variable_1&variable_2`.
+
 ## 2.1.2 (2022-07-04)
 
 ### Fixed
+
 - Fix inconsistencies with logic blocks in tab indented files.
 
 ## 2.1.1 (2022-07-04)
