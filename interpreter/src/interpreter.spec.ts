@@ -165,7 +165,7 @@ hello %someVar%
     });
   });
 
-  describe('translation', () => {
+  describe('Translation', () => {
     it('define dictionary and bring keys from it when available', () => {
       const dictionary = {
         abc: 'this is a replacement',
@@ -281,6 +281,23 @@ first topics $abc&suffix1
       const dialogue = Interpreter(content);
 
       expect(() => dialogue.getContent()).toThrow(/Unkown node type "SomeUnkownNode"/);
+    });
+  });
+
+  describe('Interpreter Options', () => {
+
+    it('sets id suffixes separators', () => {
+      const dictionary = {
+        'abc': 'should not use this one. Without suffix',
+        'abc&P': 'should not use this one. Default suffix separator.',
+        'abc__P': 'use this one',
+      };
+      const content = parse('This should be replaced $abc&suffix_1');
+
+      const dialogue = Interpreter(content, undefined, dictionary, { idSuffixLookupSeparator: '__' });
+      dialogue.setVariable("suffix_1", "P");
+
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('use this one');
     });
   });
 });

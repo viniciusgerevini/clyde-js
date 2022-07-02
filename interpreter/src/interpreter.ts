@@ -139,11 +139,24 @@ export interface InterpreterInstance {
   start(blockName?: string): void;
 }
 
+interface InterpreterOptions {
+  // Separator used between suffixes when looking translation keys up.
+  // default: &
+  idSuffixLookupSeparator: string;
+}
+
 /**
  * Clyde Interpreter
  */
-export function Interpreter(clydeDoc: ClydeDocumentRoot, data?: any, dictionary: Dictionary  = {}): InterpreterInstance {
+export function Interpreter(
+  clydeDoc: ClydeDocumentRoot,
+  data?: any, dictionary: Dictionary  = {},
+  interpreterOptions?: InterpreterOptions
+): InterpreterInstance {
   const doc: ClydeDocumentRoot & WorkingNode = clydeDoc;
+  const intOptions: InterpreterOptions = {
+    idSuffixLookupSeparator: interpreterOptions?.idSuffixLookupSeparator || '&'
+  };
   let textDictionary = dictionary;
   const anchors: {[name: string]: any} = {
   };
@@ -503,7 +516,13 @@ export function Interpreter(clydeDoc: ClydeDocumentRoot, data?: any, dictionary:
 
   const translateText = (text: string, id: string | undefined, idSuffixes?: string[]) => {
     if (idSuffixes) {
-      let identifier = `${id}&${idSuffixes.map(p => mem.getVariable(p)).filter(Boolean).join('&')}`;
+      const suffixes = idSuffixes.map(
+        p => mem.getVariable(p)
+      )
+      .filter(Boolean)
+      .join(intOptions.idSuffixLookupSeparator);
+
+      const identifier = `${id}${intOptions.idSuffixLookupSeparator}${suffixes}`;
       if (textDictionary[identifier]) {
         return textDictionary[identifier];
       }
