@@ -1,6 +1,6 @@
 import { parse } from '@clyde-lang/parser';
 import { EventType } from './events';
-import { Interpreter, DialogueLine } from './interpreter';
+import { Interpreter, DialogueLine, DialogueOptions } from './interpreter';
 
 describe("Interpreter", () => {
   describe('lines', () => {
@@ -212,6 +212,65 @@ replace $ghi
       dialogue.start();
       dialogue.loadDictionary(dictionaryPT);
       expect((dialogue.getContent() as DialogueLine).text).toEqual('Olá');
+    });
+
+    describe('id suffixes', () => {
+      const dictionary = {
+        'abc': 'simple key',
+        'abc&P': 'simple key with suffix 1',
+        'abc&P&S': 'simple key with suffix 1 and 2',
+        'abc&S': 'simple key with only suffix 2',
+      };
+
+      const initializeDialogue = () => {
+        const content = parse('This should be replaced $abc&suffix_1&suffix_2');
+        return Interpreter(content, undefined, dictionary);
+      };
+
+      it('returns key with suffix value', () => {
+        const dialogue = initializeDialogue();
+        dialogue.setVariable("suffix_1", "P");
+        expect((dialogue.getContent() as DialogueLine).text).toEqual('simple key with suffix 1');
+      });
+
+      it('returns key with multiple suffixes', () => {
+        const dialogue = initializeDialogue();
+        dialogue.setVariable("suffix_1", "P");
+        dialogue.setVariable("suffix_2", "S");
+        expect((dialogue.getContent() as DialogueLine).text).toEqual('simple key with suffix 1 and 2');
+      });
+
+      it('ignores suffix if variable not set', () => {
+        const dialogue = initializeDialogue();
+        dialogue.setVariable("suffix_2", "S");
+        expect((dialogue.getContent() as DialogueLine).text).toEqual('simple key with only suffix 2');
+      });
+
+      it('ignores all suffixes when not set', () => {
+        const dialogue = initializeDialogue();
+        expect((dialogue.getContent() as DialogueLine).text).toEqual('simple key');
+      });
+
+      it('works with options', () => {
+        const content = parse(`
+first topics $abc&suffix1
+  * option 1 $abc&suffix2
+    blah
+*
+  blah $abc&suffix1&suffix2`);
+        const dialogue = Interpreter(content, undefined, dictionary);
+        dialogue.setVariable("suffix1", "P");
+        dialogue.setVariable("suffix2", "S");
+        const firstOptions = dialogue.getContent() as DialogueOptions;
+        expect(firstOptions.name).toEqual('simple key with suffix 1');
+        expect(firstOptions.options[0].label).toEqual('simple key with only suffix 2');
+
+        dialogue.choose(0);
+        dialogue.getContent();
+
+        const secondOptions = dialogue.getContent() as DialogueOptions;
+        expect(secondOptions.options[0].label).toEqual('simple key with suffix 1 and 2');
+      });
     });
   });
 
