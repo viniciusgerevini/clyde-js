@@ -2,6 +2,15 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## 3.0.2 (2022-07-04)
+
+### Fixed
+- Update parser to fix inconsistencies with logic blocks in tab indented files.
+
+## 3.0.1 (2022-07-04)
+
+Same as 3.0.0.
+
 ## 3.0.0 (2022-06-20)
 
 ## Breaking Changes

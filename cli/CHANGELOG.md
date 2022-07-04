@@ -2,6 +2,15 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## 2.1.2 (2022-07-04)
+
+### Fixed
+- Update parser and interpreter to fix inconsistencies with logic blocks in tab indented files.
+
+## 2.1.1 (2022-07-04)
+
+Same as 2.1.0.
+
 ## 2.1.0 (2022-06-26)
 
 ### Added
