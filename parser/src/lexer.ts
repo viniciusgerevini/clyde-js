@@ -211,6 +211,13 @@ export function tokenize(input: string): TokenList {
     }
   };
 
+  const handleRogueTab = (): void => {
+    while (input[position].match(/\t/)) {
+      position += 1;
+      column += 1;
+    }
+  };
+
   // handle text
   const handleText = (): TokenHandlerReturn => {
     const initialLine = line;
@@ -669,7 +676,7 @@ export function tokenize(input: string): TokenList {
   const getFollowingLineBreak = (): Token | void => {
     let lookupPosition = position;
     let lookupColumn = column;
-    while (input[lookupPosition] === ' ') {
+    while (input[lookupPosition]?.match(/[\t ]/)) {
       lookupPosition += 1;
       lookupColumn += 1;
     }
@@ -681,7 +688,7 @@ export function tokenize(input: string): TokenList {
 
   const getLeadingLineBreak = () => {
     let lookupPosition = position - 2;
-    while (input[lookupPosition] === ' ') {
+    while (input[lookupPosition]?.match(/[\t ]/)) {
       lookupPosition -= 1;
     }
 
@@ -732,6 +739,10 @@ export function tokenize(input: string): TokenList {
 
     if (input[position] === ' ') {
       return handleSpace();
+    }
+
+    if (input[position].match(/\t/)) {
+      return handleRogueTab();
     }
 
     if (input[position] === '(') {

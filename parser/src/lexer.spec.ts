@@ -981,4 +981,30 @@ now another dedent`);
     const tokens = tokenize('))');
     expect(() => tokens.getAll()).not.toThrow();
   });
+
+  it('produces same blocks for tabbed and spaced indentation', () => {
+    const tokens = tokenize(`
+Pick an option.
+ + Quest test
+  { QUEST_STARTED } How's that quest going? (you should see this line at some point)
+  { not QUEST_STARTED } I have a quest for you! {set QUEST_STARTED = true}
+  <-
+{no QUEST_STARTED}
+ blah { not QUEST_STARTED} 
+ bleh { QUEST_STARTED}
+`).getAll();
+
+    const tabTokens = tokenize(`
+Pick an option.
+	+ Quest test
+		{ QUEST_STARTED } How's that quest going? (you should see this line at some point)
+		{ not QUEST_STARTED } I have a quest for you! {set QUEST_STARTED = true}
+		<-
+{no QUEST_STARTED}
+	blah { not QUEST_STARTED}	
+	bleh { QUEST_STARTED}
+`).getAll();
+
+    expect(tabTokens).toEqual(tokens);
+  });
 });
