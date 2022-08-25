@@ -339,6 +339,31 @@ speaker1: this is something $123`).getAll();
     ]);
   });
 
+  it('id sufixes', () => {
+    const tokens = tokenize(`
+speaker1: this is something $123&var1
+* this is another thing $abc&var1&var2
+*= hello $a1b2&var1 #tag`).getAll();
+    expect(tokens).toEqual([
+      { token: TOKENS.SPEAKER, value: 'speaker1', line: 1, column: 0 },
+      { token: TOKENS.TEXT, value: 'this is something', line: 1, column: 10 },
+      { token: TOKENS.LINE_ID, value: '123', line: 1, column: 28 },
+      { token: TOKENS.ID_SUFFIX, value: 'var1', line: 1, column: 32 },
+      { token: TOKENS.OPTION, line: 2, column: 0 },
+      { token: TOKENS.TEXT, value: 'this is another thing', line: 2, column: 2 },
+      { token: TOKENS.LINE_ID, value: 'abc', line: 2, column: 24 },
+      { token: TOKENS.ID_SUFFIX, value: 'var1', line: 2, column: 28 },
+      { token: TOKENS.ID_SUFFIX, value: 'var2', line: 2, column: 33 },
+      { token: TOKENS.OPTION, line: 3, column: 0 },
+      { token: TOKENS.ASSIGN, line: 3, column: 1 },
+      { token: TOKENS.TEXT, value: 'hello', line: 3, column: 3 },
+      { token: TOKENS.LINE_ID, value: 'a1b2', line: 3, column: 9 },
+      { token: TOKENS.ID_SUFFIX, value: 'var1', line: 3, column: 14 },
+      { token: TOKENS.TAG, value: 'tag', line: 3, column: 20 },
+      { token: TOKENS.EOF, line: 3, column: 24 },
+    ]);
+  });
+
   it('tags', () => {
     const tokens = tokenize(`
 this is something #hello #happy #something_else

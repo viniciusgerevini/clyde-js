@@ -20,7 +20,8 @@ export class LineNode {
     public value: string,
     public speaker?: string,
     public id?: string,
-    public tags?: string[]
+    public tags?: string[],
+    public id_suffixes?: string[]
   ) {};
 }
 
@@ -32,7 +33,8 @@ export class OptionsNode {
     public name?: string,
     public id?: string,
     public speaker?: string,
-    public tags?: string[]
+    public tags?: string[],
+    public id_suffixes?: string[]
   ) {};
 }
 
@@ -45,7 +47,8 @@ export class OptionNode {
     public name?: string,
     public id?: string,
     public speaker?: string,
-    public tags?: string[]
+    public tags?: string[],
+    public id_suffixes?: string[]
   ) {};
 }
 

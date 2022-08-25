@@ -11,6 +11,7 @@ export const TOKENS = {
   SPEAKER: 'SPEAKER',
   LINE_ID: 'LINE_ID',
   TAG: 'TAG',
+  ID_SUFFIX: 'ID_SUFFIX',
   BLOCK: 'BLOCK',
   DIVERT: 'DIVERT',
   DIVERT_PARENT: 'DIVERT_PARENT',
@@ -72,6 +73,7 @@ const tokenFriendlyHint = {
   [TOKENS.SPEAKER]: '<speaker name>:',
   [TOKENS.LINE_ID]: '$id',
   [TOKENS.TAG]: '#tag',
+  [TOKENS.ID_SUFFIX]: '&id_suffix',
   [TOKENS.BLOCK]: '== <block name>',
   [TOKENS.DIVERT]: '-> <target name>',
   [TOKENS.DIVERT_PARENT]: '<-',
@@ -328,7 +330,30 @@ export function tokenize(input: string): TokenList {
       position += 1;
       column += 1;
     }
-    return { token: TOKENS.LINE_ID, line, column: initialColumn, value: values.join('') };
+    const idToken = { token: TOKENS.LINE_ID, line, column: initialColumn, value: values.join('') };
+
+    const tokens = [idToken];
+
+    while (input[position] === '&') {
+      tokens.push(handleIdSuffix());
+    }
+
+    return tokens;
+  };
+
+  const handleIdSuffix = () => {
+    const initialColumn = column;
+    let values = [];
+    position += 1;
+    column += 1;
+
+    while (input[position] && input[position].match(/[A-Z|a-z|0-9|_]/)) {
+      values.push(input[position]);
+      position += 1;
+      column += 1;
+    }
+
+    return { token: TOKENS.ID_SUFFIX, line, column: initialColumn, value: values.join('') };
   };
 
   const handleTag = () => {

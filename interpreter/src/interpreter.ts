@@ -139,11 +139,24 @@ export interface InterpreterInstance {
   start(blockName?: string): void;
 }
 
+interface InterpreterOptions {
+  // Separator used between suffixes when looking translation keys up.
+  // default: &
+  idSuffixLookupSeparator: string;
+}
+
 /**
  * Clyde Interpreter
  */
-export function Interpreter(clydeDoc: ClydeDocumentRoot, data?: any, dictionary: Dictionary  = {}): InterpreterInstance {
+export function Interpreter(
+  clydeDoc: ClydeDocumentRoot,
+  data?: any, dictionary: Dictionary  = {},
+  interpreterOptions?: InterpreterOptions
+): InterpreterInstance {
   const doc: ClydeDocumentRoot & WorkingNode = clydeDoc;
+  const intOptions: InterpreterOptions = {
+    idSuffixLookupSeparator: interpreterOptions?.idSuffixLookupSeparator || '&'
+  };
   let textDictionary = dictionary;
   const anchors: {[name: string]: any} = {
   };
@@ -359,9 +372,9 @@ export function Interpreter(clydeDoc: ClydeDocumentRoot, data?: any, dictionary:
       speaker: optionsNode.speaker,
       id: optionsNode.id,
       tags: optionsNode.tags,
-      name: replaceVariables(translateText(optionsNode.name as string, optionsNode.id)),
-      options: options.map((t: ActionContentNode | OptionNode) => t.type === 'action_content' ? t.content : t).map((t) => ({
-        label: replaceVariables(translateText(t.name, t.id)),
+      name: replaceVariables(translateText(optionsNode.name as string, optionsNode.id, optionsNode.id_suffixes)),
+      options: options.map((t: ActionContentNode | OptionNode) => t.type === 'action_content' ? t.content : t).map((t: OptionNode) => ({
+        label: replaceVariables(translateText(t.name!, t.id, t.id_suffixes)),
         speaker: t.speaker,
         tags: t.tags,
         id: t.id
@@ -411,7 +424,7 @@ export function Interpreter(clydeDoc: ClydeDocumentRoot, data?: any, dictionary:
       tags: lineNode.tags,
       id: lineNode.id,
       speaker: lineNode.speaker,
-      text: replaceVariables(translateText(lineNode.value, lineNode.id))
+      text: replaceVariables(translateText(lineNode.value, lineNode.id, lineNode.id_suffixes))
     };
   }
 
@@ -501,10 +514,24 @@ export function Interpreter(clydeDoc: ClydeDocumentRoot, data?: any, dictionary:
     return option;
   };
 
-  const translateText = (text: string, id: string | undefined) => {
+  const translateText = (text: string, id: string | undefined, idSuffixes?: string[]) => {
+    if (idSuffixes) {
+      const suffixes = idSuffixes.map(
+        p => mem.getVariable(p)
+      )
+      .filter(Boolean)
+      .join(intOptions.idSuffixLookupSeparator);
+
+      const identifier = `${id}${intOptions.idSuffixLookupSeparator}${suffixes}`;
+      if (textDictionary[identifier]) {
+        return textDictionary[identifier];
+      }
+    }
+
     if (id && textDictionary[id]) {
       return textDictionary[id];
     }
+
     return text;
   };
 

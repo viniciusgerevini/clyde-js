@@ -4,6 +4,27 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 Check [LANGUAGE.md](./LANGUAGE.md) for latest documentation.
 
+## 2.1.0 (2022-07-02)
+
+### Added
+
+Id Suffixes: `dialogue line $id&some_var&some_var2`.
+
+Suffixes can help with dialogue localization and alternatives. Example:
+
+dictionary:
+```
+LINE_1;Hello, my friend!
+LINE_1&F;Hello, sister!
+LINE_1&M;Hello, brother!
+```
+Dialogue:
+```
+Hello, my friend! $LINE_1&player_pronoun
+```
+In this case, if the `player_pronoun` variable is set as M, `Hello, brother!` is returned.
+When F, `Hello, sister!` is returned. And when not set, the default LINE_1 `Hello, my friend!` is returned.
+
 ## 2.0.0 (2021-11-21)
 
 ### Breaking Changes
