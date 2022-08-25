@@ -2,6 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## 2.2.0 (2022-08-25)
+
+### Added
+
+- Update parser and interpreter to support id suffixes.
+
 ## 2.1.2 (2022-07-04)
 
 ### Fixed

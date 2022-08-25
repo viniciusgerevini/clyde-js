@@ -1,6 +1,6 @@
 {
   "name": "@clyde-lang/interpreter",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "description": "Interpreter for Clyde dialogue language",
   "main": "./dist/cjs/index.js",
   "types": "./dist/mjs/index.d.ts",
@@ -32,6 +32,6 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "@clyde-lang/parser": "2.1.2"
+    "@clyde-lang/parser": "2.2.0"
   }
 }
