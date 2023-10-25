@@ -794,7 +794,7 @@ Logic blocks may contain:
 
 **Math operators**: sum `+`, subtract `-`,  multiply `*`, divide `/`,  power `^`,  modulo/remainder `%`.
 
-**Assignment operators**: assign `=`, sum `+=`, subtract `-=`, multiply `*=`, divide `/=`, power `^=`, modulo `%=`, init `?=` and type safe `:=`.
+**Assignment operators**: assign `=`, sum `+=`, subtract `-=`, multiply `*=`, divide `/=`, power `^=`, modulo `%=` and init `?=`.
 
 **Literals**: Number (`100`, `1.5`), String (`"some text"`, `'some text'`), Boolean (`true`, `false`), Null (`null`).
 
@@ -831,13 +831,6 @@ The initializer assigment `?=` can be used when you wish to only set the variabl
 { set count ?= 1 } -- count will be set to 1
 
 { set count ?= 2 } -- count will remain 1, as it's already set
-```
-
-The type safe assigment `:=` can be used when you want to guarantee you are not changing the type of a variable.
-
-```
-{ set count = "this is a string" }
-{ set count := 2 } -- this will not work or change the value, because variable was defined as a string first
 ```
 
 ### Conditions

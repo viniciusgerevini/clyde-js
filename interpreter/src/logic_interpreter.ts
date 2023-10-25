@@ -45,12 +45,13 @@ export const LogicInterpreter = (mem: MemoryManager): LogicInterpreterInstance =
 
   const operationHandlers: Handler = {
     'assign': (name: string, value: any) => mem.setVariable(name, value),
-    'assign_sum': (name: string, value: number) => mem.setVariable(name, mem.getVariable<number>(name) + value),
-    'assign_sub': (name: string, value: number) => mem.setVariable(name, mem.getVariable<number>(name) - value),
-    'assign_mult': (name: string, value: number) => mem.setVariable(name, mem.getVariable<number>(name) * value),
-    'assign_div': (name: string, value: number) => mem.setVariable(name, mem.getVariable<number>(name) / value),
-    'assign_pow': (name: string, value: number) => mem.setVariable(name, mem.getVariable<number>(name) ** value),
-    'assign_mod': (name: string, value: number) => mem.setVariable(name, mem.getVariable<number>(name) % value),
+    'assign_init': (name: string, value: any) => mem.getVariable(name) == undefined ? mem.setVariable(name, value) : mem.getVariable(name),
+    'assign_sum': (name: string, value: number) => mem.setVariable(name, mem.getVariable<number>(name, 0) + value),
+    'assign_sub': (name: string, value: number) => mem.setVariable(name, mem.getVariable<number>(name, 0) - value),
+    'assign_mult': (name: string, value: number) => mem.setVariable(name, mem.getVariable<number>(name, 0) * value),
+    'assign_div': (name: string, value: number) => mem.setVariable(name, mem.getVariable<number>(name, 0) / value),
+    'assign_pow': (name: string, value: number) => mem.setVariable(name, mem.getVariable<number>(name, 0) ** value),
+    'assign_mod': (name: string, value: number) => mem.setVariable(name, mem.getVariable<number>(name, 0) % value),
     'error': (_n: any, _v: any, a: AssignmentNode) => { throw new Error(`Unknown operation "${a.operation}"`) }
   };
 

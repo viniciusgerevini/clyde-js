@@ -2,6 +2,17 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+
+## Unreleased
+
+### Added
+
+- Assignment initializer operator `?=`. It only assigns if variable was not set before.
+
+### Changed
+
+- Increment assigment now have default values. i.e. If you run `set a += 1` when `a` is not set, it will be set to 1. Before it would break because value was null.
+
 ## 2.2.0 (2022-08-25)
 
 ### Added
