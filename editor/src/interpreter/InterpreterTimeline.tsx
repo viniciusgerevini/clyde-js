@@ -23,11 +23,11 @@ export default function InterpreterTimeline(props) {
 
   const next = () => {
     const line = dialogue.getContent();
-    if (line && line.type === 'options' && timeline.length > 0 && timeline[timeline.length - 1].type === 'options') {
+    if (line.type === 'options' && timeline.length > 0 && timeline[timeline.length - 1].type === 'options') {
       return;
     }
 
-    if (!line && !timeline[timeline.length - 1]) {
+    if (line.type === 'end' && !timeline[timeline.length - 1]) {
       return;
     }
     addDialogueLine(line);

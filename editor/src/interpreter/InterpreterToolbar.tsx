@@ -92,7 +92,7 @@ export default function InterpreterToolbar(properties) {
     const line = dialogue.getContent();
     addDialogueLine(line);
 
-    if (!line || line.type === 'options') {
+    if (line.type === 'options') {
       return line;
     }
 

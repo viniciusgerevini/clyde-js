@@ -156,12 +156,12 @@ hello %someVar%
   });
 
   describe('End of dialogue', () => {
-    it('get undefined when not more lines left', () => {
+    it('get end return when not more lines left', () => {
       const content = parse('Hi!\n');
       const dialogue = Interpreter(content);
       expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hi!' });
-      expect(dialogue.getContent()).toBe(undefined);
-      expect(dialogue.getContent()).toBe(undefined);
+      expect(dialogue.getContent()).toEqual({ type: 'end' });
+      expect(dialogue.getContent()).toEqual({ type: 'end' });
     });
   });
 

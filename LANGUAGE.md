@@ -77,7 +77,10 @@ The main methods used are `getContent()` and `choose(int)`.
 }
 ```
 
-**Null / undefined**: This means the dialogue has reached an end.
+**End of Dialogue**: This means the dialogue has reached an end.
+```javascript
+{ type: 'end' }
+```
 
 When `options` are available, you can choose one of them by passing its index to the dialogue object. Option's index starts from 0:
 

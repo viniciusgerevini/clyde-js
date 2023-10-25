@@ -9,7 +9,7 @@ describe("Interpreter: blocks and diverts", () => {
 
       expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hello!' });
       expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hi there.' });
-      expect(dialogue.getContent()).toEqual(undefined);
+      expect(dialogue.getContent()).toEqual({ type: 'end' });
     });
 
     it('execute block by name', () => {
@@ -19,18 +19,18 @@ describe("Interpreter: blocks and diverts", () => {
       dialogue.start('some_block');
 
       expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hello from the block!' });
-      expect(dialogue.getContent()).toEqual(undefined);
+      expect(dialogue.getContent()).toEqual({ type: 'end' });
 
       dialogue.start('some_other_block');
 
       expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hello from the other block!' });
-      expect(dialogue.getContent()).toEqual(undefined);
+      expect(dialogue.getContent()).toEqual({ type: 'end' });
 
       dialogue.start();
 
       expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hello!' });
       expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hi there.' });
-      expect(dialogue.getContent()).toEqual(undefined);
+      expect(dialogue.getContent()).toEqual({ type: 'end' });
     });
   });
 
@@ -53,7 +53,7 @@ this is another block
       expect((dialogue.getContent() as DialogueLine).text).toEqual('Hello!');
       expect((dialogue.getContent() as DialogueLine).text).toEqual("Let's go to another block");
       expect((dialogue.getContent() as DialogueLine).text).toEqual('this is another block');
-      expect(dialogue.getContent()).toEqual(undefined);
+      expect(dialogue.getContent()).toEqual({ type: 'end' });
     });
 
     it('divert back to parent', () => {
@@ -76,7 +76,7 @@ this is another block
       expect((dialogue.getContent() as DialogueLine).text).toEqual("Let's go to another block");
       expect((dialogue.getContent() as DialogueLine).text).toEqual('this is another block');
       expect((dialogue.getContent() as DialogueLine).text).toEqual('this line should be called after block');
-      expect(dialogue.getContent()).toEqual(undefined);
+      expect(dialogue.getContent()).toEqual({ type: 'end' });
     });
 
     it('divert from block to options list', () => {
@@ -153,8 +153,8 @@ this will never be seeing
       dialogue.start();
 
       expect((dialogue.getContent() as DialogueLine).text).toEqual('Hello!');
-      expect(dialogue.getContent()).toEqual(undefined);
-      expect(dialogue.getContent()).toEqual(undefined);
+      expect(dialogue.getContent()).toEqual({ type: 'end' });
+      expect(dialogue.getContent()).toEqual({ type: 'end' });
     });
 
     it('does not fail when divert to parent in the root node', () => {
@@ -167,7 +167,7 @@ Hello!
       dialogue.start();
 
       expect((dialogue.getContent() as DialogueLine).text).toEqual('Hello!');
-      expect(dialogue.getContent()).toEqual(undefined);
+      expect(dialogue.getContent()).toEqual({ type: 'end' });
     });
   });
 });
