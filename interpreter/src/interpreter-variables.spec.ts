@@ -84,6 +84,38 @@ mod assignment { set a %= 2 }
     expect(dialogue.getVariable('a')).toBe(0);
   });
 
+  it('only sets variable once when using init assignment', () => {
+    const content = parse(`
+{ set a ?= 1} this should be %a%
+{ set a ?= 2} this should be %a% again
+`
+    );
+    const dialogue = Interpreter(content);
+
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('this should be 1');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('this should be 1 again');
+  });
+
+  it('appends uninitialized variables correctly', () => {
+    const content = parse(`
+{ set a += 1} this should be %a%
+{ set b -= 2} this should be %b%
+{ set c *= 3} this should be %c%
+{ set d /= 4} this should be %d%
+{ set e %= 5} this should be %e%
+{ set f ^= 5} this should be %f%
+`
+    );
+    const dialogue = Interpreter(content);
+
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('this should be 1');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('this should be -2');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('this should be 0');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('this should be 0');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('this should be 0');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual('this should be 0');
+  });
+
   it('set variables externally', () => {
     const content = parse('vars %id% %name%\nvars %id% %name%\n');
     const dialogue = Interpreter(content);

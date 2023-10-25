@@ -48,6 +48,7 @@ export const TOKENS = {
   ASSIGN_MULT: '*=',
   ASSIGN_POW: '^=',
   ASSIGN_MOD: '%=',
+  ASSIGN_INIT: '?=',
   COMMA: ',',
   LINE_BREAK: 'line break',
 }
@@ -631,6 +632,10 @@ export function tokenize(input: string): TokenList {
 
     if (input[position] === '=') {
       return createSimpleToken(TOKENS.ASSIGN);
+    }
+
+    if (checkSequence(input, position, '?=')) {
+      return createSimpleToken(TOKENS.ASSIGN_INIT, 2);
     }
 
     if (checkSequence(input, position, '-=')) {

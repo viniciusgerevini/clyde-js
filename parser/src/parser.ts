@@ -52,6 +52,7 @@ const assignmentOperators = {
   [TOKENS.ASSIGN_DIV]: 'assign_div',
   [TOKENS.ASSIGN_POW]: 'assign_pow',
   [TOKENS.ASSIGN_MOD]: 'assign_mod',
+  [TOKENS.ASSIGN_INIT]: 'assign_init',
 };
 
 type NestedLogicBlocks = {

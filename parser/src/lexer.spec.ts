@@ -737,6 +737,19 @@ hello
     ]);
   });
 
+  it('variables: init assignment', () => {
+    const tokens = tokenize('{ set variable ?= 1 }').getAll();
+    expect(tokens).toEqual([
+      { token: TOKENS.BRACE_OPEN, line: 0, column: 0, },
+      { token: TOKENS.KEYWORD_SET, line: 0, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'variable', line: 0, column: 6, },
+      { token: TOKENS.ASSIGN_INIT, line: 0, column: 15, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 0, column: 18, },
+      { token: TOKENS.BRACE_CLOSE, line: 0, column: 20, },
+      { token: TOKENS.EOF, line: 0, column: 21 },
+    ]);
+  });
+
   it('variables: assignements', () => {
 
     const tokens = tokenize(`
