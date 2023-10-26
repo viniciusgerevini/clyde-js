@@ -102,7 +102,7 @@ export default function InterpreterToolbar(properties) {
   const poltergeist = () => {
     const optionList = forwardToNextOption();
 
-    if (optionList.type == "end") {
+    if (optionList.type === "end") {
       return;
     }
 
