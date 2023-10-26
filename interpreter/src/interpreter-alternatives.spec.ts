@@ -59,7 +59,7 @@ describe("Interpreter: variations", () => {
     const content = parse(`( shuffle sequence\n - Hello!\n - Hi!\n - Hey!\n)\nend\n`);
     const dialogue = Interpreter(content);
 
-    let usedOptions = [];
+    let usedOptions: string[] = [];
     for (let _i in [0, 1, 2]) {
       dialogue.start();
       const option = (dialogue.getContent() as DialogueLine).text
@@ -75,7 +75,7 @@ describe("Interpreter: variations", () => {
     const content = parse(`( shuffle once\n - Hello!\n - Hi!\n - Hey!\n)\nend\n`);
     const dialogue = Interpreter(content);
 
-    let usedOptions = [];
+    let usedOptions: string[] = [];
     for (let _i in [0, 1, 2]) {
       dialogue.start();
       const option = (dialogue.getContent() as DialogueLine).text
@@ -90,8 +90,8 @@ describe("Interpreter: variations", () => {
     const content = parse(`( ${mode}\n - Hello!\n - Hi!\n - Hey!\n)\nend\n`);
     const dialogue = Interpreter(content);
 
-    let usedOptions = [];
-    let secondRunUsedOptions = [];
+    let usedOptions: string[] = [];
+    let secondRunUsedOptions: string[] = [];
     for (let _i in [0, 1, 2]) {
       dialogue.start();
       const option = (dialogue.getContent() as DialogueLine).text
@@ -130,8 +130,8 @@ describe("Interpreter: variations", () => {
     const content = parse(`( shuffle cycle\n - { not alreadyRun } Hello! { set alreadyRun = true}\n - Hi!\n - Hey!\n)\nend\n`);
     const dialogue = Interpreter(content);
 
-    let usedOptions = [];
-    let secondRunUsedOptions = [];
+    let usedOptions: string[] = [];
+    let secondRunUsedOptions: string[] = [];
     for (let _i in [0, 1, 2]) {
       dialogue.start();
       usedOptions.push((dialogue.getContent() as DialogueLine).text);

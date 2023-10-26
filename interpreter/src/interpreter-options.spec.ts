@@ -23,7 +23,7 @@ describe("Interpreter: options", () => {
     dialogue.choose(1)
     expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'ba' });
     expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'bb' });
-    expect(dialogue.getContent()).toEqual(undefined);
+    expect(dialogue.getContent()).toEqual({ type: 'end' });
 
     dialogue.start();
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ label: 'a' }, { label: 'c' } ] });
@@ -31,7 +31,7 @@ describe("Interpreter: options", () => {
 
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'ca' });
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'cb' });
-    expect(dialogue.getContent()).toEqual(undefined);
+    expect(dialogue.getContent()).toEqual({ type: 'end' });
 
     dialogue.start();
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ label: 'a' }, { label: 'c' } ] });
@@ -39,7 +39,7 @@ describe("Interpreter: options", () => {
     dialogue.choose(0)
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'aa' });
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'ab' });
-    expect(dialogue.getContent()).toEqual(undefined);
+    expect(dialogue.getContent()).toEqual({ type: 'end' });
   });
 
   it('use fallback option when others not available', () => {
@@ -64,24 +64,24 @@ describe("Interpreter: options", () => {
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }, { label: 'c 3 left' } ] });
     dialogue.choose(1);
     expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'b 2' });
-    expect(dialogue.getContent()).toEqual(undefined);
+    expect(dialogue.getContent()).toEqual({ type: 'end' });
 
     dialogue.start();
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' }, { label: 'c 2 left' } ] });
     dialogue.choose(0);
 
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'a 1' });
-    expect(dialogue.getContent()).toEqual(undefined);
+    expect(dialogue.getContent()).toEqual({ type: 'end' });
 
     dialogue.start();
     expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'c 1 left' } ] });
 
     dialogue.choose(0);
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'c 0' });
-    expect(dialogue.getContent()).toEqual(undefined);
+    expect(dialogue.getContent()).toEqual({ type: 'end' });
 
     dialogue.start();
-    expect(dialogue.getContent()).toEqual(undefined);
+    expect(dialogue.getContent()).toEqual({ type: 'end' });
   });
 
   it('use special variable OPTIONS_COUNT as condition', () => {
@@ -109,7 +109,7 @@ hello %OPTIONS_COUNT%
 
     dialogue.choose(0)
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'nope' });
-    expect(dialogue.getContent()).toEqual(undefined);
+    expect(dialogue.getContent()).toEqual({ type: 'end' });
   });
 
   it('fails when trying to select option when in wrong state', () => {

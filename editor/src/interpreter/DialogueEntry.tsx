@@ -63,7 +63,7 @@ export default function DialogueEntry(props) {
     showMetadata
   } = props;
 
-  if (line === undefined) {
+  if (line.type === "end") {
     return <InfoBubble>DIALOGUE ENDED</InfoBubble>;
   }
 

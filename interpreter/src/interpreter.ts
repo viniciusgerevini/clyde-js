@@ -52,7 +52,16 @@ export type DialogueOption = {
   id?: string;
 };
 
-type ContentReturnType = DialogueLine | DialogueOptions | undefined;
+export type DialogueEnd = {
+  type: 'end';
+};
+
+function EndObject(): DialogueEnd {
+  return { type: "end" };
+}
+
+
+type ContentReturnType = DialogueLine | DialogueOptions | DialogueEnd;
 
 export type Dictionary = {
   [key: string]: string,
@@ -107,7 +116,7 @@ export interface InterpreterInstance {
    *
    * @return Content. Line, Option list or undefined.
    */
-  getContent(): DialogueLine | DialogueOptions | undefined;
+  getContent(): ContentReturnType;
 
   /**
    * Choose option by index. Option's index start in 0.
@@ -273,16 +282,17 @@ export function Interpreter(
     }
   };
 
-  const handleDocumentNode = () => {
+  const handleDocumentNode = (): ContentReturnType => {
     const node = stackHead();
     const contentIndex = node.contentIndex + 1;
     if (contentIndex < node.current.content.length) {
       node.contentIndex = contentIndex
       return handleNextNode(node.current.content[contentIndex]);
     }
+    return { type: 'end' };
   }
 
-  const handleContentNode = (contentNode: ContentNode & WorkingNode) => {
+  const handleContentNode = (contentNode: ContentNode & WorkingNode): ContentReturnType => {
     if (stackHead().current !== contentNode) {
       if (!contentNode._index) {
         contentNode._index = generateIndex();
@@ -303,7 +313,7 @@ export function Interpreter(
     return handleNextNode(stackHead().current);
   };
 
-  const handleBlockNode = (block: BlockNode) => {
+  const handleBlockNode = (block: BlockNode): ContentReturnType => {
     addToStack(block);
 
     const node = stackHead();
@@ -313,9 +323,11 @@ export function Interpreter(
       node.contentIndex = contentIndex
       return handleNextNode(node.current.content.content[contentIndex]);
     }
+
+    return EndObject();
   };
 
-  const handleDivert = (divert: DivertNode) => {
+  const handleDivert = (divert: DivertNode): ContentReturnType => {
     if (divert.target === '<parent>') {
 
       while (!['document', 'block', 'option', 'options'].includes(stackHead().current.type)) {
@@ -326,12 +338,16 @@ export function Interpreter(
         stack.pop();
         return handleNextNode(stackHead().current);
       }
-    } else if (divert.target === '<end>') {
+      return EndObject();
+    }
+
+    if (divert.target === '<end>') {
       initializeStack();
       stackHead().contentIndex = stackHead().current.content.length;
-    } else {
-      return handleNextNode(anchors[divert.target]);
-    }
+      return EndObject();
+    } 
+
+    return handleNextNode(anchors[divert.target]);
   };
 
   const handleAssignementNode = (assignment: AssignmentsNode) => {
@@ -578,7 +594,7 @@ export function Interpreter(
       textDictionary = dictionary;
     },
 
-    getContent(): DialogueLine | DialogueOptions | undefined {
+    getContent(): ContentReturnType {
       return handleNextNode(stackHead().current)
     },
 

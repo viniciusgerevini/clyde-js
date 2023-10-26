@@ -4,6 +4,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 Check [LANGUAGE.md](./LANGUAGE.md) for latest documentation.
 
+## Unreleased
+
+### Added
+
+- Assignment initializer operator `?=`. It only assigns if variable was not set before.
+
+### Changed
+
+- Return End of Dialogue object instead of undefined. `{ type: 'end' }`.
+
+
 ## 2.1.0 (2022-07-02)
 
 ### Added

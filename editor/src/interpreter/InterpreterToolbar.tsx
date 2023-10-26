@@ -92,7 +92,7 @@ export default function InterpreterToolbar(properties) {
     const line = dialogue.getContent();
     addDialogueLine(line);
 
-    if (!line || line.type === 'options') {
+    if (line.type === 'end' || line.type === 'options') {
       return line;
     }
 
@@ -102,7 +102,7 @@ export default function InterpreterToolbar(properties) {
   const poltergeist = () => {
     const optionList = forwardToNextOption();
 
-    if (!optionList) {
+    if (optionList.type == "end") {
       return;
     }
 
@@ -126,7 +126,7 @@ export default function InterpreterToolbar(properties) {
       <BlockList document={doc} currentBlock={currentBlock} onBlockSelected={selectBlock}/>
       <FontAwesomeIcon icon={faRedoAlt} title="Restart dialogue" onClick={restart}/>
 
-      <FontAwesomeIcon icon={faFastForward} title="Forward untill next choice" onClick={forwardToNextOption}/>
+      <FontAwesomeIcon icon={faFastForward} title="Forward until next choice" onClick={forwardToNextOption}/>
 
       <FontAwesomeIcon icon={faGhost} title="Execute Poltergeist mode (auto anwser)" onClick={poltergeist}/>
 
