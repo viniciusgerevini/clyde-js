@@ -27,7 +27,7 @@ export default function InterpreterTimeline(props) {
       return;
     }
 
-    if (line.type === 'end' && !timeline[timeline.length - 1]) {
+    if (line.type === 'end' && timeline[timeline.length - 1]?.type === 'end') {
       return;
     }
     addDialogueLine(line);

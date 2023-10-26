@@ -43,7 +43,7 @@ describe('Interpreter component', () => {
   it('shows end message when dialogue has ended', () => {
     const addDialogueLineStub = jest.fn();
     const content = 'Hello!\n';
-    const timeline = [undefined];
+    const timeline = [{ type: "end" }];
     const { getByText, getByLabelText } = render(
       <Interpreter content={content} timeline={timeline} addDialogueLine={addDialogueLineStub}/>
     );
@@ -528,7 +528,7 @@ third line
             addDialogueLine={addDialogueLineStub}/>
       );
 
-      fireEvent.click(getByLabelText(/Forward untill next choice/i));
+      fireEvent.click(getByLabelText(/Forward until next choice/i));
 
       expect(addDialogueLineStub).toHaveBeenCalledTimes(4);
       expect(addDialogueLineStub).toHaveBeenLastCalledWith({ type: 'options', options: [{ label: 'yes' }]});
@@ -556,10 +556,10 @@ third line
             addDialogueLine={addDialogueLineStub}/>
       );
 
-      fireEvent.click(getByLabelText(/Forward untill next choice/i));
+      fireEvent.click(getByLabelText(/Forward until next choice/i));
 
       expect(addDialogueLineStub).toHaveBeenCalledTimes(4);
-      expect(addDialogueLineStub).toHaveBeenLastCalledWith(undefined);
+      expect(addDialogueLineStub).toHaveBeenLastCalledWith({ type: 'end' });
     });
 
     it('run poltergeist mode: choose all options', () => {
@@ -598,7 +598,7 @@ this is the end
       fireEvent.click(getByLabelText(/Execute Poltergeist mode \(auto anwser\)/i));
 
       expect(addDialogueLineStub).toHaveBeenCalledTimes(11);
-      expect(addDialogueLineStub).toHaveBeenLastCalledWith(undefined);
+      expect(addDialogueLineStub).toHaveBeenLastCalledWith({ type: 'end' });
       expect(chooseOptionStub).toHaveBeenCalledTimes(3);
       expect(timeline[timeline.length - 2]).toEqual({ type: 'line', text: 'this is the end'});
     });
