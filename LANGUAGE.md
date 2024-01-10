@@ -77,18 +77,18 @@ The main methods used are `getContent()` and `choose(int)`.
 }
 ```
 
-**End of Dialogue**: This means the dialogue has reached an end.
-```javascript
-{ type: 'end' }
-```
-
 When `options` are available, you can choose one of them by passing its index to the dialogue object. Option's index starts from 0:
 
 ```javascript
 dialogue.choose(0);
 ```
 
-When in an options state, any call to `getContent()` will return the same options object, until a choice is made.
+When in an options state, any subsequent call to `getContent()` will return the same options object, until a choice is made.
+
+**end**: This means the dialogue has reached an end. Any subsequent call to `getContent` will return an end object.
+```javascript
+{ type: 'end' }
+```
 
 Currently there are two interpreter implementations: a [JavaScript version](), and a [Godot's GDScript version](https://github.com/viniciusgerevini/godot-clyde-dialogue). Check the respective links for more details on how to use them. They expose similar interfaces, but there are some differences due to language standards and how each engine handles events and localisation.
 
