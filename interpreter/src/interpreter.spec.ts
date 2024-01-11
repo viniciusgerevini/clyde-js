@@ -153,6 +153,44 @@ hello %someVar%
       dialogue.clearData();
       expect((dialogue.getContent() as DialogueLine).text).toEqual('hello ');
     });
+
+    it("changing block order does not impact options persistence", () => {
+      const block1 = `
+== block_1
+* option 1
+  line 1
+* option 2
+  line 2
+`;
+      const block2 = `
+== block_2
+* option 1
+  line 1
+* option 2
+  line 2
+`;
+
+      const content = parse(block1 + block2);
+      const invertedContent = parse(block2 + block1);
+
+      const dialogue = Interpreter(content);
+      dialogue.start("block_1")
+      dialogue.getContent();
+      dialogue.choose(0);
+
+      const data = dialogue.getData();
+
+      const invertedDialogue = Interpreter(invertedContent);
+      invertedDialogue.loadData(data);
+      invertedDialogue.start("block_1")
+      const block1Options = invertedDialogue.getContent();
+      invertedDialogue.start("block_2")
+      const block2Options = invertedDialogue.getContent();
+
+
+      expect(block1Options).toEqual({ type: 'options', options: [{ label: 'option 2' }] });
+      expect(block2Options).toEqual({ type: 'options', options: [{ label: 'option 1' }, { label: 'option 2' }] });
+    });
   });
 
   describe('End of dialogue', () => {
