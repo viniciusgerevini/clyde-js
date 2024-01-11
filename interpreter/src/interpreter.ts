@@ -23,7 +23,7 @@ type StackItem = {
 };
 
 type WorkingNode = {
-  _index?: number,
+  _index?: string,
 }
 
 type WorkingActionContentNode = ActionContentNode & { mode: string };
@@ -174,9 +174,9 @@ export function Interpreter(
   let stack: StackItem[];
   const logic = LogicInterpreter(mem);
 
-  doc._index = 1;
-  doc.blocks.forEach((block: BlockNode & WorkingNode, index: number) => {
-    block._index = index + 2;
+  doc._index = "r";
+  doc.blocks.forEach((block: BlockNode & WorkingNode) => {
+    block._index = `b_${block.name}`;
     anchors[block.name] = block;
   });
 
@@ -234,7 +234,7 @@ export function Interpreter(
     'shuffle': (variations: VariationsNode & WorkingNode, mode = 'cycle' ): number => {
       const SHUFFLE_VISITED_KEY = `${variations._index}_shuffle_visited`;
       const LAST_VISITED_KEY = `${variations._index}_last_index`;
-      let visitedItems: number[] = mem.getInternalVariable(SHUFFLE_VISITED_KEY, []);
+      let visitedItems: string[] = mem.getInternalVariable(SHUFFLE_VISITED_KEY, []);
       const remainingOptions: (ContentNode & WorkingNode)[]  = variations.content.filter((a: ContentNode & WorkingNode) => !visitedItems.includes(a._index!));
 
       if (remainingOptions.length === 0) {
@@ -271,7 +271,7 @@ export function Interpreter(
 
   const handleNextNode = (node: any, fallback?: any) => (nodeHandlers[node.type] || nodeHandlers['error'])(node, fallback);
 
-  const generateIndex = () => (10 * stackHead().current._index) + stackHead().contentIndex;
+  const generateIndex = () => `${stackHead().current._index}_${stackHead().contentIndex}`;
 
   const addToStack = (node: any) => {
     if (stackHead().current !== node) {
@@ -411,7 +411,7 @@ export function Interpreter(
     if (!variations._index) {
       variations._index = generateIndex();
       variations.content.forEach((c: ContentNode & WorkingNode, index: number) => {
-        c._index = generateIndex() * 100 + index;
+        c._index = `${generateIndex()}_${index}`;
       });
     }
 
@@ -507,7 +507,7 @@ export function Interpreter(
 
   const prepareOption = (option: ( WorkingActionContentNode | ConditionalContentNode | OptionNode) & WorkingNode, index: number): any => {
     if (!option._index) {
-      option._index = generateIndex() * 100 + index;
+      option._index = `${generateIndex()}_${index}`;
     }
 
     if (option.type === 'conditional_content') {
