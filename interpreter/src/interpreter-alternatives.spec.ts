@@ -86,8 +86,8 @@ describe("Interpreter: variations", () => {
     expect((dialogue.getContent() as DialogueLine).text).toEqual('end');
   });
 
-  test.each(['shuffle', 'shuffle cycle'])('%s: show each alternative out of order and then repeat again when finished.', (mode) => {
-    const content = parse(`( ${mode}\n - Hello!\n - Hi!\n - Hey!\n)\nend\n`);
+  it('shuffle cycle: show each alternative out of order and then repeat again when finished', () => {
+    const content = parse("( shuffle cycle\n - Hello!\n - Hi!\n - Hey!\n)\nend\n");
     const dialogue = Interpreter(content);
 
     let usedOptions: string[] = [];
@@ -107,6 +107,33 @@ describe("Interpreter: variations", () => {
     }
     expect(usedOptions.sort()).toEqual(secondRunUsedOptions.sort());
   });
+
+  describe("real shuffle", () => {
+    let mathRandomMock: jest.SpiedFunction<typeof Math.random>;
+
+    beforeEach(() => {
+        mathRandomMock = jest.spyOn(global.Math, 'random');
+    });
+
+    afterEach(() => {
+        jest.spyOn(global.Math, 'random').mockRestore();
+    });
+
+    it('shuffle: return one of the variations without guarantee all will be returned', () => {
+      const content = parse(`( shuffle\n - Hello!\n - Hi!\n - Hey!\n)\nend\n`);
+      const dialogue = Interpreter(content);
+
+      let randomReturn = [0.1, 0.1, 0.9];
+      let expectedReturnOrder = ["Hello!", "Hello!", "Hey!"];
+      for (let i of [0, 1, 2]) {
+        mathRandomMock.mockReturnValue(randomReturn[i]);
+        dialogue.start();
+        const variation = (dialogue.getContent() as DialogueLine).text
+        expect(variation).toEqual(expectedReturnOrder[i]);
+      }
+    });
+  });
+
 
   it('works with conditional variations', () => {
     const content = parse(`(sequence \n - Hello!\n - { someVar } Hi!\n - Hey!\n)\nYep!\n`);

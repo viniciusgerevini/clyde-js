@@ -13,6 +13,7 @@ Check [LANGUAGE.md](./LANGUAGE.md) for latest documentation.
 ### Changed
 
 - Return End of Dialogue object instead of undefined. `{ type: 'end' }`.
+- Variation `shuffle` will do real randomization with no guarantee all items will be visited.
 
 
 ## 2.1.0 (2022-07-02)
