@@ -203,6 +203,34 @@ export function Interpreter(
     'error': (node: any) => { throw new Error(`Unkown node type "${node.type}"`) },
   };
 
+  const shuffleWithMemory = (variations: VariationsNode & WorkingNode, mode: string ): number => {
+    const SHUFFLE_VISITED_KEY = `${variations._index}_shuffle_visited`;
+    const LAST_VISITED_KEY = `${variations._index}_last_index`;
+    let visitedItems: string[] = mem.getInternalVariable(SHUFFLE_VISITED_KEY, []);
+    const remainingOptions: (ContentNode & WorkingNode)[]  = variations.content.filter((a: ContentNode & WorkingNode) => !visitedItems.includes(a._index!));
+
+    if (remainingOptions.length === 0) {
+      if (mode === 'once') {
+        return -1;
+      }
+      if (mode === 'cycle') {
+        mem.setInternalVariable(SHUFFLE_VISITED_KEY, []);
+        return shuffleWithMemory(variations, mode);
+      }
+      return mem.getInternalVariable(LAST_VISITED_KEY, -1);
+    }
+
+    const random = Math.floor(Math.random() * remainingOptions.length);
+    const index = variations.content.indexOf(remainingOptions[random]);
+
+    visitedItems.push(remainingOptions[random]._index!);
+
+    mem.setInternalVariable(LAST_VISITED_KEY, index);
+    mem.setInternalVariable(SHUFFLE_VISITED_KEY, visitedItems);
+
+    return index;
+  };
+
   const variationHandlers: { [type: string]: Function } = {
     'cycle': (variations: VariationsNode & WorkingNode) => {
       let current = mem.getInternalVariable(`${variations._index}`, -1);
@@ -231,41 +259,17 @@ export function Interpreter(
       }
       return current;
     },
-    'shuffle': (variations: VariationsNode & WorkingNode, mode = 'cycle' ): number => {
-      const SHUFFLE_VISITED_KEY = `${variations._index}_shuffle_visited`;
-      const LAST_VISITED_KEY = `${variations._index}_last_index`;
-      let visitedItems: string[] = mem.getInternalVariable(SHUFFLE_VISITED_KEY, []);
-      const remainingOptions: (ContentNode & WorkingNode)[]  = variations.content.filter((a: ContentNode & WorkingNode) => !visitedItems.includes(a._index!));
-
-      if (remainingOptions.length === 0) {
-        if (mode === 'once') {
-          return -1;
-        }
-        if (mode === 'cycle') {
-          mem.setInternalVariable(SHUFFLE_VISITED_KEY, []);
-          return variationHandlers['shuffle'](variations, mode);
-        }
-        return mem.getInternalVariable(LAST_VISITED_KEY, -1);
-      }
-
-      const random = Math.floor(Math.random() * remainingOptions.length);
-      const index = variations.content.indexOf(remainingOptions[random]);
-
-      visitedItems.push(remainingOptions[random]._index!);
-
-      mem.setInternalVariable(LAST_VISITED_KEY, index);
-      mem.setInternalVariable(SHUFFLE_VISITED_KEY, visitedItems);
-
-      return index;
+    'shuffle': (variations: VariationsNode & WorkingNode): number => {
+      return Math.floor(Math.random() * variations.content.length);
     },
     'shuffle sequence': (variations: VariationsNode) => {
-      return variationHandlers['shuffle'](variations, 'sequence');
+      return shuffleWithMemory(variations, 'sequence');
     },
     'shuffle once': (variations: VariationsNode) => {
-      return variationHandlers['shuffle'](variations, 'once');
+      return shuffleWithMemory(variations, 'once');
     },
     'shuffle cycle': (variations: VariationsNode) => {
-      return variationHandlers['shuffle'](variations, 'cycle');
+      return shuffleWithMemory(variations, 'cycle');
     }
   };
 
