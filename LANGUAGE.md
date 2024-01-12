@@ -762,7 +762,9 @@ The following example will show each item following a random sequence. Once all 
 )
 ```
 
-Variations can be nested and can contain other elements, like options and diverts:
+As opposed to `shuffle sequence`, `shuffle cycle` and `shuffle once`, the standalone `shuffle` option will work as regular randomization with no guarantee all items will be visited.
+
+Variations can be nested and may contain other elements, like options and diverts:
 
 ```
 npc: How is the day today?
