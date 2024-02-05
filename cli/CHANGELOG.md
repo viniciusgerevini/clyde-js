@@ -2,6 +2,16 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## Unreleased
+
+### Breaking changes
+
+- `shuffle` variations are really random now.
+
+### Changed
+
+- Bump interpreter major version. `shuffle` variations change. External var support.
+
 ## 2.2.0 (2022-08-25)
 
 ### Added

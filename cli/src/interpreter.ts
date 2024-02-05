@@ -6,6 +6,7 @@ import {
   DialogueLine,
   DialogueOption,
   DialogueOptions,
+  DialogueEnd,
   Dictionary,
   EventType,
   Interpreter,
@@ -62,8 +63,8 @@ const inputHandlers = (dialogue: InterpreterInstance, args: InterpreterCliArgs, 
     }
   };
 
-  const printContent = (content: DialogueLine | DialogueOptions | undefined) => {
-    if (content === undefined) {
+  const printContent = (content: DialogueLine | DialogueOptions | DialogueEnd) => {
+    if (content.type === "end") {
       console.log('-- END');
       if (argv.debug) {
         printDebugInfo(events);

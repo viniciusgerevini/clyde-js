@@ -2,6 +2,7 @@ export {
   DialogueLine,
   DialogueOption,
   DialogueOptions,
+  DialogueEnd,
   Dictionary,
   Interpreter,
   InterpreterInstance,
