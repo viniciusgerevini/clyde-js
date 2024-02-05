@@ -1,5 +1,5 @@
 import { LogicInterpreter } from'./logic_interpreter';
-import { Memory, InternalMemory } from './memory';
+import { Memory, DialogueData } from './memory';
 import { Events, EventType } from './events';
 import {
   ClydeDocumentRoot,
@@ -90,14 +90,14 @@ export interface InterpreterInstance {
    *
    * @return data
    */
-  getData(): InternalMemory;
+  getData(): DialogueData;
 
   /**
    * Load internal data
    *
    * @param data
    */
-  loadData(data: InternalMemory): void;
+  loadData(data: DialogueData): void;
 
   /**
    * Clear all internal data
@@ -139,6 +139,21 @@ export interface InterpreterInstance {
    * @return variable value
    */
   getVariable(name: string): any;
+
+  /**
+   * set external variable
+   *
+   * @param name - External variable name
+   * @param value - Value
+   */
+  setExternalVariable(name: string, value: any): void;
+
+  /**
+   * Return external variable value
+   * @param name - External variable name
+   * @return variable value
+   */
+  getExternalVariable(name: string): any;
 
   /**
    * Start dialogue from the begining
@@ -557,7 +572,7 @@ export function Interpreter(
 
   const replaceVariables = (text: string) => {
     if (text) {
-      (text.match(/\%([A-z0-9]*)\%/g) || [])
+      (text.match(/\%([A-z0-9@]*)\%/g) || [])
         .map(match => {
           const name = match.replace(/\%/g, '');
           let value: any;
@@ -582,11 +597,11 @@ export function Interpreter(
       listeners.removeListener(eventName, callback);
     },
 
-    getData(): InternalMemory {
+    getData(): DialogueData {
       return mem.getAll();
     },
 
-    loadData(data: InternalMemory) {
+    loadData(data: DialogueData) {
       mem.load(data);
     },
 
@@ -612,6 +627,14 @@ export function Interpreter(
 
     getVariable(name: string): any {
       return mem.getVariable(name);
+    },
+
+    setExternalVariable(name: string, value: any): void {
+      mem.setExternalVariable(name, value);
+    },
+
+    getExternalVariable(name: string): any {
+      return mem.getExternalVariable(name);
     },
 
     start(blockName?: string): void {

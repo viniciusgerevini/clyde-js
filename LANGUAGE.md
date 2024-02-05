@@ -42,6 +42,14 @@ dialogue.setVariable(name, value);
 // Get value of variables set in the dialogue
 dialogue.getVariable(name);
 
+// Set external variable to be used by the dialogue
+// External variables can be accessed using the `@` prefix and
+// are not included in the save object, so they are not persisted between runs.
+dialogue.setExternalVariable(name, value);
+
+// Get value of external variables set in the dialogue
+dialogue.getExternalVariable(name);
+
 // Load a dictionary with translations.
 // when returning a line with line id defined, it looks first in this object
 // for translation before returning the value. Useful for localisation.
@@ -809,7 +817,7 @@ There are three types of logic blocks: assignments, conditions, and triggers.
 
 ### Assignments
 
-Besides setting external variables using the interpreter method, you can set variables internally with assignment blocks. Assignment blocks need to start with the `set` keyword. Here are some examples:
+Besides setting variables using the interpreter method, you can set variables internally with assignment blocks. Assignment blocks need to start with the `set` keyword. Here are some examples:
 
 ```
 -- standalone
@@ -947,6 +955,34 @@ Hello, %playerName%! Long time no see.
 This should print `Hello, Vini! Long time no see!`
 
 This can be used with variables defined internally or externally.
+
+### External variables
+
+External variables can be accessed using the `@` prefix and are not included in the save object, so they are not persisted between runs.
+
+They are useful when dealing with data that belongs to your game and shouldn't be persisted with the dialogue. They can be set and changed in the dialogue
+like this:
+
+```
+{ set @hp = 10 }
+```
+
+To set them from your game you can use one of these methods:
+
+```
+dialogue.setExternalVariable("npc_name", "Vincent"); // this variable will be accessible as @npc_name
+// or
+dialogue.setVariable("@npc_name", "Vincent");
+```
+To retrieve it back:
+
+```
+dialogue.getExternalVariable("npc_name");
+// or
+dialogue.getVariable("@npc_name");
+```
+
+External variables do not trigger the `variable_changed` event. They trigger the `external_variable_changed` event instead.
 
 ### Special variables
 

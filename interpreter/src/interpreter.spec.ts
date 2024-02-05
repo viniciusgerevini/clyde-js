@@ -37,6 +37,20 @@ describe("Interpreter", () => {
       dialogue.getContent()
     });
 
+    it('trigger event on external variable changed', (done) => {
+      const content = parse('Hi!{ set @something = 123 }\n');
+      const dialogue = Interpreter(content);
+
+      dialogue.setExternalVariable('something', 456);
+
+      dialogue.on(EventType.EXTERNAL_VARIABLE_CHANGED, (data: any) => {
+        expect(data).toEqual({ name:'something', value: 123, previousValue: 456 });
+        done();
+      });
+
+      dialogue.getContent()
+    });
+
     it('remove listener', (done) => {
       const content = parse('Hi!{ set something = 123 }\n');
       const dialogue = Interpreter(content);
@@ -309,6 +323,22 @@ first topics $abc&suffix1
         const secondOptions = dialogue.getContent() as DialogueOptions;
         expect(secondOptions.options[0].label).toEqual('simple key with suffix 1 and 2');
       });
+    });
+
+    it('external variables should not be included in final data', () =>{
+      const content = parse(`
+Hi!{ set @someVar = 1, someOtherVar = 2 }
+`);
+      const dialogue = Interpreter(content);
+
+      dialogue.setExternalVariable("yet_another_var", 3);
+
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Hi!');
+      expect(dialogue.getData()).toEqual(expect.objectContaining({
+        variables: {
+          someOtherVar: 2,
+        }
+      }));
     });
   });
 

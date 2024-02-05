@@ -498,6 +498,12 @@ export function tokenize(input: string): TokenList {
     const initialColumn = column;
     let values = '';
 
+    if (input[position] == "@") {
+      values += input[position];
+      position += 1;
+      column += 1;
+    }
+
     while (input[position] && input[position].match(/[A-Z|a-z|0-9|_]/)) {
       values += input[position];
       position += 1;
@@ -698,7 +704,7 @@ export function tokenize(input: string): TokenList {
       return handleLogicNumber();
     }
 
-    if (input[position].match(/[A-Za-z]/)) {
+    if (input[position].match(/[A-Za-z@]/)) {
       return handleLogicIdentifier();
     }
   };

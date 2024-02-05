@@ -9,6 +9,8 @@ Check [LANGUAGE.md](./LANGUAGE.md) for latest documentation.
 ### Added
 
 - Assignment initializer operator `?=`. It only assigns if variable was not set before.
+- External variables using `@` prefix. They are not included in the save object, so they are not persisted between runs.
+They are useful when dealing with data that belongs to your game and shouldn't be persisted with the dialogue.
 
 ### Changed
 
