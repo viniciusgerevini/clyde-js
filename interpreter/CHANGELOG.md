@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added
 
 - Assignment initializer operator `?=`. It only assigns if variable was not set before.
+- External variable support. Implemented `set_external_variable` and `get_external_variable`.
 
 ### Changed
 
