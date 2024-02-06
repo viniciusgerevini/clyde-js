@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added
 
 - Assignment initializer operator `?=`. It only assigns if variable was not set before.
+- Define and access external variable by using `@` prefix.
 
 ### Changed
 

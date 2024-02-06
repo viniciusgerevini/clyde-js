@@ -537,6 +537,7 @@ hello
 { variable == false }
 { variable == "s1" }
 { variable == null }
+{ @global_variable }
 
 `).getAll();
     expect(tokens).toEqual([
@@ -706,7 +707,13 @@ hello
       { token: TOKENS.BRACE_CLOSE, line: 23, column: 19, },
       { token: TOKENS.LINE_BREAK, line: 23, column: 20, },
 
-      { token: TOKENS.EOF, line: 25, column: 0 },
+      { token: TOKENS.LINE_BREAK, line: 24, column: 0,  },
+      { token: TOKENS.BRACE_OPEN, line: 24, column: 0, },
+      { token: TOKENS.IDENTIFIER, value: '@global_variable', line: 24, column: 2, },
+      { token: TOKENS.BRACE_CLOSE, line: 24, column: 19, },
+      { token: TOKENS.LINE_BREAK, line: 24, column: 20, },
+
+      { token: TOKENS.EOF, line: 26, column: 0 },
 
     ]);
   });
