@@ -2,6 +2,15 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## 2.3.2 (2024-06-20)
+
+### Fixed
+
+- Dist files started being ignored by npm.
+
+### Thanks
+
+- Thanks to Aaron (@clogwyn55) for reporting this issue.
 
 ## 2.3.0 (2024-02-14)
 
