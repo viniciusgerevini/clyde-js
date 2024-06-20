@@ -1,6 +1,6 @@
 {
   "name": "@clyde-lang/parser",
-  "version": "2.3.0",
+  "version": "2.3.2",
   "description": "Parser for Clyde dialogue language",
   "main": "./dist/cjs/index.js",
   "types": "./dist/mjs/index.d.ts",
@@ -29,6 +29,7 @@
     "./package.json": "./package.json"
   },
   "dependencies": {},
+  "files": ["./dist", "README.md", "CHANGELOG.md"],
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node"
