@@ -42,13 +42,11 @@ dialogue.setVariable(name, value);
 // Get value of variables set in the dialogue
 dialogue.getVariable(name);
 
-// Set external variable to be used by the dialogue
-// External variables can be accessed using the `@` prefix and
-// are not included in the save object, so they are not persisted between runs.
-dialogue.setExternalVariable(name, value);
+// Set callback to be used when requesting external variables.
+onExternalVariableFetch(callback: ((name: string) => any) | undefined): void;
 
-// Get value of external variables set in the dialogue
-dialogue.getExternalVariable(name);
+// Set callback to be used when an external variable is updated in the dialogue.
+onExternalVariableUpdate(callback: ((name: string, value: any) => void) | undefined): void;
 
 // Load a dictionary with translations.
 // when returning a line with line id defined, it looks first in this object
@@ -958,31 +956,33 @@ This can be used with variables defined internally or externally.
 
 ### External variables
 
-External variables can be accessed using the `@` prefix and are not included in the save object, so they are not persisted between runs.
+External variables can be accessed using the `@` prefix. They are saved outside the dialogue data and the interpreter should provide callbacks to fetch and update these variables.
 
-They are useful when dealing with data that belongs to your game and shouldn't be persisted with the dialogue. They can be set and changed in the dialogue
-like this:
+They are useful when dealing with data that belongs to your game and shouldn't be persisted with the dialogue. They can be set and used in the dialogue like this:
 
 ```
+-- set
 { set @hp = 10 }
+
+-- use
+{ @hp > 10 }
+
+-- interpolation
+Hello, %@player_name%!
 ```
 
-To set them from your game you can use one of these methods:
+Here is an example on how the callbacks to fetch and update the data can be used:
 
 ```
-dialogue.setExternalVariable("npc_name", "Vincent"); // this variable will be accessible as @npc_name
-// or
-dialogue.setVariable("@npc_name", "Vincent");
-```
-To retrieve it back:
+dialogue.onExternalVariableFetch((name: string): any => {
+    return my_persistence_object[name];
+});
+
+dialogue.onExternalVariableUpdate((name: string, value: any): void => {
+    my_persistence_object[name] = value;
+});
 
 ```
-dialogue.getExternalVariable("npc_name");
-// or
-dialogue.getVariable("@npc_name");
-```
-
-External variables do not trigger the `variable_changed` event. They trigger the `external_variable_changed` event instead.
 
 ### Special variables
 
