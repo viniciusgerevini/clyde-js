@@ -156,6 +156,19 @@ export interface InterpreterInstance {
   getExternalVariable(name: string): any;
 
   /**
+   * Set callback to be used when requesting
+   * external variables. This will have preference over
+   * values set via `setExternalVariable`
+   */
+  onExternalVariableFetch(callback: ((name: string) => any) | undefined): void;
+
+  /**
+   * Set callback to be used when an external variable
+   * is updated in the dialogue.
+   */
+  onExternalVariableUpdate(callback: ((name: string, value: any) => void) | undefined): void;
+
+  /**
    * Start dialogue from the begining
    *
    * @param [blockName] - Dialogue block to use
@@ -635,6 +648,14 @@ export function Interpreter(
 
     getExternalVariable(name: string): any {
       return mem.getExternalVariable(name);
+    },
+
+    onExternalVariableFetch(callback: ((name: string) => any) | undefined): void {
+      mem.onExternalVariableFetch(callback);
+    },
+
+    onExternalVariableUpdate(callback: ((name: string, value: any) => void) | undefined): void {
+      mem.onExternalVariableUpdate(callback);
     },
 
     start(blockName?: string): void {
