@@ -141,21 +141,6 @@ export interface InterpreterInstance {
   getVariable(name: string): any;
 
   /**
-   * set external variable
-   *
-   * @param name - External variable name
-   * @param value - Value
-   */
-  setExternalVariable(name: string, value: any): void;
-
-  /**
-   * Return external variable value
-   * @param name - External variable name
-   * @return variable value
-   */
-  getExternalVariable(name: string): any;
-
-  /**
    * Set callback to be used when requesting
    * external variables. This will have preference over
    * values set via `setExternalVariable`
@@ -640,14 +625,6 @@ export function Interpreter(
 
     getVariable(name: string): any {
       return mem.getVariable(name);
-    },
-
-    setExternalVariable(name: string, value: any): void {
-      mem.setExternalVariable(name, value);
-    },
-
-    getExternalVariable(name: string): any {
-      return mem.getExternalVariable(name);
     },
 
     onExternalVariableFetch(callback: ((name: string) => any) | undefined): void {

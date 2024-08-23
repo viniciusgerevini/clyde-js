@@ -7,7 +7,6 @@ export type InternalMemory = {
   access: any;
   variables: any;
   internal: any;
-  e_variables: any;
 }
 
 export type DialogueData = Omit<InternalMemory, "e_variables">;
@@ -17,7 +16,7 @@ export interface MemoryManager {
     wasAlreadyAccessed(id: string): boolean;
     getVariable<T>(id: string, defaultValue?: T): T;
     setVariable<T>(id: string, value: T): T;
-    getExternalVariable<T>(id: string, defaultValue?: T): T;
+    getExternalVariable<T>(id: string): T;
     setExternalVariable<T>(id: string, value: T): T;
     setInternalVariable<T>(id: string, value: T): T;
     getInternalVariable<T>(id: string, defaultValue?: T): T;
@@ -36,7 +35,6 @@ export function Memory(listeners: EventsInstance, init?: InternalMemory): Memory
     access: {},
     variables: {},
     internal: {},
-    e_variables: {},
   };
 
   return {
@@ -54,7 +52,7 @@ export function Memory(listeners: EventsInstance, init?: InternalMemory): Memory
       }
 
       if (id.startsWith(EXTERNAL_VARIABLE_PREFIX)) {
-        return this.getExternalVariable(id, defaultValue);
+        return this.getExternalVariable(id);
       }
 
       const value = mem.variables[id];
@@ -73,37 +71,26 @@ export function Memory(listeners: EventsInstance, init?: InternalMemory): Memory
       return mem.variables[id] = value;
     },
 
-    getExternalVariable(id: string, defaultValue?: any): any {
+    getExternalVariable(id: string): any {
       const sanitizedId = id.replace(EXTERNAL_VARIABLE_PREFIX, "");
 
       let value: any;
 
       if (onExternalVariableFetchCallback) {
         value = onExternalVariableFetchCallback(sanitizedId);
-      } else {
-        value = mem.e_variables[sanitizedId];
       }
 
-      if (value === undefined) {
-        return defaultValue;
-      }
       return value;
     },
 
     setExternalVariable<T>(id: string, value: T): T {
       const sanitizedId = id.replace(EXTERNAL_VARIABLE_PREFIX, "");
-      listeners.triggerEvent(EventType.EXTERNAL_VARIABLE_CHANGED, { name: sanitizedId, value, previousValue: mem.e_variables[sanitizedId] });
-
-      let persistedValue: T;
 
       if (onExternalVariableUpdateCallback) {
         onExternalVariableUpdateCallback(sanitizedId, value);
-        persistedValue =  value
-      } else {
-        persistedValue = mem.e_variables[sanitizedId] = value;
       }
 
-      return persistedValue;
+      return value;
     },
 
     setInternalVariable<T>(id: string, value: T): T {
@@ -129,7 +116,6 @@ export function Memory(listeners: EventsInstance, init?: InternalMemory): Memory
     load(data: DialogueData): void {
       mem = {
         ...data,
-        e_variables: {},
       };
     },
 
@@ -138,7 +124,6 @@ export function Memory(listeners: EventsInstance, init?: InternalMemory): Memory
         access: {},
         variables: {},
         internal: {},
-        e_variables: {},
       };
     },
     onExternalVariableFetch(callback: ((name: string) => any) | undefined): void {
