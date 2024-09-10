@@ -141,19 +141,14 @@ export interface InterpreterInstance {
   getVariable(name: string): any;
 
   /**
-   * set external variable
-   *
-   * @param name - External variable name
-   * @param value - Value
+   * Set callback to be used when requesting external variables
    */
-  setExternalVariable(name: string, value: any): void;
+  onExternalVariableFetch(callback: ((name: string) => any) | undefined): void;
 
   /**
-   * Return external variable value
-   * @param name - External variable name
-   * @return variable value
+   * Set callback to be used when an external variable is updated in the dialogue
    */
-  getExternalVariable(name: string): any;
+  onExternalVariableUpdate(callback: ((name: string, value: any) => void) | undefined): void;
 
   /**
    * Start dialogue from the begining
@@ -629,12 +624,12 @@ export function Interpreter(
       return mem.getVariable(name);
     },
 
-    setExternalVariable(name: string, value: any): void {
-      mem.setExternalVariable(name, value);
+    onExternalVariableFetch(callback: ((name: string) => any) | undefined): void {
+      mem.onExternalVariableFetch(callback);
     },
 
-    getExternalVariable(name: string): any {
-      return mem.getExternalVariable(name);
+    onExternalVariableUpdate(callback: ((name: string, value: any) => void) | undefined): void {
+      mem.onExternalVariableUpdate(callback);
     },
 
     start(blockName?: string): void {

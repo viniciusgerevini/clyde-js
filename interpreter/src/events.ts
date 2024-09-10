@@ -1,6 +1,5 @@
 export enum EventType {
   VARIABLE_CHANGED = 'variable_changed',
-  EXTERNAL_VARIABLE_CHANGED = 'external_variable_changed',
   EVENT_TRIGGERED = 'event_triggered'
 };
 
@@ -15,7 +14,6 @@ type ListenerList = { [event: string]: Function[] };
 export function Events(): EventsInstance {
   const listeners: ListenerList = {
     [EventType.VARIABLE_CHANGED]: [],
-    [EventType.EXTERNAL_VARIABLE_CHANGED]: [],
     [EventType.EVENT_TRIGGERED]: [],
   };
 

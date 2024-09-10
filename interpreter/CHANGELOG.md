@@ -2,6 +2,18 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## Unreleased
+
+### Breaking changes
+
+Changed external variables to be requested in runtime instead of set beforehand.
+This means now there are two new methods to define the callbacks (`onExternalVariableFetch`, `onExternalVariableUpdate`) and
+the external variable methods `set_external_variable` and `get_external_variable` were removed.
+
+### Added
+
+- External variable fetching/updating callbacks
+
 ## 4.0.1 (2024-06-20)
 
 ### Fixed

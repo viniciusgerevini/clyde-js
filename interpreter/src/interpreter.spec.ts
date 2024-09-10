@@ -37,20 +37,6 @@ describe("Interpreter", () => {
       dialogue.getContent()
     });
 
-    it('trigger event on external variable changed', (done) => {
-      const content = parse('Hi!{ set @something = 123 }\n');
-      const dialogue = Interpreter(content);
-
-      dialogue.setExternalVariable('something', 456);
-
-      dialogue.on(EventType.EXTERNAL_VARIABLE_CHANGED, (data: any) => {
-        expect(data).toEqual({ name:'something', value: 123, previousValue: 456 });
-        done();
-      });
-
-      dialogue.getContent()
-    });
-
     it('remove listener', (done) => {
       const content = parse('Hi!{ set something = 123 }\n');
       const dialogue = Interpreter(content);
@@ -331,8 +317,6 @@ Hi!{ set @someVar = 1, someOtherVar = 2 }
 `);
       const dialogue = Interpreter(content);
 
-      dialogue.setExternalVariable("yet_another_var", 3);
-
       expect((dialogue.getContent() as DialogueLine).text).toEqual('Hi!');
       expect(dialogue.getData()).toEqual(expect.objectContaining({
         variables: {
@@ -366,6 +350,34 @@ Hi!{ set @someVar = 1, someOtherVar = 2 }
       dialogue.setVariable("suffix_1", "P");
 
       expect((dialogue.getContent() as DialogueLine).text).toEqual('use this one');
+    });
+  });
+
+  describe("External variables callbacks", () => {
+    it('call external variable update callback when setting an external variable', (done) => {
+      const content = parse('Hi!{ set @something = 123 }\n');
+      const dialogue = Interpreter(content);
+
+      dialogue.onExternalVariableUpdate((name: string, value: any) => {
+        expect(name).toEqual("something");
+        expect(value).toEqual(123);
+        done();
+      });
+
+      dialogue.getContent()
+    });
+
+    it('call external variable fetch callback when requesting an external variable', () => {
+      const externalValue = "stranger";
+      const content = parse('Hello %@player_name%!\n');
+      const dialogue = Interpreter(content);
+      const fetchCallback = jest.fn();
+      fetchCallback.mockReturnValue(externalValue);
+
+      dialogue.onExternalVariableFetch(fetchCallback);
+
+      expect((dialogue.getContent() as DialogueLine).text).toEqual('Hello stranger!');
+      expect(fetchCallback).toHaveBeenCalledWith("player_name");
     });
   });
 });

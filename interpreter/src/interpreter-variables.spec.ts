@@ -136,31 +136,5 @@ mod assignment { set a %= 2 }
 
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'var  here' });
   });
-
-  it('set external variable via dialogue', () => {
-    const content = parse('lets set a variable {set @something="the"}\nthis is %@something% variable\n');
-    const dialogue = Interpreter(content);
-
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('lets set a variable');
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('this is the variable');
-  });
-
-  it('set external variable externally', () => {
-    const content = parse('vars %@id% %@name% %id%\nvars %@id% %@name% %id%\n');
-    const dialogue = Interpreter(content);
-
-    dialogue.setExternalVariable('id', 'some_id');
-    dialogue.setExternalVariable('name', 'some name');
-    dialogue.setVariable('id', 'internal_id');
-    dialogue.setVariable('some_internal_var', 'internal_id');
-
-    expect(dialogue.getExternalVariable('id')).toBe("some_id");
-    expect(dialogue.getContent()).toEqual({ type: 'line', text: 'vars some_id some name internal_id' });
-
-    dialogue.setExternalVariable('id', 'some other id');
-
-    expect(dialogue.getContent()).toEqual({ type: 'line', text: 'vars some other id some name internal_id' });
-    expect(dialogue.getExternalVariable("some_internal_var")).toEqual(undefined);
-  });
 });
 
