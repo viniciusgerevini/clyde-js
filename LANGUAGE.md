@@ -172,6 +172,27 @@ Output:
 { type: 'line', speaker: 'Harry Potter', text: "I'm a what?" }
 ```
 
+When defining multiple lines with same speaker, you can set the same speaker for all lines
+by indenting them after the speaker:
+
+```
+Vinny:
+    Multiple lines can be set with same speaker.
+    You just need to indent them after the speaker line.
+    Grouping lines also work this way
+        by indenting the line further.
+```
+
+Output:
+```javascript
+// get content
+{ type: 'line', speaker: 'Vinny', text: 'Multiple lines can be set with same speaker.' }
+// get content
+{ type: 'line', speaker: 'Vinny', text: 'You just need to indent them after the speaker line.' }
+// get content
+{ type: 'line', speaker: 'Vinny', text: 'Grouping lines also work this way by indenting the line further.' }
+```
+
 ### Line ID
 
 Use `$` + `[A-Za-z0-9_]` to set a line id:
