@@ -96,6 +96,40 @@ Just talking."
     expect(result).toEqual(expected);
   });
 
+  it('parse lines grouped by speaker', () => {
+    const result = parse(`
+jules:
+  First line $first #yelling #mad
+  Second line $second #sec
+  Third line w multi line $third #t
+    Still third line
+  This is conditional { some_var }
+  Fourth line $fourth
+Line with no speaker
+`);
+    const expected = {
+      type: 'document',
+      content: [{
+        type: 'content',
+        content: [
+          { type: 'line', value: 'First line', id: 'first', speaker: 'jules', tags: [ 'yelling', 'mad' ] },
+          { type: 'line', value: 'Second line', id: 'second', speaker: 'jules', tags: [ 'sec' ] },
+          { type: 'line', value: 'Third line w multi line Still third line', id: 'third', speaker: 'jules', tags: [ 't' ] },
+          {
+            type: "conditional_content",
+            conditions: { type: "variable", name: "some_var" },
+            content: { type: "line", value: "This is conditional", speaker: 'jules' }
+          },
+          { type: 'line', value: 'Fourth line', id: 'fourth', speaker: 'jules' },
+          { type: 'line', value: 'Line with no speaker' },
+        ]
+      }],
+      blocks: []
+    };
+    expect(result).toEqual(expected);
+  });
+
+
   it('throws error when empty string in quotes', () => {
     expect(() => parse(`speaker: ""`)).toThrow(/Unexpected token "EOF" on line 1 column 12. Expected text /);
   });
