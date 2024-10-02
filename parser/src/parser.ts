@@ -185,6 +185,12 @@ export default function parse(doc: string): ClydeDocumentRoot {
       case TOKENS.SPEAKER:
       case TOKENS.TEXT:
         consume([ TOKENS.SPEAKER, TOKENS.TEXT ]);
+
+        if (currentToken.token == TOKENS.SPEAKER && peek([TOKENS.INDENT])) {
+          lines = LinesWithSpeaker();
+          break;
+        }
+
         const line = DialogueLine();
         if (peek([TOKENS.BRACE_OPEN])) {
           consume([TOKENS.BRACE_OPEN]);
@@ -235,6 +241,31 @@ export default function parse(doc: string): ClydeDocumentRoot {
       case TOKENS.TEXT:
         return TextLine();
     }
+  };
+
+  const LinesWithSpeaker = (): LineNode[] => {
+    const speakerToken = currentToken;
+    const lines = [];
+
+    consume([TOKENS.INDENT]);
+
+    while (peek([TOKENS.DEDENT, TOKENS.EOF]) == null) {
+      consume([TOKENS.TEXT]);
+      const line = TextLine();
+      line.speaker = speakerToken.value;
+
+      if (peek([TOKENS.BRACE_OPEN])) {
+        consume([TOKENS.BRACE_OPEN]);
+        lines.push(LineWithAction(line));
+      } else {
+        lines.push(line);
+      }
+    }
+
+    if (peek([TOKENS.DEDENT])) {
+      consume([TOKENS.DEDENT]);
+    }
+    return lines;
   };
 
   const LineWithSpeaker = (): LineNode => {
