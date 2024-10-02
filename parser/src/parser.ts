@@ -262,7 +262,9 @@ export default function parse(doc: string): ClydeDocumentRoot {
       }
     }
 
-    consume([TOKENS.DEDENT]);
+    if (peek([TOKENS.DEDENT])) {
+      consume([TOKENS.DEDENT]);
+    }
     return lines;
   };
 

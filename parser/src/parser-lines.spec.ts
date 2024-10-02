@@ -105,7 +105,8 @@ jules:
     Still third line
   This is conditional { some_var }
   Fourth line $fourth
-Line with no speaker
+vincent:
+  Another one
 `);
     const expected = {
       type: 'document',
@@ -121,7 +122,7 @@ Line with no speaker
             content: { type: "line", value: "This is conditional", speaker: 'jules' }
           },
           { type: 'line', value: 'Fourth line', id: 'fourth', speaker: 'jules' },
-          { type: 'line', value: 'Line with no speaker' },
+          { type: 'line', value: 'Another one', speaker: 'vincent' },
         ]
       }],
       blocks: []
