@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/clyde/static/css/main.18e36f58.css",
-    "main.js": "/clyde/static/js/main.e60e3ed5.js",
-    "index.html": "/clyde/index.html",
-    "main.18e36f58.css.map": "/clyde/static/css/main.18e36f58.css.map",
-    "main.e60e3ed5.js.map": "/clyde/static/js/main.e60e3ed5.js.map"
+    "main.css": "/clyde-js/static/css/main.18e36f58.css",
+    "main.js": "/clyde-js/static/js/main.7f6fd4dd.js",
+    "index.html": "/clyde-js/index.html",
+    "main.18e36f58.css.map": "/clyde-js/static/css/main.18e36f58.css.map",
+    "main.7f6fd4dd.js.map": "/clyde-js/static/js/main.7f6fd4dd.js.map"
   },
   "entrypoints": [
     "static/css/main.18e36f58.css",
-    "static/js/main.e60e3ed5.js"
+    "static/js/main.7f6fd4dd.js"
   ]
 }
