@@ -2,6 +2,23 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## Unreleased
+
+### Added
+
+- Support speaker blocks
+```
+Vinny:
+    Multiple lines can be set with same speaker.
+    You just need to indent them after the speaker line.
+    Grouping lines also work this way
+        by indenting the line further.
+```
+
+### Changed
+
+- Tags now accept `.` and `-` also.
+
 ## 2.3.2 (2024-06-20)
 
 ### Fixed
