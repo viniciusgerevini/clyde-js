@@ -366,13 +366,13 @@ speaker1: this is something $123&var1
 
   it('tags', () => {
     const tokens = tokenize(`
-this is something #hello #happy #something_else
+this is something #hello #happy.mm #something-else
 `).getAll();
     expect(tokens).toEqual([
       { token: TOKENS.TEXT, value: 'this is something', line: 1, column: 0 },
       { token: TOKENS.TAG, value: 'hello', line: 1, column: 18 },
-      { token: TOKENS.TAG, value: 'happy', line: 1, column: 25 },
-      { token: TOKENS.TAG, value: 'something_else', line: 1, column: 32 },
+      { token: TOKENS.TAG, value: 'happy.mm', line: 1, column: 25 },
+      { token: TOKENS.TAG, value: 'something-else', line: 1, column: 35 },
       { token: TOKENS.EOF, line: 2, column: 0 },
     ]);
   });
@@ -536,7 +536,7 @@ hello
 { variable == true }
 { variable == false }
 { variable == "s1" }
-{ variable == null }
+{ _variable == null }
 { @global_variable }
 
 `).getAll();
@@ -701,11 +701,11 @@ hello
 
       { token: TOKENS.LINE_BREAK, line: 23, column: 0, },
       { token: TOKENS.BRACE_OPEN, line: 23, column: 0, },
-      { token: TOKENS.IDENTIFIER, value: 'variable', line: 23, column: 2, },
-      { token: TOKENS.EQUAL, line: 23, column: 11, },
-      { token: TOKENS.NULL_TOKEN, line: 23, column: 14, },
-      { token: TOKENS.BRACE_CLOSE, line: 23, column: 19, },
-      { token: TOKENS.LINE_BREAK, line: 23, column: 20, },
+      { token: TOKENS.IDENTIFIER, value: '_variable', line: 23, column: 2, },
+      { token: TOKENS.EQUAL, line: 23, column: 12, },
+      { token: TOKENS.NULL_TOKEN, line: 23, column: 15, },
+      { token: TOKENS.BRACE_CLOSE, line: 23, column: 20, },
+      { token: TOKENS.LINE_BREAK, line: 23, column: 21, },
 
       { token: TOKENS.LINE_BREAK, line: 24, column: 0,  },
       { token: TOKENS.BRACE_OPEN, line: 24, column: 0, },
