@@ -2,7 +2,7 @@
   "name": "clyde-editor",
   "version": "2.1.0",
   "private": true,
-  "homepage": "https://viniciusgerevini.github.io/clyde",
+  "homepage": "https://viniciusgerevini.github.io/clyde-js",
   "dependencies": {
     "@clyde-lang/interpreter": "4.0.1",
     "@clyde-lang/parser": "2.3.2",
