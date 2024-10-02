@@ -536,7 +536,7 @@ hello
 { variable == true }
 { variable == false }
 { variable == "s1" }
-{ variable == null }
+{ _variable == null }
 { @global_variable }
 
 `).getAll();
@@ -701,11 +701,11 @@ hello
 
       { token: TOKENS.LINE_BREAK, line: 23, column: 0, },
       { token: TOKENS.BRACE_OPEN, line: 23, column: 0, },
-      { token: TOKENS.IDENTIFIER, value: 'variable', line: 23, column: 2, },
-      { token: TOKENS.EQUAL, line: 23, column: 11, },
-      { token: TOKENS.NULL_TOKEN, line: 23, column: 14, },
-      { token: TOKENS.BRACE_CLOSE, line: 23, column: 19, },
-      { token: TOKENS.LINE_BREAK, line: 23, column: 20, },
+      { token: TOKENS.IDENTIFIER, value: '_variable', line: 23, column: 2, },
+      { token: TOKENS.EQUAL, line: 23, column: 12, },
+      { token: TOKENS.NULL_TOKEN, line: 23, column: 15, },
+      { token: TOKENS.BRACE_CLOSE, line: 23, column: 20, },
+      { token: TOKENS.LINE_BREAK, line: 23, column: 21, },
 
       { token: TOKENS.LINE_BREAK, line: 24, column: 0,  },
       { token: TOKENS.BRACE_OPEN, line: 24, column: 0, },

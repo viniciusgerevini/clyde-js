@@ -704,7 +704,7 @@ export function tokenize(input: string): TokenList {
       return handleLogicNumber();
     }
 
-    if (input[position].match(/[A-Za-z@]/)) {
+    if (input[position].match(/[A-Za-z@_]/)) {
       return handleLogicIdentifier();
     }
   };
