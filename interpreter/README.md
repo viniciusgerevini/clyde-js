@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40clyde-lang%2Finterpreter.svg)](https://www.npmjs.com/package/@clyde-lang/interpreter)
 
 
-Interpreter library for [Clyde dialogue language](https://github.com/viniciusgerevini/clyde/blob/master/LANGUAGE.md).
+Interpreter library for [Clyde dialogue language](https://github.com/viniciusgerevini/clyde/blob/main/LANGUAGE.md).
 
 ```javascript
 import { parse } from '@clyde-lang/parser';

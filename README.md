@@ -1,9 +1,9 @@
 # Clyde - Dialogue Language
 
-![Parser and Interpreter tests](https://github.com/viniciusgerevini/clyde/actions/workflows/main.yml/badge.svg?branch=master)
-![Editor tests](https://github.com/viniciusgerevini/clyde/actions/workflows/editor.yml/badge.svg?branch=master)
-![Playground deploy](https://github.com/viniciusgerevini/clyde/actions/workflows/gh_pages.yml/badge.svg?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/viniciusgerevini/clyde/badge.svg?branch=master)](https://coveralls.io/github/viniciusgerevini/clyde?branch=master)
+![Parser and Interpreter tests](https://github.com/viniciusgerevini/clyde-js/actions/workflows/main.yml/badge.svg?branch=master)
+![Editor tests](https://github.com/viniciusgerevini/clyde-js/actions/workflows/editor.yml/badge.svg?branch=master)
+![Playground deploy](https://github.com/viniciusgerevini/clyde-js/actions/workflows/gh_pages.yml/badge.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/viniciusgerevini/clyde-js/badge.svg?branch=master)](https://coveralls.io/github/viniciusgerevini/clyde-js?branch=master)
 
 <p align="center"><img src="icon.png" alt=/></p>
 
@@ -11,7 +11,7 @@ Clyde is a language for writing game dialogues. It supports branching dialogues,
 
 It was heavily inspired by [Ink](https://github.com/inkle/ink), but it focuses on dialogues instead of narratives.
 
-You can play with the online editor [here](https://viniciusgerevini.github.io/clyde/).
+You can play with the online editor [here](https://viniciusgerevini.github.io/clyde-js/).
 
 Here is a simple dialogue:
 ```
@@ -75,5 +75,5 @@ I originally created the editor for the demo page, but I know no custom editor w
 
 ### Online Editor and Interpreter
 
-[Playground page](https://viniciusgerevini.github.io/clyde/).
+[Playground page](https://viniciusgerevini.github.io/clyde-js/).
 
