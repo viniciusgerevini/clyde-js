@@ -18,6 +18,7 @@ Vinny:
 ### Changed
 
 - Tags now accept `.` and `-` also.
+- Variables now can start with `_`.
 
 ## 2.3.2 (2024-06-20)
 
