@@ -1,4 +1,4 @@
-# Clyde - Dialogue Language
+# Clyde Dialogue Language for JavaScript/TypeScript
 
 ![Parser and Interpreter tests](https://github.com/viniciusgerevini/clyde-js/actions/workflows/main.yml/badge.svg?branch=master)
 ![Editor tests](https://github.com/viniciusgerevini/clyde-js/actions/workflows/editor.yml/badge.svg?branch=master)
@@ -7,9 +7,7 @@
 
 <p align="center"><img src="icon.png" alt=/></p>
 
-Clyde is a language for writing game dialogues. It supports branching dialogues, translations and interfacing with your game through variables and events.
-
-It was heavily inspired by [Ink](https://github.com/inkle/ink), but it focuses on dialogues instead of narratives.
+> Clyde is a language for writing game dialogues. It supports branching, translations and interfacing with your game through variables and events.
 
 You can play with the online editor [here](https://viniciusgerevini.github.io/clyde-js/).
 
@@ -44,9 +42,9 @@ This dialogue results in something like this:
 
 This is just a simple example. There are many features not included above, like branching, variations, tags and ids.
 
-You can read the complete language definition with examples on [LANGUAGE.md](./LANGUAGE.md).
+You can read the complete language definition with examples on [LANGUAGE.md](https://github.com/viniciusgerevini/clyde/blob/main/LANGUAGE.md).
 
-## Tools
+## Tools in this repository
 
 ### Interpreters and parsers
 
@@ -58,22 +56,10 @@ There are three Node libraries which can be used to play with this language:
 
 [@clyde-lang/cli](./cli): CLI tool for executing, parsing and debugging Clyde dialogues.
 
-
-### Clyde Godot plugin
-
-Godot plugin with importer and interpreter features. It was written completely in GDScript, so it does not require any external dependency. More information in its [repository](https://github.com/viniciusgerevini/godot-clyde-dialogue).
-
-
-###  Syntax highlighting
-
-I originally created the editor for the demo page, but I know no custom editor would be better than your editor of choice. With that in mind here are some syntax highlighting plugins:
-
-[Vim/Neovim](https://github.com/viniciusgerevini/clyde.vim) syntax highlighting.
-
-[VSCode](https://github.com/viniciusgerevini/vscode-clyde) syntax highlighting.
-
-
 ### Online Editor and Interpreter
 
 [Playground page](https://viniciusgerevini.github.io/clyde-js/).
 
+## More
+
+There are other tools like a Godot plugin and syntax highlighting. Check the language [repository](https://github.com/viniciusgerevini/clyde) for more tools.
