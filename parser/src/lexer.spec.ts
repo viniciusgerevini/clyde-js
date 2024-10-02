@@ -366,13 +366,13 @@ speaker1: this is something $123&var1
 
   it('tags', () => {
     const tokens = tokenize(`
-this is something #hello #happy #something_else
+this is something #hello #happy.mm #something-else
 `).getAll();
     expect(tokens).toEqual([
       { token: TOKENS.TEXT, value: 'this is something', line: 1, column: 0 },
       { token: TOKENS.TAG, value: 'hello', line: 1, column: 18 },
-      { token: TOKENS.TAG, value: 'happy', line: 1, column: 25 },
-      { token: TOKENS.TAG, value: 'something_else', line: 1, column: 32 },
+      { token: TOKENS.TAG, value: 'happy.mm', line: 1, column: 25 },
+      { token: TOKENS.TAG, value: 'something-else', line: 1, column: 35 },
       { token: TOKENS.EOF, line: 2, column: 0 },
     ]);
   });
