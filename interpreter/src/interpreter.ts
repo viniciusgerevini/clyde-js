@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { LogicInterpreter } from'./logic_interpreter';
 import { Memory, DialogueData } from './memory';
 import { Events, EventType } from './events';
@@ -25,6 +27,11 @@ type StackItem = {
 type WorkingNode = {
   _index?: string,
 }
+
+type DocExtraWorkingFields = {
+  anchors: {[name: string]: any},
+  links: {[name: string]: string},
+};
 
 type WorkingActionContentNode = ActionContentNode & { mode: string };
 
@@ -161,33 +168,49 @@ export interface InterpreterInstance {
 interface InterpreterOptions {
   // Separator used between suffixes when looking translation keys up.
   // default: &
-  idSuffixLookupSeparator: string;
+  idSuffixLookupSeparator?: string;
+  fileLoader?: (filePath: string) => RuntimeClydeDocumentRoot;
 }
+
+type WorkingDoc = Omit<RuntimeClydeDocumentRoot, "type"> & { type: "document" | "linked_document" } & WorkingNode & DocExtraWorkingFields;
+
+export type RuntimeClydeDocumentRoot = ClydeDocumentRoot & { docPath?: string };
 
 /**
  * Clyde Interpreter
  */
 export function Interpreter(
-  clydeDoc: ClydeDocumentRoot,
+  clydeDoc: RuntimeClydeDocumentRoot,
   data?: any, dictionary: Dictionary  = {},
   interpreterOptions?: InterpreterOptions
 ): InterpreterInstance {
-  const doc: ClydeDocumentRoot & WorkingNode = clydeDoc;
-  const intOptions: InterpreterOptions = {
-    idSuffixLookupSeparator: interpreterOptions?.idSuffixLookupSeparator || '&'
+  const doc: WorkingDoc = clydeDoc as WorkingDoc;
+  const docStack: Array<WorkingDoc> = [doc];
+  const defaultFileLoader = (filePath: string) => {
+    console.warn(`File link is not implemented. '${filePath}' not accessible.`)
+    return new ClydeDocumentRoot();
   };
+  const intOptions: InterpreterOptions = {
+    idSuffixLookupSeparator: interpreterOptions?.idSuffixLookupSeparator || '&',
+  };
+  const fileLoader = interpreterOptions?.fileLoader || defaultFileLoader;
+
   let textDictionary = dictionary;
-  const anchors: {[name: string]: any} = {
+  let anchors: {[name: string]: any} = {
   };
   const listeners = Events();
   const mem = Memory(listeners, data);
   let stack: StackItem[];
   const logic = LogicInterpreter(mem);
+  let docAnchors = doc.links;
+  const loadedDocs: {[path: string]: WorkingDoc} = {};
 
   doc._index = "r";
+  doc.anchors = {};
   doc.blocks.forEach((block: BlockNode & WorkingNode) => {
     block._index = `b_${block.name}`;
     anchors[block.name] = block;
+    doc.anchors[block.name] = block;
   });
 
   const initializeStack = (root = doc) => {
@@ -199,6 +222,7 @@ export function Interpreter(
 
   const nodeHandlers: { [type: string]: Function } = {
     'document': () => handleDocumentNode(),
+    'linked_document': () => handleLinkedDoc(),
     'content': (node: ContentNode) => handleContentNode(node),
     'options': (node: OptionsNode) => handleOptionsNode(node),
     'option': (node: OptionNode) => handleOptionNode(node),
@@ -342,9 +366,13 @@ export function Interpreter(
   };
 
   const handleDivert = (divert: DivertNode): ContentReturnType => {
+    if (divert.target instanceof Object) {
+      return divertToLinkedDoc(divert.target);
+    }
+
     if (divert.target === '<parent>') {
 
-      while (!['document', 'block', 'option', 'options'].includes(stackHead().current.type)) {
+      while (!['document', 'block', 'option', 'options', 'linked_document'].includes(stackHead().current.type)) {
         stack.pop();
       }
 
@@ -362,6 +390,66 @@ export function Interpreter(
     } 
 
     return handleNextNode(anchors[divert.target]);
+  };
+
+  const divertToLinkedDoc = (target: any): ContentReturnType => {
+    if (!docAnchors[target.link]) {
+      console.error(`Could not divert to '${target.link}'. Link not found.`);
+      return EndObject();
+    }
+    const docPath: string = docAnchors[target.link];
+    let docNode: WorkingDoc;
+    let actualPath = docPath;
+
+    if (docPath.startsWith("./") || docPath.startsWith("../")) {
+      const currentDoc = docStack[docStack.length - 1];
+      actualPath = path.join(path.dirname(currentDoc.docPath || ""), docPath);
+    }
+
+    if (loadedDocs[actualPath]) {
+      docNode = loadedDocs[actualPath];
+    } else {
+      const doc = fileLoader(actualPath);
+      if (!doc) {
+        console.error(`Could not load file '${actualPath}'.`);
+        return EndObject();
+      }
+      const workingDoc: WorkingDoc = {
+        ...doc,
+        _index: target.link,
+        type: "linked_document",
+        anchors: {},
+      }
+      workingDoc.blocks.forEach((block: BlockNode & WorkingNode) => {
+        block._index = `b_${block.name}`;
+        anchors[block.name] = block;
+        workingDoc.anchors[block.name] = block;
+      });
+      docNode = workingDoc;
+      loadedDocs[actualPath] = docNode;
+    }
+
+    docStack.push(docNode);
+    anchors = docNode.anchors;
+    docAnchors = docNode.links;
+    addToStack(loadedDocs[actualPath]);
+
+    if (target.block == "") {
+      return handleDocumentNode();
+    } else if (anchors[target.block]) {
+      return handleNextNode(anchors[target.block]);
+    } else {
+      return EndObject();
+    }
+  };
+
+  const handleLinkedDoc = () => {
+      docStack.pop();
+      const docNode = docStack[docStack.length - 1];
+      anchors = docNode.anchors;
+      docAnchors = docNode.links;
+      stack.pop();
+      return handleNextNode(stackHead().current);
   };
 
   const handleAssignementNode = (assignment: AssignmentsNode) => {

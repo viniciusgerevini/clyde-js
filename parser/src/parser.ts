@@ -119,32 +119,53 @@ export default function parse(doc: string): ClydeDocumentRoot {
       TOKENS.DIVERT_PARENT,
       TOKENS.BRACKET_OPEN,
       TOKENS.BRACE_OPEN,
+      TOKENS.BLOCK,
+      TOKENS.LINK_FILE,
+      TOKENS.LINE_BREAK,
     ];
-    const next = peek();
+    const next = peek(expected);
 
-    switch (next.token) {
-      case TOKENS.EOF:
-        return new ClydeDocumentRoot();
-      case TOKENS.SPEAKER:
-      case TOKENS.TEXT:
-      case TOKENS.OPTION:
-      case TOKENS.STICKY_OPTION:
-      case TOKENS.FALLBACK_OPTION:
-      case TOKENS.DIVERT:
-      case TOKENS.DIVERT_PARENT:
-      case TOKENS.BRACKET_OPEN:
-      case TOKENS.BRACE_OPEN:
-      case TOKENS.LINE_BREAK:
-        const result =  new ClydeDocumentRoot([new ContentNode(Lines())]);
-        if (peek([TOKENS.BLOCK])) {
-          result.blocks = Blocks();
-        }
-        return result;
-      case TOKENS.BLOCK:
-        return new ClydeDocumentRoot([], Blocks());
-      default:
-        wrongTokenError(next, expected);
-    };
+    if (!next) {
+      wrongTokenError(peek(), expected);
+    }
+
+    let doc = new ClydeDocumentRoot();
+
+    if (next.token == TOKENS.EOF) {
+      return doc;
+    }
+
+    // links are always at the beginnig of the file
+    if (next.token == TOKENS.LINK_FILE) {
+      doc.links = Links();
+    }
+
+    // if a block token is next, it's because there is not
+    // default block
+    if (peek([TOKENS.BLOCK])) {
+      doc.blocks = Blocks();
+      return doc;
+    }
+
+    doc.content =  [new ContentNode(Lines())];
+
+    if (peek([TOKENS.BLOCK])) {
+      doc.blocks = Blocks();
+    }
+
+    return doc
+  };
+
+  const Links = (): object => {
+    const links = {};
+
+    while (peek([TOKENS.LINK_FILE])) {
+      consume([TOKENS.LINK_FILE]);
+      const value = JSON.parse(currentToken.value);
+      links[value.name] = value.path;
+    }
+
+    return links
   };
 
   const Blocks = (): BlockNode[] => {

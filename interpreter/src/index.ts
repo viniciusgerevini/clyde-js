@@ -6,6 +6,7 @@ export {
   Dictionary,
   Interpreter,
   InterpreterInstance,
+  RuntimeClydeDocumentRoot,
 } from './interpreter';
 
 export { EventType } from './events';

@@ -11,6 +11,7 @@ import {
   EventType,
   Interpreter,
   InterpreterInstance,
+  RuntimeClydeDocumentRoot,
 } from '@clyde-lang/interpreter';
 
 export async function executeInterpreter(args: string[], exitCallback = process.exit, commandName?: string) {
@@ -20,7 +21,16 @@ export async function executeInterpreter(args: string[], exitCallback = process.
   const dictionary = argv.translation ? await getTranslationDictionary(argv.translation) : undefined;
   const data = argv['save-data'] ? loadSaveFile(argv['save-data']) : undefined;
 
-  const dialogue = Interpreter(getContent(filename), data, dictionary);
+  function fileLoader(filepath: string): RuntimeClydeDocumentRoot {
+    const c: RuntimeClydeDocumentRoot = getContent(filepath);
+    c.docPath = filepath;
+    return c;
+  }
+
+  const doc: RuntimeClydeDocumentRoot = getContent(filename);
+  doc.docPath = filename;
+
+  const dialogue = Interpreter(doc, data, dictionary, { fileLoader });
   const handlers = inputHandlers(dialogue, argv, events, exitCallback);
 
   dialogue.start(argv.block);
@@ -350,3 +360,4 @@ function trackInternalChanges(dataType: string, events: any): Function {
     }
   };
 }
+
