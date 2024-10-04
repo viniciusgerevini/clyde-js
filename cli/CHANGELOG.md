@@ -2,6 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## Unreleased
+
+### Added
+
+- Support file links: `@link ...`, `-> @...`
+
 ## 3.0.1 (2024-06-20)
 
 ### Fixed

@@ -15,6 +15,8 @@ Vinny:
         by indenting the line further.
 ```
 
+- Support file links: `@link ...`, `-> @...`
+
 ### Changed
 
 - Tags now accept `.` and `-` also.

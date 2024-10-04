@@ -13,6 +13,7 @@ the external variable methods `set_external_variable` and `get_external_variable
 ### Added
 
 - External variable fetching/updating callbacks
+- Support file links: `@link ...`, `-> @...`
 
 ## 4.0.1 (2024-06-20)
 
