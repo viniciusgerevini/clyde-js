@@ -25,6 +25,7 @@
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
     "react-ace": "^9.2.1",
+    "react-app-rewired": "^2.2.1",
     "react-dom": "^17.0.1",
     "react-redux": "^7.2.2",
     "react-scripts": "5.0.1",
@@ -35,9 +36,9 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --run-in-band --coverage",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test --run-in-band --coverage",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
