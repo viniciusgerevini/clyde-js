@@ -1052,4 +1052,29 @@ Pick an option.
 
     expect(tabTokens).toEqual(tokens);
   });
+
+  it('file links', () => {
+    const tokens = tokenize(`
+@link to_import
+@link common = ./to_import
+@link common2 = to_import
+@link common3 = res://test/dialogue_samples/to_import.clyde
+
+-> @common.some_block_name
+-> @common
+`).getAll();
+    expect(tokens).toEqual([
+      { token: TOKENS.LINK_FILE, value: JSON.stringify({ name: 'to_import', path: 'to_import'}), line: 1, column: 0, },
+      { token: TOKENS.LINK_FILE, value: JSON.stringify({ name: 'common', path: './to_import'}), line: 2, column: 0, },
+      { token: TOKENS.LINK_FILE, value: JSON.stringify({ name: 'common2', path: 'to_import'}), line: 3, column: 0, },
+      { token: TOKENS.LINK_FILE, value: JSON.stringify({ name: 'common3', path: 'res://test/dialogue_samples/to_import.clyde'}), line: 4, column: 0, },
+
+      { token: TOKENS.DIVERT, value: JSON.stringify({ link: 'common', block: 'some_block_name' }), line: 6, column: 0, },
+      { token: TOKENS.LINE_BREAK, line: 6, column: 26, },
+      { token: TOKENS.DIVERT, value: JSON.stringify({ link: 'common', block: '' }), line: 7, column: 0, },
+      { token: TOKENS.LINE_BREAK, line: 7, column: 10, },
+
+      { token: TOKENS.EOF, line: 8, column: 0, },
+    ]);
+  });
 });

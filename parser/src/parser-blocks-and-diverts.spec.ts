@@ -30,7 +30,8 @@ line 4
             { type: 'line', value: 'line 4' },
           ]
         }},
-      ]
+      ],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -73,7 +74,8 @@ line 4
             { type: 'line', value: 'line 4' },
           ]
         }},
-      ]
+      ],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -114,7 +116,8 @@ line 4
           ]},
         ]
       }],
-      blocks: []
+      blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -132,7 +135,38 @@ line 4
           type: 'content',
           content: []
         }},
-      ]
+      ],
+      links: {},
+    };
+    expect(result).toEqual(expected);
+  });
+
+  it('parse links', () => {
+    const result = parse(`
+@link to_import
+@link common = ./to_import
+@link common2 = to_import
+@link common3 = res://test/dialogue_samples/to_import.clyde
+
+-> @common.some_block_name
+-> @common
+`);
+    const expected = {
+      type: 'document',
+      content: [{
+        type: 'content',
+        content: [
+          { type: 'divert', target: { "link": "common", "block": "some_block_name" } },
+          { type: 'divert', target: { "link": "common", "block": "" } },
+        ]
+      }],
+      blocks: [],
+      links: {
+        "to_import": "to_import",
+        "common": "./to_import",
+        "common2": "to_import",
+        "common3": "res://test/dialogue_samples/to_import.clyde",
+      }
     };
     expect(result).toEqual(expected);
   });

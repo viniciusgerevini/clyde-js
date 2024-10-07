@@ -1,6 +1,6 @@
 export class ClydeDocumentRoot {
   public readonly type = 'document';
-  constructor(public content: ContentNode[] = [], public blocks: BlockNode[] = []) {};
+  constructor(public content: ContentNode[] = [], public blocks: BlockNode[] = [], public links = {}) {};
 }
 
 export class ContentNode {
@@ -54,10 +54,12 @@ export class OptionNode {
 
 export class DivertNode { 
   public readonly type = 'divert';
-  public target: string;
+  public target: string | object;
 
   constructor (target: string) {
-    if (target === 'END') {
+    if (target.startsWith("{")) {
+      this.target = JSON.parse(target);
+    } else if (target === 'END') {
       this.target = '<end>';
     } else {
       this.target = target;

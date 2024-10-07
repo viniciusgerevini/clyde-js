@@ -68,6 +68,7 @@ npc: what do you want to talk about?
       },
       ],
       blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -118,6 +119,7 @@ npc: what do you want to talk about?
       },
       ],
       blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -168,6 +170,7 @@ npc: what do you want to talk about?
       },
       ],
       blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -225,6 +228,7 @@ npc: what do you want to talk about?
       },
       ],
       blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -279,6 +283,7 @@ npc: what do you want to talk about?
       },
       ],
       blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -343,6 +348,7 @@ spk: second try
       },
       ],
       blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -401,6 +407,7 @@ spk: second try
       },
       ],
       blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -454,6 +461,7 @@ spk: second try
       },
       ],
       blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -503,6 +511,7 @@ spk: second try
         ],
       }],
       blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -575,6 +584,7 @@ spk: second try
         ],
       }],
       blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -739,6 +749,7 @@ spk: second try
         ],
       }],
       blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });

@@ -6,7 +6,8 @@ describe('parse', () => {
     const expected = {
       type: 'document',
       content: [],
-      blocks: []
+      blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -16,7 +17,8 @@ describe('parse', () => {
     const expected = {
       type: 'document',
       content: [],
-      blocks: []
+      blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });

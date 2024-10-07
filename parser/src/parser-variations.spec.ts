@@ -12,6 +12,7 @@ describe('variations', () => {
     const expected = {
       type: 'document',
       blocks: [],
+      links: {},
       content: [{
         type: 'content',
         content: [
@@ -38,6 +39,7 @@ describe('variations', () => {
     const expected = {
       type: 'document',
       blocks: [],
+      links: {},
       content: [{
         type: 'content',
         content: [
@@ -67,6 +69,7 @@ describe('variations', () => {
     const expected = {
       type: 'document',
       blocks: [],
+      links: {},
       content: [{
         type: 'content',
         content: [
@@ -98,6 +101,7 @@ describe('variations', () => {
     const expected = {
       type: 'document',
       blocks: [],
+      links: {},
       content: [{
         type: 'content',
         content: [
@@ -142,6 +146,7 @@ describe('variations', () => {
     const expected = {
       type: 'document',
       blocks: [],
+      links: {},
       content: [{
         type: 'content',
         content: [

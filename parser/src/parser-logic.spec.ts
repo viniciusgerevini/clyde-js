@@ -8,7 +8,8 @@ describe('parse: logic', () => {
         type: "content",
         content
       }],
-      blocks
+      blocks,
+      links: {},
     };
   };
 

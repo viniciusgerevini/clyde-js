@@ -18,7 +18,8 @@ describe('parse: lines', () => {
           ]
         }]
       }],
-      blocks: []
+      blocks: [],
+      links: {},
     };
     expect(result).toEqual(expected);
   });
@@ -45,7 +46,9 @@ id last #tag #another_tag $some_id
           { type: 'line', value: 'id last', id: 'some_id', tags: [ 'tag', 'another_tag' ] },
         ]
       }],
-      blocks: []
+      blocks: [],
+      links: {},
+
     };
     expect(result).toEqual(expected);
   });
@@ -67,7 +70,9 @@ hello! $id_on_first_line&suffix #and_tags
           { type: 'line', value: 'hello! Just talking.', id: 'id_on_first_line', tags: [ 'and_tags' ], id_suffixes: ['suffix'] },
         ]
       }],
-      blocks: []
+      blocks: [],
+      links: {},
+
     };
     expect(result).toEqual(expected);
   });
@@ -91,7 +96,9 @@ Just talking."
           { type: 'line', value: 'this has $everything:', id: 'id_on_first_line', tags: [ 'and_tags' ] },
         ]
       }],
-      blocks: []
+      blocks: [],
+      links: {},
+
     };
     expect(result).toEqual(expected);
   });
@@ -125,7 +132,9 @@ vincent:
           { type: 'line', value: 'Another one', speaker: 'vincent' },
         ]
       }],
-      blocks: []
+      blocks: [],
+      links: {},
+
     };
     expect(result).toEqual(expected);
   });

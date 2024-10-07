@@ -1,8 +1,13 @@
+import { ClydeDocumentRoot } from '@clyde-lang/parser';
 import { parse } from '@clyde-lang/parser';
 import { EventType } from './events';
-import { Interpreter, DialogueLine, DialogueOptions } from './interpreter';
+import { Interpreter, DialogueLine, DialogueOptions, RuntimeClydeDocumentRoot } from './interpreter';
 
 describe("Interpreter", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('lines', () => {
     it('get lines', () => {
       const content = parse('Hello!\nHi there.\nHey.#tag\n');
@@ -350,6 +355,123 @@ Hi!{ set @someVar = 1, someOtherVar = 2 }
       dialogue.setVariable("suffix_1", "P");
 
       expect((dialogue.getContent() as DialogueLine).text).toEqual('use this one');
+    });
+
+    describe("File loder", () => {
+      beforeEach(() => {
+        jest.spyOn(console, "error").mockImplementation(() => {});
+        jest.spyOn(console, "warn").mockImplementation(() => {});
+      });
+      it("calls file loader correctly", () => {
+        const mainContent: RuntimeClydeDocumentRoot = parse(`
+@link to_import
+@link common = ./to_import
+@link common2 = to_import
+@link common3 = res://test/dialogue_samples/to_import.clyde
+
+Importing from default folder
+-> @to_import.this_block_returns_back
+Relative import
+-> @common.this_block_goes_further
+Default folder import
+-> @common2
+Absolute import
+-> @common3.this_block_returns_back
+
+Now it goes and never comes back
+-> @common3.this_block_does_not_go_back
+End
+`);
+
+        const secondContent = parse(`
+Default block
+== this_block_returns_back
+Let's get back.
+<-
+
+== this_block_goes_further
+I'm here
+Let's get back.
+<-
+
+== this_block_does_not_go_back
+I'm not going back!
+`);
+
+        const fakeLoader = jest.fn();
+
+        fakeLoader.mockReturnValue(secondContent);
+
+        mainContent.docPath = "fake_path/test.clyde";
+
+        const dialogue = Interpreter(mainContent, undefined, {}, { fileLoader: fakeLoader });
+        dialogue.start();
+
+        expect((dialogue.getContent() as DialogueLine).text).toEqual("Importing from default folder"),
+        expect((dialogue.getContent() as DialogueLine).text).toEqual("Let's get back."),
+        expect((dialogue.getContent() as DialogueLine).text).toEqual("Relative import"),
+        expect((dialogue.getContent() as DialogueLine).text).toEqual("I'm here"),
+        expect((dialogue.getContent() as DialogueLine).text).toEqual("Let's get back."),
+        expect((dialogue.getContent() as DialogueLine).text).toEqual("Default folder import"),
+        expect((dialogue.getContent() as DialogueLine).text).toEqual("Default block"),
+        expect((dialogue.getContent() as DialogueLine).text).toEqual("Absolute import"),
+        expect((dialogue.getContent() as DialogueLine).text).toEqual("Let's get back."),
+        expect((dialogue.getContent() as DialogueLine).text).toEqual("Now it goes and never comes back"),
+        expect((dialogue.getContent() as DialogueLine).text).toEqual("I'm not going back!"),
+        expect(dialogue.getContent()).toEqual({ "type": "end" });
+
+        expect(fakeLoader).toHaveBeenCalledWith("to_import");
+        expect(fakeLoader).toHaveBeenCalledWith("fake_path/to_import");
+        expect(fakeLoader).toHaveBeenCalledWith("res://test/dialogue_samples/to_import.clyde");
+      });
+
+      it("uses default loader", () => {
+        const mainContent = parse(`
+@link to_import
+-> @to_import.this_block_returns_back
+`);
+
+        const dialogue = Interpreter(mainContent);
+        dialogue.start();
+
+        expect(dialogue.getContent()).toEqual({ "type": "end" });
+      });
+
+      it("ends when directing to missing link", () => {
+        const mainContent = parse(`
+@link to_import
+
+Importing from default folder
+-> @this_link_does_not_exist
+`);
+
+        const fakeLoader = jest.fn();
+        fakeLoader.mockReturnValue(new ClydeDocumentRoot());
+
+        const dialogue = Interpreter(mainContent, undefined, {}, { fileLoader: fakeLoader });
+        dialogue.start();
+
+        expect((dialogue.getContent() as DialogueLine).text).toEqual("Importing from default folder"),
+        expect(dialogue.getContent()).toEqual({ "type": "end" });
+      });
+
+      it("ends when can't load file", () => {
+        const mainContent = parse(`
+@link to_import = ./to_import
+
+Importing from default folder
+-> @to_import.this_block_returns_back
+`);
+
+        const fakeLoader = jest.fn();
+        fakeLoader.mockReturnValue(undefined);
+
+        const dialogue = Interpreter(mainContent, undefined, {}, { fileLoader: fakeLoader });
+        dialogue.start();
+
+        expect((dialogue.getContent() as DialogueLine).text).toEqual("Importing from default folder"),
+        expect(dialogue.getContent()).toEqual({ "type": "end" });
+      });
     });
   });
 

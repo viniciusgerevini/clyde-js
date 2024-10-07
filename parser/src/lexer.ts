@@ -51,6 +51,7 @@ export const TOKENS = {
   ASSIGN_INIT: '?=',
   COMMA: ',',
   LINE_BREAK: 'line break',
+  LINK_FILE: 'link file',
 }
 
 enum LexerMode {
@@ -90,6 +91,7 @@ const tokenFriendlyHint = {
   [TOKENS.LE]: '<=',
   [TOKENS.GREATER]: '>',
   [TOKENS.LESS]: '<',
+  [TOKENS.LINK_FILE]: '@link <import> | <import_name> = <import_path>',
 }
 
 type OptionType = '*' | '+' | '>';
@@ -371,6 +373,48 @@ export function tokenize(input: string): TokenList {
     return { token: TOKENS.TAG, line, column: initialColumn, value: values.join('') };
   };
 
+  const handleLink = () => {
+    const initialColumn = column;
+    position += 6;
+    column += 6;
+
+    let linkName = ''
+    let linkPath = ''
+
+    while (input[position] && input[position] != "\n") {
+      if (input[position].match(/[A-Z|a-z|0-9|_]/)) {
+        linkName += input[position];
+        position += 1;
+        column += 1;
+      } else {
+        break;
+      }
+    }
+
+    let hasAssignment = false;
+
+    while (input[position] && input[position] != "\n" && (input[position] == ' ' || input[position] == '=')) {
+      position += 1;
+      column += 1;
+
+      if (input[position] == "=") {
+        hasAssignment = true;
+      }
+    }
+
+    if (hasAssignment) {
+      while (input[position] && input[position] != "\n") {
+        linkPath += input[position];
+        position += 1;
+        column += 1;
+      }
+    } else if (input[position] == "\n") {
+      linkPath = linkName;
+    }
+
+    return { token: TOKENS.LINK_FILE, line, column: initialColumn, value: JSON.stringify({ name: linkName, path: linkPath })};
+  };
+
   const handleBlock = () => {
     const initialColumn = column;
     let values = [];
@@ -391,19 +435,61 @@ export function tokenize(input: string): TokenList {
     position += 2;
     column += 2;
 
-    while (input[position] && input[position].match(/[A-Z|a-z|0-9|_| ]/)) {
-      values.push(input[position]);
+    while (input[position] && input[position] == " ") {
       position += 1;
       column += 1;
     }
 
-    const token = { token: TOKENS.DIVERT, line, column: initialColumn, value: values.join('').trim() };
+    let token: Token;
+
+    if (input[position] == "@") {
+      position += 1;
+      column += 1;
+      token = handleDivertExt(initialColumn);
+    } else {
+      while (input[position] && input[position].match(/[A-Z|a-z|0-9|_| ]/)) {
+        values.push(input[position]);
+        position += 1;
+        column += 1;
+      }
+
+      token = { token: TOKENS.DIVERT, line, column: initialColumn, value: values.join('').trim() };
+    }
+
     const linebreak = getFollowingLineBreak();
     if (linebreak) {
       return [ token, linebreak ];
     }
 
     return token;
+  };
+
+
+  const handleDivertExt = (initialColumn: number): Token => {
+    	let linkName = '';
+    	let linkBlock = '';
+
+
+      while (input[position] && input[position].match(/[A-Z|a-z|0-9|_]/)) {
+        linkName += input[position];
+        position += 1;
+        column += 1;
+      }
+
+      if (input[position] && input[position] == ".") {
+        position += 1;
+        column += 1;
+      }
+
+      while (input[position] && input[position].match(/[A-Z|a-z|0-9|_| ]/)) {
+        linkBlock += input[position];
+        position += 1;
+        column += 1;
+      }
+
+      const value = JSON.stringify({ link: linkName, block: linkBlock });
+
+      return { token: TOKENS.DIVERT, line, column: initialColumn, value: value };
   };
 
   const handleDivertToParent = () => {
@@ -791,6 +877,10 @@ export function tokenize(input: string): TokenList {
 
     if (column === 0 && input[position] === '=' && input[position + 1] === '=') {
       return handleBlock();
+    }
+
+    if (column === 0 && checkSequence(input, position, "@link")) {
+      return handleLink();
     }
 
     if (input[position] === '-' && input[position + 1] === '>') {
