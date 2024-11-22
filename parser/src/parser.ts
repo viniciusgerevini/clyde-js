@@ -691,17 +691,36 @@ export default function parse(doc: string): ClydeDocumentRoot {
   const Events = (): EventsNode => {
     consume([TOKENS.KEYWORD_TRIGGER]);
     consume([TOKENS.IDENTIFIER]);
-    const events = [new EventNode(currentToken.value)];
+    const events = [Event(currentToken.value)];
 
     while(peek([TOKENS.COMMA])) {
       consume([TOKENS.COMMA]);
       consume([TOKENS.IDENTIFIER]);
-      events.push(new EventNode(currentToken.value));
+      events.push(Event(currentToken.value));
     }
 
     consume([TOKENS.BRACE_CLOSE]);
 
     return new EventsNode(events);
+  };
+
+  const Event = (eventName: string): EventNode => {
+    if (!peek([TOKENS.BRACKET_OPEN])) {
+      return new EventNode(eventName);
+    }
+
+    consume([TOKENS.BRACKET_OPEN]);
+
+    const params = [Expression()];
+
+    while(peek([TOKENS.COMMA])) {
+      consume([TOKENS.COMMA]);
+      params.push(Expression());
+    }
+
+    consume([TOKENS.BRACKET_CLOSE]);
+
+    return new EventNode(eventName, params);
   };
 
   const ConditionalLine = (): ConditionalContentNode => {

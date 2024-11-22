@@ -976,6 +976,7 @@ hello
 { trigger event_name }
 { trigger event_name, event_name_2 }
 { trigger event_name(param_1, "text", 1, true) }
+{ trigger event_name(param_1 + 1) }
 `).getAll();
     expect(tokens).toEqual([
       { token: TOKENS.LINE_BREAK, line: 1, column: 0 },
@@ -1010,7 +1011,19 @@ hello
       { token: TOKENS.BRACE_CLOSE, line: 3, column: 47, },
       { token: TOKENS.LINE_BREAK, line: 3, column: 48 },
 
-      { token: TOKENS.EOF, line: 4, column: 0 },
+      { token: TOKENS.LINE_BREAK, line: 4, column: 0 },
+      { token: TOKENS.BRACE_OPEN, line: 4, column: 0, },
+      { token: TOKENS.KEYWORD_TRIGGER, line: 4, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'event_name', line: 4, column: 10, },
+      { token: TOKENS.BRACKET_OPEN, line: 4, column: 20, },
+      { token: TOKENS.IDENTIFIER, value: 'param_1', line: 4, column: 21, },
+      { token: TOKENS.PLUS, line: 4, column: 29, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 4, column: 31, },
+      { token: TOKENS.BRACKET_CLOSE, line: 4, column: 32, },
+      { token: TOKENS.BRACE_CLOSE, line: 4, column: 34, },
+      { token: TOKENS.LINE_BREAK, line: 4, column: 35 },
+
+      { token: TOKENS.EOF, line: 5, column: 0 },
     ]);
   });
 
