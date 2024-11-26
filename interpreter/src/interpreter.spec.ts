@@ -80,6 +80,22 @@ describe("Interpreter", () => {
 
       dialogue.getContent()
     });
+
+    it('trigger dialogue event with parameters', (done) => {
+      const content = parse('Hi! {set a = 1 }{ trigger some_event(a, "test", true, a + 1) }\n');
+      const dialogue = Interpreter(content);
+
+      dialogue.on(EventType.EVENT_TRIGGERED, (data: any) => {
+        try {
+          expect(data).toEqual({ name:'some_event', parameters: [1, "test", true, 2 ] });
+          done();
+        } catch (e) {
+          done(e);
+        }
+      });
+
+      dialogue.getContent()
+    });
   });
 
   describe('persistence', () => {
