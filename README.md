@@ -63,3 +63,9 @@ There are three Node libraries which can be used to play with this language:
 ## More
 
 There are other tools like a Godot plugin and syntax highlighting. Check the language [repository](https://github.com/viniciusgerevini/clyde) for more tools.
+
+## Contact
+
+If you are looking for help on how things work, general questions, ideas to improve the language or just want to share something, please use our main discussion forum: https://github.com/viniciusgerevini/clyde/discussions
+
+I also would love to see what games you've been making with Clyde. If you have any released game using clyde, share it with us on: https://github.com/viniciusgerevini/clyde/discussions/3
