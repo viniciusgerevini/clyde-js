@@ -4,8 +4,8 @@
   "private": true,
   "homepage": "https://viniciusgerevini.github.io/clyde-js",
   "dependencies": {
-    "@clyde-lang/interpreter": "4.0.1",
-    "@clyde-lang/parser": "2.3.2",
+    "@clyde-lang/interpreter": "4.2.0",
+    "@clyde-lang/parser": "2.5.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.14",
