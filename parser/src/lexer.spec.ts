@@ -971,6 +971,62 @@ hello
     ]);
   });
 
+  it('events trigger', () => {
+    const tokens = tokenize(`
+{ trigger event_name }
+{ trigger event_name, event_name_2 }
+{ trigger event_name(param_1, "text", 1, true) }
+{ trigger event_name(param_1 + 1) }
+`).getAll();
+    expect(tokens).toEqual([
+      { token: TOKENS.LINE_BREAK, line: 1, column: 0 },
+      { token: TOKENS.BRACE_OPEN, line: 1, column: 0, },
+      { token: TOKENS.KEYWORD_TRIGGER, line: 1, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'event_name', line: 1, column: 10, },
+      { token: TOKENS.BRACE_CLOSE, line: 1, column: 21, },
+      { token: TOKENS.LINE_BREAK, line: 1, column: 22 },
+
+      { token: TOKENS.LINE_BREAK, line: 2, column: 0 },
+      { token: TOKENS.BRACE_OPEN, line: 2, column: 0, },
+      { token: TOKENS.KEYWORD_TRIGGER, line: 2, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'event_name', line: 2, column: 10, },
+      { token: TOKENS.COMMA, line: 2, column: 20, },
+      { token: TOKENS.IDENTIFIER, value: 'event_name_2', line: 2, column: 22, },
+      { token: TOKENS.BRACE_CLOSE, line: 2, column: 35, },
+      { token: TOKENS.LINE_BREAK, line: 2, column: 36 },
+
+      { token: TOKENS.LINE_BREAK, line: 3, column: 0 },
+      { token: TOKENS.BRACE_OPEN, line: 3, column: 0, },
+      { token: TOKENS.KEYWORD_TRIGGER, line: 3, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'event_name', line: 3, column: 10, },
+      { token: TOKENS.BRACKET_OPEN, line: 3, column: 20, },
+      { token: TOKENS.IDENTIFIER, value: 'param_1', line: 3, column: 21, },
+      { token: TOKENS.COMMA, line: 3, column: 28, },
+      { token: TOKENS.STRING_LITERAL, value: 'text', line: 3, column: 30, },
+      { token: TOKENS.COMMA, line: 3, column: 36, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 3, column: 38, },
+      { token: TOKENS.COMMA, line: 3, column: 39, },
+      { token: TOKENS.BOOLEAN_LITERAL, value: 'true', line: 3, column: 41, },
+      { token: TOKENS.BRACKET_CLOSE, line: 3, column: 45, },
+      { token: TOKENS.BRACE_CLOSE, line: 3, column: 47, },
+      { token: TOKENS.LINE_BREAK, line: 3, column: 48 },
+
+      { token: TOKENS.LINE_BREAK, line: 4, column: 0 },
+      { token: TOKENS.BRACE_OPEN, line: 4, column: 0, },
+      { token: TOKENS.KEYWORD_TRIGGER, line: 4, column: 2, },
+      { token: TOKENS.IDENTIFIER, value: 'event_name', line: 4, column: 10, },
+      { token: TOKENS.BRACKET_OPEN, line: 4, column: 20, },
+      { token: TOKENS.IDENTIFIER, value: 'param_1', line: 4, column: 21, },
+      { token: TOKENS.PLUS, line: 4, column: 29, },
+      { token: TOKENS.NUMBER_LITERAL, value: '1', line: 4, column: 31, },
+      { token: TOKENS.BRACKET_CLOSE, line: 4, column: 32, },
+      { token: TOKENS.BRACE_CLOSE, line: 4, column: 34, },
+      { token: TOKENS.LINE_BREAK, line: 4, column: 35 },
+
+      { token: TOKENS.EOF, line: 5, column: 0 },
+    ]);
+  });
+
   it('includes line break when just after or before a logic block', () => {
 
     const tokens = tokenize(`

@@ -12,6 +12,7 @@ import { MemoryManager } from './memory';
 
 export interface LogicInterpreterInstance {
   checkCondition(condition: OperandNode): any;
+  getNodeValue(source: any): any;
   handleAssignement(assignment: AssignmentNode): any;
 }
 
@@ -84,6 +85,7 @@ export const LogicInterpreter = (mem: MemoryManager): LogicInterpreterInstance =
 
   return {
     checkCondition,
+    getNodeValue,
     handleAssignement,
   };
 };

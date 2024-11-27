@@ -690,6 +690,14 @@ export function tokenize(input: string): TokenList {
       return handleLogicBlockStop();
     }
 
+    if (input[position] === '(') {
+      return createSimpleToken(TOKENS.BRACKET_OPEN, 1);
+    }
+
+    if (input[position] === ')') {
+      return createSimpleToken(TOKENS.BRACKET_CLOSE, 1);
+    }
+
     if (checkSequence(input, position, '==')) {
       return handleLogicOperator(TOKENS.EQUAL, 2);
     }

@@ -458,11 +458,7 @@ export function Interpreter(
   };
 
   const handleEventNode = (events: EventsNode) => {
-    events.events.forEach((event: EventNode) => {
-      listeners.triggerEvent(
-        EventType.EVENT_TRIGGERED,
-        { name: event.name });
-    });
+    triggerEvents(events);
     return handleNextNode(stackHead().current);
   };
 
@@ -553,14 +549,22 @@ export function Interpreter(
 
   const handleAction = (actionNode: ActionContentNode) => {
     if (actionNode.action.type === 'events') {
-      (actionNode.action as EventsNode).events.forEach((event: EventNode) => {
-        listeners.triggerEvent(
-          EventType.EVENT_TRIGGERED,
-          { name: event.name });
-      });
+      triggerEvents(actionNode.action as EventsNode);
     } else {
       (actionNode.action as AssignmentsNode).assignments.forEach(logic.handleAssignement)
     }
+  }
+
+  const triggerEvents = (events: EventsNode) => {
+    events.events.forEach((event: EventNode) => {
+      listeners.triggerEvent(
+        EventType.EVENT_TRIGGERED,
+        {
+          name: event.name,
+          parameters: event.params?.map(logic.getNodeValue),
+        }
+      );
+    });
   }
 
   const handleConditionalContent = (conditionalNode: ConditionalContentNode, fallbackNode = stackHead().current) => {

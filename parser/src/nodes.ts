@@ -154,7 +154,7 @@ export class EventsNode {
 
 export class EventNode {
   public type = 'event';
-  constructor (public name: string) {};
+  constructor (public name: string, public params: Array<OperandNode> | undefined = undefined) {};
 }
 
 export type LogicBlockNode = ConditionalContentNode | ActionContentNode;

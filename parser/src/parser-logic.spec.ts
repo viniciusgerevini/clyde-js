@@ -1,7 +1,7 @@
 import parse from './parser';
 
 describe('parse: logic', () => {
-  const createDocPayload = (content = [], blocks = []) => {
+  const createDocPayload = (content: Array<any> = [], blocks = []) => {
     return {
       type: 'document',
       content: [{
@@ -930,6 +930,41 @@ describe('parse: logic', () => {
         action: {
           type: 'events',
           events: [{ type: 'event', name: 'some_event' }],
+        },
+        content: {
+          type: 'line',
+          value: 'trigger',
+        },
+      }]);
+      expect(result).toEqual(expected);
+    });
+
+    it('trigger event with parameters', () => {
+      const result = parse(`{ trigger some_event(this_is_a_var, this_is_a_var + 1, 123, "text", false) } trigger`);
+      const expected = createDocPayload([{
+        type: 'action_content',
+        action: {
+          type: 'events',
+          events: [
+            {
+              type: 'event',
+              name: 'some_event',
+              params: [
+                { type: 'variable', name: 'this_is_a_var' },
+                {
+                  type: 'expression',
+                  name: 'add',
+                  elements: [
+                    { type: 'variable', name: 'this_is_a_var', },
+                    { type: 'literal', name: 'number', value: 1 },
+                  ],
+                },
+                { type: 'literal', name: 'number', value: 123 },
+                { type: 'literal', name: 'string', value: "text" },
+                { type: 'literal', name: 'boolean', value: false },
+              ]
+            }
+          ],
         },
         content: {
           type: 'line',
