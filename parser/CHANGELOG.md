@@ -8,6 +8,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - Add match block support
 
+## 2.5.0 (2024-11-26)
+
 ### Changed
 
 - Support events with parameters (e.g `{ trigger event(param1, param2, "text", ...) }`)
