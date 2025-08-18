@@ -1090,6 +1090,39 @@ hello
       ]);
     });
 
+    it('mixed with content', () => {
+      const tokens = tokenize(`
+this is a line outside the match
+{ match this_is_a_variable
+  'value_a':
+    This is a line
+}
+this is a line after the match
+`).getAll();
+
+      expect(tokens).toEqual([
+        { token: TOKENS.TEXT, value: 'this is a line outside the match', line: 1, column: 0 },
+        { token: TOKENS.LINE_BREAK, line: 2, column: 0 },
+        { token: TOKENS.BRACE_OPEN, line: 2, column: 0, },
+        { token: TOKENS.KEYWORD_MATCH, line: 2, column: 2, },
+        { token: TOKENS.IDENTIFIER, value: 'this_is_a_variable', line: 2, column: 8, },
+        { token: TOKENS.INDENT, line: 3, column: 0 },
+        { token: TOKENS.STRING_LITERAL, value: 'value_a', line: 3, column: 2, },
+        { token: TOKENS.INDENT, line: 4, column: 2 },
+        {
+          token: TOKENS.TEXT,
+          value: 'This is a line',
+          line: 4,
+          column: 4,
+        },
+        { token: TOKENS.DEDENT, line: 5, column: 2 },
+        { token: TOKENS.DEDENT, line: 5, column: 0 },
+        { token: TOKENS.BRACE_CLOSE, line: 5, column: 0, },
+        { token: TOKENS.TEXT, value: 'this is a line after the match', line: 6, column: 0 },
+        { token: TOKENS.EOF, line: 7, column: 0 },
+      ]);
+    });
+
     it('handles error scenario gracefully', () => {
       const tokens = tokenize(`
 { match

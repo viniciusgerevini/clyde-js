@@ -17,6 +17,7 @@ import {
   AssignmentsNode,
   EventsNode,
   EventNode,
+  MatchBlockNode,
 } from '@clyde-lang/parser';
 
 type StackItem = {
@@ -229,6 +230,7 @@ export function Interpreter(
     'line': (node: LineNode) => handleLineNode(node),
     'action_content': (node: ActionContentNode) => handleActionContent(node),
     'conditional_content': (node: ConditionalContentNode, fallback: any) => handleConditionalContent(node, fallback),
+    'match': (node: MatchBlockNode) => handleMatchBlock(node),
     'variations': (node: VariationsNode) => handleVariations(node),
     'block': (node: BlockNode) => handleBlockNode(node),
     'divert': (node: DivertNode) => handleDivert(node),
@@ -572,6 +574,24 @@ export function Interpreter(
       return handleNextNode(conditionalNode.content);
     }
     return handleNextNode(fallbackNode);
+  };
+
+  const handleMatchBlock = (node: MatchBlockNode) => {
+    const conditionValue = logic.getNodeValue(node.condition);
+
+    for (let branch of node.branches) {
+      const branchValue = logic.getNodeValue((branch.check));
+
+      if (conditionValue === branchValue) {
+        return handleNextNode(branch.content);
+      }
+    }
+
+    if (node.defaultBranch) {
+      return handleNextNode(node.defaultBranch);
+    }
+
+    return handleNextNode(stackHead().current);
   };
 
   const selectOption = (contentIndex: number): void => {

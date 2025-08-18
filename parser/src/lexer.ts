@@ -613,7 +613,8 @@ export function tokenize(input: string): TokenList {
     if (input[position] === "}") {
       column += 1;
       position += 1;
-      popMode();
+      popMode(); // pop match
+      popMode(); // pop logic
       return { token: TOKENS.BRACE_CLOSE, line, column: column - 1 };
     }
 

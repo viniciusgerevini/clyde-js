@@ -25,6 +25,7 @@ export {
   OperandNode,
   LogicBlockNode,
   ActionableNode,
+  MatchBlockNode,
 } from './nodes';
 
 export { addIds } from './id_generator';
