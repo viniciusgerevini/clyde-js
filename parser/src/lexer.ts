@@ -41,6 +41,9 @@ export const TOKENS = {
   KEYWORD_SET: 'set',
   KEYWORD_TRIGGER: 'trigger',
   KEYWORD_WHEN: 'when',
+  KEYWORD_MATCH: 'match',
+  KEYWORD_ELSE: 'else',
+  KEYWORD_THEN: 'then',
   ASSIGN: '=',
   ASSIGN_SUM: '+=',
   ASSIGN_SUB: '-=',
@@ -60,6 +63,8 @@ enum LexerMode {
   QSTRING,
   LOGIC,
   VARIATIONS,
+  MATCH,
+  MATCH_BODY,
 };
 
 const tokenFriendlyHint = {
@@ -146,6 +151,8 @@ export function tokenize(input: string): TokenList {
     }
   };
 
+  const matchBodyIndent: number[] = [];
+
   const isCurrentMode = (mode: LexerMode): boolean => {
     return modes[0] === mode;
   };
@@ -168,6 +175,11 @@ export function tokenize(input: string): TokenList {
         const previousIndent = indent[0];
         column += indentation;
         indent.unshift(indentation);
+
+        if (isCurrentMode(LexerMode.MATCH_BODY)) {
+          matchBodyIndent.push(previousIndent);
+        }
+
         return { token: TOKENS.INDENT, line: initialLine, column: previousIndent };
     }
 
@@ -181,10 +193,20 @@ export function tokenize(input: string): TokenList {
         indent.shift();
         column = indent[0];
         tokens.push({ token: TOKENS.DEDENT, line, column });
+
+        if (isMatchBodyIndentLevel(column)) {
+          popMode();
+          matchBodyIndent.shift();
+        }
     }
 
     return tokens;
   };
+
+  const isMatchBodyIndentLevel = (currentIndent: number): boolean => (
+    isCurrentMode(LexerMode.MATCH_BODY) &&
+    matchBodyIndent[matchBodyIndent.length - 1] === currentIndent
+  );
 
   // handle comments
   const handleComments = (): void => {
@@ -548,8 +570,71 @@ export function tokenize(input: string): TokenList {
     return { token: TOKENS.MINUS, line, column: initialColumn };
   };
 
+  const handleLogicOrMatchBlockStart = (): TokenHandlerReturn => {
+    const blockStart = handleLogicBlockStart();
 
-  const handleLogicBlockStart = () => {
+    while (input[position] && input[position].match(/[ \n\t]/)) {
+      if (input[position] === '\n') {
+        line += 1;
+        column = 0;
+      } else {
+        column += 1;
+      }
+      position += 1;
+    }
+
+    if (checkSequence(input, position, 'match')) {
+      const token = { token: TOKENS.KEYWORD_MATCH, line, column };
+      position += 5;
+      column += 5;
+
+      handleSpace();
+
+      const statement = handleLogicStatement();
+
+      stackMode(LexerMode.MATCH);
+
+      if (!statement) {
+        return [].concat(blockStart, token);
+      }
+
+      return [].concat(blockStart, token, statement);
+    }
+
+    return blockStart;
+  }
+
+  const handleMatchBlock = (): TokenHandlerReturn | undefined => {
+    if (input[position] === "}") {
+      column += 1;
+      position += 1;
+      popMode();
+      return { token: TOKENS.BRACE_CLOSE, line, column: column - 1 };
+    }
+
+    let statement: TokenHandlerReturn | undefined;
+
+    if (checkSequence(input, position, 'else')) {
+      statement = { token: TOKENS.KEYWORD_ELSE, line, column: column };
+      position += 4;
+      column += 4;
+    } else if (checkSequence(input, position, 'then')) {
+      statement = { token: TOKENS.KEYWORD_THEN, line, column: column };
+      position += 4;
+      column += 4;
+    } else {
+      statement = handleLogicStatement();
+    }
+
+    if (input[position] === ":") {
+      column += 1;
+      position += 1;
+      stackMode(LexerMode.MATCH_BODY);
+    }
+    return statement;
+  };
+
+  const handleLogicBlockStart = (): TokenHandlerReturn => {
     const initialColumn = column;
     column += 1;
     position += 1;
@@ -577,7 +662,7 @@ export function tokenize(input: string): TokenList {
 
   const keywords = [
     'is', 'isnt', 'or', 'and', 'not', 'true', 'false', 'null',
-    'set', 'trigger', 'when'
+    'set', 'trigger', 'when', 'match',
   ];
 
   const handleLogicIdentifier = (): TokenHandlerReturn => {
@@ -627,7 +712,6 @@ export function tokenize(input: string): TokenList {
       case 'when':
         return { token: TOKENS.KEYWORD_WHEN, line, column: initialColumn };
     }
-
   };
 
   const handleLogicNot = (): Token => {
@@ -679,15 +763,19 @@ export function tokenize(input: string): TokenList {
   };
 
   const handleLogicBlock = (): TokenHandlerReturn => {
+    if (input[position] === '}') {
+      return handleLogicBlockStop();
+    }
+
+    return handleLogicStatement();
+  };
+
+  const handleLogicStatement = (): TokenHandlerReturn => {
     if (input[position] === '"' || input[position] == "'") {
       if (currentQuote === null) {
         currentQuote = input[position]
       }
       return handleLogicString();
-    }
-
-    if (input[position] === '}') {
-      return handleLogicBlockStop();
     }
 
     if (input[position] === '(') {
@@ -842,11 +930,19 @@ export function tokenize(input: string): TokenList {
     }
 
     if (!isCurrentMode(LexerMode.QSTRING) && input[position] === '{') {
-      return handleLogicBlockStart();
+      return handleLogicOrMatchBlockStart();
     }
 
     if(isCurrentMode(LexerMode.LOGIC)) {
       const response = handleLogicBlock();
+
+      if (response)  {
+        return response;
+      }
+    }
+
+    if(isCurrentMode(LexerMode.MATCH)) {
+      const response = handleMatchBlock();
 
       if (response)  {
         return response;
