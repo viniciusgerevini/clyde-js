@@ -1242,4 +1242,112 @@ describe('parse: logic', () => {
     }]);
     expect(result).toEqual(expected);
   });
+
+  describe('match', () => {
+    it('match with branches', () => {
+    const result = parse(`
+{ match this_is_a_variable
+  'value_a':
+    This is a line
+  'value_b':
+    This is another line
+  default:
+    This is the default line
+}
+`);
+
+      const expected = createDocPayload([
+        {
+          type: "match",
+          condition: { type: "variable", name: "this_is_a_variable" },
+          branches: [
+            {
+              check:  { type: 'literal', name: 'string', value: 'value_a' },
+              content: {
+                type: 'content',
+                content: [
+                  { type: 'line', value: 'This is a line', },
+                ],
+              },
+            },
+            {
+              check:  { type: 'literal', name: 'string', value: 'value_b' },
+              content: {
+                type: 'content',
+                content: [
+                  { type: 'line', value: 'This is another line', },
+                ],
+              },
+            },
+          ],
+          defaultBranch: {
+            type: 'content',
+            content: [
+              { type: 'line', value: 'This is the default line', },
+            ],
+          }
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+    it('match with inline branches', () => {
+    const result = parse(`
+{
+  match this_is_a_variable
+    true: -> go here
+    default: -> go there
+}
+`);
+
+      const expected = createDocPayload([
+        {
+          type: "match",
+          condition: { type: "variable", name: "this_is_a_variable" },
+          branches: [
+            {
+              check:  { type: 'literal', name: 'boolean', value: true },
+              content: {
+                type: 'content',
+                content: [{ type: "divert", target: "go here", }]
+              },
+            },
+          ],
+          defaultBranch: {
+            type: 'content',
+            content: [{ type: "divert", target: "go there", }],
+          }
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
+
+    it('match without default', () => {
+    const result = parse(`
+{
+  match this_is_a_variable
+    true:
+      -> go here
+}
+`);
+
+      const expected = createDocPayload([
+        {
+          type: "match",
+          condition: { type: "variable", name: "this_is_a_variable" },
+          branches: [
+            {
+              check:  { type: 'literal', name: 'boolean', value: true },
+              content: {
+                type: 'content',
+                content: [{ type: "divert", target: "go here", }]
+              },
+            },
+          ],
+          defaultBranch: undefined,
+        },
+      ]);
+      expect(result).toEqual(expected);
+    });
+  });
 });

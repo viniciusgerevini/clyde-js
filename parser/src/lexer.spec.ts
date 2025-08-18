@@ -979,7 +979,7 @@ hello
     This is a line
   'value_b':
     This is another line
-  else:
+  default:
     This is the default line
 }`).getAll();
 
@@ -1009,7 +1009,7 @@ hello
           column: 4,
         },
         { token: TOKENS.DEDENT, line: 6, column: 2 },
-        { token: TOKENS.KEYWORD_ELSE, line: 6, column: 2, },
+        { token: TOKENS.KEYWORD_DEFAULT, line: 6, column: 2, },
         // { token: TOKENS.COLON, line: 6, column: 6, },
         { token: TOKENS.INDENT, line: 7, column: 2 },
         {
@@ -1057,13 +1057,11 @@ hello
       ]);
     });
 
-    it('match with then and else', () => {
+    it('branches in the same line', () => {
       const tokens = tokenize(`
 { match this_is_a_variable
-  then:
-    This is a line
-  else:
-    This is the default line
+  true: This is a line
+  default: This is the default line
 }`).getAll();
 
       expect(tokens).toEqual([
@@ -1072,34 +1070,30 @@ hello
         { token: TOKENS.KEYWORD_MATCH, line: 1, column: 2, },
         { token: TOKENS.IDENTIFIER, value: 'this_is_a_variable', line: 1, column: 8, },
         { token: TOKENS.INDENT, line: 2, column: 0 },
-        { token: TOKENS.KEYWORD_THEN, line: 2, column: 2, },
-        { token: TOKENS.INDENT, line: 3, column: 2 },
+        { token: TOKENS.BOOLEAN_LITERAL, value: 'true', line: 2, column: 2, },
         {
           token: TOKENS.TEXT,
           value: 'This is a line',
-          line: 3,
-          column: 4,
+          line: 2,
+          column: 8,
         },
-        { token: TOKENS.DEDENT, line: 4, column: 2 },
-        { token: TOKENS.KEYWORD_ELSE, line: 4, column: 2, },
-        { token: TOKENS.INDENT, line: 5, column: 2 },
+        { token: TOKENS.KEYWORD_DEFAULT, line: 3, column: 2, },
         {
           token: TOKENS.TEXT,
           value: 'This is the default line',
-          line: 5,
-          column: 4,
+          line: 3,
+          column: 11,
         },
-        { token: TOKENS.DEDENT, line: 6, column: 2 },
-        { token: TOKENS.DEDENT, line: 6, column: 0 },
-        { token: TOKENS.BRACE_CLOSE, line: 6, column: 0, },
-        { token: TOKENS.EOF, line: 6, column: 1 },
+        { token: TOKENS.DEDENT, line: 4, column: 0 },
+        { token: TOKENS.BRACE_CLOSE, line: 4, column: 0, },
+        { token: TOKENS.EOF, line: 4, column: 1 },
       ]);
     });
 
     it('handles error scenario gracefully', () => {
       const tokens = tokenize(`
 { match
-  then:
+  true:
     This is a line
 }
 
@@ -1116,7 +1110,7 @@ hello
         { token: TOKENS.BRACE_OPEN, line: 1, column: 0, },
         { token: TOKENS.KEYWORD_MATCH, line: 1, column: 2, },
         { token: TOKENS.INDENT, line: 2, column: 0 },
-        { token: TOKENS.KEYWORD_THEN, line: 2, column: 2, },
+        { token: TOKENS.BOOLEAN_LITERAL, value: 'true', line: 2, column: 2, },
         { token: TOKENS.INDENT, line: 3, column: 2 },
         {
           token: TOKENS.TEXT,

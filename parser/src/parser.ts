@@ -24,6 +24,9 @@ import {
   OperandNode,
   LogicBlockNode,
   ActionableNode,
+  MatchBlockNode,
+  LiteralNode,
+  MatchBlockBranch,
 } from './nodes';
 
 const variationsModes = ['sequence', 'once', 'cycle', 'shuffle', 'shuffle sequence', 'shuffle once', 'shuffle cycle' ];
@@ -237,7 +240,9 @@ export default function parse(doc: string): ClydeDocumentRoot {
         consume([ TOKENS.LINE_BREAK ]);
       case TOKENS.BRACE_OPEN:
         consume([TOKENS.BRACE_OPEN]);
-        if (peek([TOKENS.KEYWORD_SET, TOKENS.KEYWORD_TRIGGER])) {
+        if (peek([TOKENS.KEYWORD_MATCH])) {
+          lines = [MatchBlock()];
+        }else if (peek([TOKENS.KEYWORD_SET, TOKENS.KEYWORD_TRIGGER])) {
           lines = [LineWithAction() as (LogicBlockNode | AssignmentsNode | EventsNode)];
         } else {
           if (peek([TOKENS.KEYWORD_WHEN])) {
@@ -826,9 +831,17 @@ export default function parse(doc: string): ClydeDocumentRoot {
   };
 
   const Operand = (): OperandNode | undefined => {
+    if (peek([TOKENS.NOT])) {
+      consume([TOKENS.NOT]);
+      return new ExpressionNode('not', [Operand()]);
+    }
+
+    return Value();
+  };
+
+  const Value = (): LiteralNode | NullTokenNode | VariableNode => {
     consume([
       TOKENS.IDENTIFIER,
-      TOKENS.NOT,
       TOKENS.NUMBER_LITERAL,
       TOKENS.STRING_LITERAL,
       TOKENS.BOOLEAN_LITERAL,
@@ -836,8 +849,6 @@ export default function parse(doc: string): ClydeDocumentRoot {
     ]);
 
     switch(currentToken.token) {
-      case TOKENS.NOT:
-        return new ExpressionNode('not', [Operand()]);
       case TOKENS.IDENTIFIER:
         return new VariableNode(currentToken.value);
       case TOKENS.NUMBER_LITERAL:
@@ -850,6 +861,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
         return new NullTokenNode();
     }
   };
+
 
   const Operator = (operator: string, lhs: OperandNode, rhs: OperandNode): ExpressionNode => {
     const labels = {
@@ -869,6 +881,66 @@ export default function parse(doc: string): ClydeDocumentRoot {
       [TOKENS.LE]: 'less_or_equal',
     };
     return new ExpressionNode(labels[operator], [lhs, rhs]);
+  };
+
+  const MatchBlock = (): MatchBlockNode => {
+    consume([TOKENS.KEYWORD_MATCH]);
+
+    const expression = Expression();
+
+    consume([TOKENS.INDENT]);
+
+    const branches: MatchBlockBranch[] = MatchBlockBranches();
+
+    let defaultBranch: ContentNode;
+
+    if (peek([TOKENS.KEYWORD_DEFAULT])) {
+      consume([TOKENS.KEYWORD_DEFAULT])
+      defaultBranch = MatchBlockBranchContent();
+    }
+
+    consume([TOKENS.DEDENT]);
+    consume([TOKENS.BRACE_CLOSE]);
+
+    return new MatchBlockNode(expression, branches, defaultBranch);
+  };
+
+  const MatchBlockBranches = (): MatchBlockBranch[] => {
+    const branches: MatchBlockBranch[] = [];
+
+    while (peek([
+      TOKENS.IDENTIFIER,
+      TOKENS.NUMBER_LITERAL,
+      TOKENS.STRING_LITERAL,
+      TOKENS.BOOLEAN_LITERAL,
+      TOKENS.NULL_TOKEN
+    ])) {
+      branches.push(MatchBlockBranch());
+    }
+
+    return branches;
+  };
+
+  const MatchBlockBranch = (): MatchBlockBranch => {
+    return {
+      check: Value(),
+      content: MatchBlockBranchContent(),
+    }
+  };
+
+  const MatchBlockBranchContent = (): ContentNode => {
+    let hasIndent = peek([TOKENS.INDENT]);
+
+    if (hasIndent) {
+      consume([TOKENS.INDENT]);
+    }
+
+    const content = new ContentNode(Lines());
+
+    if (hasIndent) {
+      consume([TOKENS.DEDENT]);
+    }
+    return content;
   };
 
   const result = Document();

@@ -42,8 +42,7 @@ export const TOKENS = {
   KEYWORD_TRIGGER: 'trigger',
   KEYWORD_WHEN: 'when',
   KEYWORD_MATCH: 'match',
-  KEYWORD_ELSE: 'else',
-  KEYWORD_THEN: 'then',
+  KEYWORD_DEFAULT: 'default',
   ASSIGN: '=',
   ASSIGN_SUM: '+=',
   ASSIGN_SUB: '-=',
@@ -152,6 +151,7 @@ export function tokenize(input: string): TokenList {
   };
 
   const matchBodyIndent: number[] = [];
+  let isInlineMatchBranch: boolean = false;
 
   const isCurrentMode = (mode: LexerMode): boolean => {
     return modes[0] === mode;
@@ -226,6 +226,11 @@ export function tokenize(input: string): TokenList {
     }
 
     if (isCurrentMode(LexerMode.OPTION)) {
+      popMode();
+      return;
+    }
+
+    if (isCurrentMode(LexerMode.MATCH_BODY) && isInlineMatchBranch) {
       popMode();
     }
   };
@@ -614,14 +619,10 @@ export function tokenize(input: string): TokenList {
 
     let statement: TokenHandlerReturn | undefined;
 
-    if (checkSequence(input, position, 'else')) {
-      statement = { token: TOKENS.KEYWORD_ELSE, line, column: column };
-      position += 4;
-      column += 4;
-    } else if (checkSequence(input, position, 'then')) {
-      statement = { token: TOKENS.KEYWORD_THEN, line, column: column };
-      position += 4;
-      column += 4;
+    if (checkSequence(input, position, 'default:')) {
+      statement = { token: TOKENS.KEYWORD_DEFAULT, line, column: column };
+      position += 7;
+      column += 7;
     } else {
       statement = handleLogicStatement();
     }
@@ -630,7 +631,18 @@ export function tokenize(input: string): TokenList {
       column += 1;
       position += 1;
       stackMode(LexerMode.MATCH_BODY);
+
+      isInlineMatchBranch = false;
+      let p = position
+      while(input[p] && input[p] != '\n') {
+        if (input[p] != ' ') {
+          isInlineMatchBranch = true;
+          break;
+        }
+        p += 1;
+      }
     }
+
     return statement;
   };
 
