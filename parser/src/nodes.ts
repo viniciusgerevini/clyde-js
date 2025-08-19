@@ -132,6 +132,20 @@ export class ActionContentNode {
   constructor (public action: EventsNode | AssignmentsNode, public content?: any) {}; // TODO replace any with something
 }
 
+export class MatchBlockNode {
+  public readonly type = 'match';
+  constructor (
+    public condition: OperandNode,
+    public branches: MatchBlockBranch[],
+    public defaultBranch: ContentNode | undefined
+  ) {};
+}
+
+export class MatchBlockBranch {
+  check: LiteralNode | VariableNode | NullTokenNode;
+  content: ContentNode;
+}
+
 export class ExpressionNode {
   public readonly type = 'expression';
   constructor(public name: string, public elements: OperandNode[]) {};
@@ -159,4 +173,12 @@ export class EventNode {
 
 export type LogicBlockNode = ConditionalContentNode | ActionContentNode;
 
-export type ActionableNode = LineNode | OptionsNode | DivertNode | LogicBlockNode | AssignmentsNode | EventsNode | VariationsNode;
+export type ActionableNode =
+  AssignmentsNode |
+  DivertNode |
+  EventsNode |
+  LineNode |
+  LogicBlockNode |
+  MatchBlockNode |
+  OptionsNode |
+  VariationsNode;
