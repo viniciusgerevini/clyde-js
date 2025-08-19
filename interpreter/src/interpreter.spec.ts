@@ -108,13 +108,13 @@ describe("Interpreter", () => {
 `);
       const dialogue = Interpreter(content);
 
-      expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'a' }, { label: 'b' }] });
+      expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ text: 'a' }, { text: 'b' }] });
       dialogue.choose(0);
       expect((dialogue.getContent() as DialogueLine).text).toEqual('Hi!');
 
       const newDialogue = Interpreter(content, dialogue.getData());
 
-      expect(newDialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'b' }] });
+      expect(newDialogue.getContent()).toEqual({ type: 'options', options: [{ text: 'b' }] });
       newDialogue.choose(0);
       expect((newDialogue.getContent() as DialogueLine).text).toEqual('hello 1');
     });
@@ -130,8 +130,8 @@ result is %someVar%
       const dialogue = Interpreter(content);
       const anotherDialogue = Interpreter(content);
 
-      expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'a' }, { label: 'b' }] });
-      expect(anotherDialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'a' }, { label: 'b' }] });
+      expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ text: 'a' }, { text: 'b' }] });
+      expect(anotherDialogue.getContent()).toEqual({ type: 'options', options: [{ text: 'a' }, { text: 'b' }] });
       dialogue.choose(0);
       anotherDialogue.choose(1);
       expect((dialogue.getContent() as DialogueLine).text).toEqual('set as 1!');
@@ -153,13 +153,13 @@ result is %someVar%
 `);
       const dialogue = Interpreter(content);
       const anotherDialogue = Interpreter(content);
-      expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'a' }, { label: 'b' }] });
+      expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ text: 'a' }, { text: 'b' }] });
       dialogue.choose(0);
 
       const stringifiedData = JSON.stringify(dialogue.getData());
       anotherDialogue.loadData(JSON.parse(stringifiedData));
 
-      expect(anotherDialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'b' }] });
+      expect(anotherDialogue.getContent()).toEqual({ type: 'options', options: [{ text: 'b' }] });
     });
 
 
@@ -209,8 +209,8 @@ hello %someVar%
       const block2Options = invertedDialogue.getContent();
 
 
-      expect(block1Options).toEqual({ type: 'options', options: [{ label: 'option 2' }] });
-      expect(block2Options).toEqual({ type: 'options', options: [{ label: 'option 1' }, { label: 'option 2' }] });
+      expect(block1Options).toEqual({ type: 'options', options: [{ text: 'option 2' }] });
+      expect(block2Options).toEqual({ type: 'options', options: [{ text: 'option 1' }, { text: 'option 2' }] });
     });
   });
 
@@ -248,7 +248,7 @@ replace $ghi
       expect((dialogue.getContent() as DialogueLine).text).toEqual('This will not be replaced');
       expect((dialogue.getContent() as DialogueLine).text).toEqual('this is a replacement');
       expect((dialogue.getContent() as DialogueLine).text).toEqual('This will not be replaced either');
-      expect(dialogue.getContent()).toEqual({ id: 'ghi', type: 'options', name: 'replaced', options: [{ id: 'jkl', label: 'replaced 2' }]});
+      expect(dialogue.getContent()).toEqual({ id: 'ghi', type: 'options', text: 'replaced', options: [{ id: 'jkl', text: 'replaced 2' }]});
       dialogue.choose(0);
       expect((dialogue.getContent() as DialogueLine).text).toEqual('replaced 3');
     });
@@ -321,14 +321,14 @@ first topics $abc&suffix1
         dialogue.setVariable("suffix1", "P");
         dialogue.setVariable("suffix2", "S");
         const firstOptions = dialogue.getContent() as DialogueOptions;
-        expect(firstOptions.name).toEqual('simple key with suffix 1');
-        expect(firstOptions.options[0].label).toEqual('simple key with only suffix 2');
+        expect(firstOptions.text).toEqual('simple key with suffix 1');
+        expect(firstOptions.options[0].text).toEqual('simple key with only suffix 2');
 
         dialogue.choose(0);
         dialogue.getContent();
 
         const secondOptions = dialogue.getContent() as DialogueOptions;
-        expect(secondOptions.options[0].label).toEqual('simple key with suffix 1 and 2');
+        expect(secondOptions.options[0].text).toEqual('simple key with suffix 1 and 2');
       });
     });
 
