@@ -330,7 +330,7 @@ neither this one
     it('triggers show debug pane when pane is hidden', () => {
       const showDebugPaneStub = jest.fn();
       const hideDebugPaneStub = jest.fn();
-      const { getByLabelText, getByText } = render(
+      const { getByText } = render(
         <Interpreter
           content={'Hello!\nHi\n'}
           hideDebugPane={hideDebugPaneStub}
@@ -347,7 +347,7 @@ neither this one
     it('triggers hide debug pane when pane is visible', () => {
       const showDebugPaneStub = jest.fn();
       const hideDebugPaneStub = jest.fn();
-      const { getByLabelText, getByText } = render(
+      const { getByText } = render(
         <Interpreter
           content={'Hello!\nHi\n'}
           hideDebugPane={hideDebugPaneStub}
@@ -367,7 +367,7 @@ neither this one
     it('triggers show extra metadata', () => {
       const showExtraMetadataStub = jest.fn();
       const hideExtraMetadataStub = jest.fn();
-      const { getByLabelText, getByText } = render(
+      const { getByText } = render(
         <Interpreter
           content={'Hello!\nHi\n'}
           hideExtraMetadata={hideExtraMetadataStub}
@@ -384,7 +384,7 @@ neither this one
     it('triggers hide extra metadata when it is already visible', () => {
       const showExtraMetadataStub = jest.fn();
       const hideExtraMetadataStub = jest.fn();
-      const { getByLabelText, getByText } = render(
+      const { getByText } = render(
         <Interpreter
           content={'Hello!\nHi\n'}
           hideExtraMetadata={hideExtraMetadataStub}
@@ -531,7 +531,7 @@ third line
       fireEvent.click(getByLabelText(/Forward until next choice/i));
 
       expect(addDialogueLineStub).toHaveBeenCalledTimes(4);
-      expect(addDialogueLineStub).toHaveBeenLastCalledWith({ type: 'options', options: [{ label: 'yes' }]});
+      expect(addDialogueLineStub).toHaveBeenLastCalledWith({ type: 'options', options: [{ text: 'yes' }]});
     });
 
     it('stops in the end when no option found', () => {
