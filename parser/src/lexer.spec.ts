@@ -990,7 +990,6 @@ hello
         { token: TOKENS.IDENTIFIER, value: 'this_is_a_variable', line: 1, column: 8, },
         { token: TOKENS.INDENT, line: 2, column: 0 },
         { token: TOKENS.STRING_LITERAL, value: 'value_a', line: 2, column: 2, },
-        // { token: TOKENS.COLON, line: 2, column: 9, },
         { token: TOKENS.INDENT, line: 3, column: 2 },
         {
           token: TOKENS.TEXT,
@@ -1000,7 +999,6 @@ hello
         },
         { token: TOKENS.DEDENT, line: 4, column: 2 },
         { token: TOKENS.STRING_LITERAL, value: 'value_b', line: 4, column: 2, },
-        // { token: TOKENS.COLON, line: 4, column: 9, },
         { token: TOKENS.INDENT, line: 5, column: 2 },
         {
           token: TOKENS.TEXT,
@@ -1010,7 +1008,6 @@ hello
         },
         { token: TOKENS.DEDENT, line: 6, column: 2 },
         { token: TOKENS.KEYWORD_DEFAULT, line: 6, column: 2, },
-        // { token: TOKENS.COLON, line: 6, column: 6, },
         { token: TOKENS.INDENT, line: 7, column: 2 },
         {
           token: TOKENS.TEXT,

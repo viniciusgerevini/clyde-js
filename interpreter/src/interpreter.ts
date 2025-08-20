@@ -586,8 +586,8 @@ export function Interpreter(
       }
     }
 
-    if (node.defaultBranch) {
-      return handleNextNode(node.defaultBranch);
+    if (node.default_branch) {
+      return handleNextNode(node.default_branch);
     }
 
     return handleNextNode(stackHead().current);

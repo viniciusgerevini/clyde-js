@@ -1280,7 +1280,7 @@ describe('parse: logic', () => {
               },
             },
           ],
-          defaultBranch: {
+          default_branch: {
             type: 'content',
             content: [
               { type: 'line', value: 'This is the default line', },
@@ -1313,7 +1313,7 @@ describe('parse: logic', () => {
               },
             },
           ],
-          defaultBranch: {
+          default_branch: {
             type: 'content',
             content: [{ type: "divert", target: "go there", }],
           }
@@ -1344,7 +1344,7 @@ describe('parse: logic', () => {
               },
             },
           ],
-          defaultBranch: undefined,
+          default_branch: undefined,
         },
       ]);
       expect(result).toEqual(expected);

@@ -137,7 +137,7 @@ export class MatchBlockNode {
   constructor (
     public condition: OperandNode,
     public branches: MatchBlockBranch[],
-    public defaultBranch: ContentNode | undefined
+    public default_branch: ContentNode | undefined
   ) {};
 }
 
