@@ -47,14 +47,14 @@ export type DialogueLine = {
 export type DialogueOptions = {
   type: 'options',
   options: DialogueOption[],
-  name?: string;
+  text?: string
   speaker?: string;
   tags?: string[];
   id?: string;
 };
 
 export type DialogueOption = {
-  label: string, 
+  text: string,
   speaker?: string;
   tags?: string[];
   id?: string;
@@ -482,15 +482,14 @@ export function Interpreter(
       selectOption(0);
       return handleNextNode(stackHead().current);
     }
-
     return {
       type: 'options',
       speaker: optionsNode.speaker,
       id: optionsNode.id,
       tags: optionsNode.tags,
-      name: replaceVariables(translateText(optionsNode.name as string, optionsNode.id, optionsNode.id_suffixes)),
+      text: replaceVariables(translateText(optionsNode.name as string, optionsNode.id, optionsNode.id_suffixes)),
       options: options.map((t: ActionContentNode | OptionNode) => t.type === 'action_content' ? t.content : t).map((t: OptionNode) => ({
-        label: replaceVariables(translateText(t.name!, t.id, t.id_suffixes)),
+        text: replaceVariables(translateText(t.name!, t.id, t.id_suffixes)),
         speaker: t.speaker,
         tags: t.tags,
         id: t.id
@@ -587,8 +586,8 @@ export function Interpreter(
       }
     }
 
-    if (node.defaultBranch) {
-      return handleNextNode(node.defaultBranch);
+    if (node.default_branch) {
+      return handleNextNode(node.default_branch);
     }
 
     return handleNextNode(stackHead().current);

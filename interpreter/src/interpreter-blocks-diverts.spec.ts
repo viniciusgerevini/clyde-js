@@ -103,7 +103,7 @@ no a!
       dialogue.start();
 
       expect((dialogue.getContent() as DialogueLine).text).toEqual('Hello!');
-      expect((dialogue.getContent() as DialogueOptions).name).toEqual("question");
+      expect((dialogue.getContent() as DialogueOptions).text).toEqual("question");
       dialogue.choose(0);
       expect((dialogue.getContent() as DialogueLine).text).toEqual('yes a!');
       expect((dialogue.getContent() as DialogueLine).text).toEqual('continue');
@@ -135,11 +135,11 @@ no a!
       dialogue.start();
 
       expect((dialogue.getContent() as DialogueLine).text).toEqual('Hello!');
-      expect((dialogue.getContent() as DialogueOptions).name).toEqual("question");
+      expect((dialogue.getContent() as DialogueOptions).text).toEqual("question");
       dialogue.choose(0);
       expect((dialogue.getContent() as DialogueLine).text).toEqual('yes a!');
       expect((dialogue.getContent() as DialogueLine).text).toEqual('continue');
-      expect((dialogue.getContent() as DialogueOptions).name).toEqual("question");
+      expect((dialogue.getContent() as DialogueOptions).text).toEqual("question");
     });
 
     it('end dialogue', () => {

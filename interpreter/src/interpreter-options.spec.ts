@@ -8,7 +8,7 @@ describe("Interpreter: options", () => {
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello', speaker: 'speaker', options: [{ text: 'a' },{ text: 'b' }] });
     dialogue.choose(1)
     expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'ba' });
     expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'bb' });
@@ -19,14 +19,14 @@ describe("Interpreter: options", () => {
     const content = parse('speaker: hello #name_tag\n  * a\n   aa\n   ab\n  * b $abc #option_tag\n   ba\n   bb\n  + c\n   ca\n   cb\n');
     const dialogue = Interpreter(content);
 
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ label: 'a' },{ label: 'b', id: 'abc', tags: [ 'option_tag' ] }, { label: 'c' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ text: 'a' },{ text: 'b', id: 'abc', tags: [ 'option_tag' ] }, { text: 'c' } ] });
     dialogue.choose(1)
     expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'ba' });
     expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'bb' });
     expect(dialogue.getContent()).toEqual({ type: 'end' });
 
     dialogue.start();
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ label: 'a' }, { label: 'c' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ text: 'a' }, { text: 'c' } ] });
     dialogue.choose(1)
 
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'ca' });
@@ -34,7 +34,7 @@ describe("Interpreter: options", () => {
     expect(dialogue.getContent()).toEqual({ type: 'end' });
 
     dialogue.start();
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ label: 'a' }, { label: 'c' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello', speaker: 'speaker', tags: [ 'name_tag' ], options: [{ text: 'a' }, { text: 'c' } ] });
 
     dialogue.choose(0)
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'aa' });
@@ -47,7 +47,7 @@ describe("Interpreter: options", () => {
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello', speaker: 'speaker', options: [{ text: 'a' },{ text: 'b' }] });
     dialogue.choose(0)
     expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'a' });
     expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'end' });
@@ -61,20 +61,20 @@ describe("Interpreter: options", () => {
     const content = parse('speaker: hello\n  * a\n   a %OPTIONS_COUNT%\n  * b\n   b %OPTIONS_COUNT%\n  * c %OPTIONS_COUNT% left\n   c %OPTIONS_COUNT%\n');
     const dialogue = Interpreter(content);
 
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }, { label: 'c 3 left' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello', speaker: 'speaker', options: [{ text: 'a' },{ text: 'b' }, { text: 'c 3 left' } ] });
     dialogue.choose(1);
     expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'b 2' });
     expect(dialogue.getContent()).toEqual({ type: 'end' });
 
     dialogue.start();
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' }, { label: 'c 2 left' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello', speaker: 'speaker', options: [{ text: 'a' }, { text: 'c 2 left' } ] });
     dialogue.choose(0);
 
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'a 1' });
     expect(dialogue.getContent()).toEqual({ type: 'end' });
 
     dialogue.start();
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'c 1 left' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello', speaker: 'speaker', options: [{ text: 'c 1 left' } ] });
 
     dialogue.choose(0);
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'c 0' });
@@ -99,13 +99,13 @@ hello %OPTIONS_COUNT%
 `);
     const dialogue = Interpreter(content);
 
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello 3', options: [{ label: 'Yes' },{ label: 'No' }, { label: 'What?' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello 3', options: [{ text: 'Yes' },{ text: 'No' }, { text: 'What?' } ] });
     dialogue.choose(2);
     expect(dialogue.getContent()).toEqual({ type: 'line',  text: 'wat' });
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello 3', options: [{ label: 'Yes' },{ label: 'No' }, { label: 'What?' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello 3', options: [{ text: 'Yes' },{ text: 'No' }, { text: 'What?' } ] });
     dialogue.choose(0)
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'yep' });
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello 2', options: [ { label: 'No' }, { label: 'What?' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello 2', options: [ { text: 'No' }, { text: 'What?' } ] });
 
     dialogue.choose(0)
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'nope' });
@@ -123,7 +123,7 @@ hello %OPTIONS_COUNT%
   it('fails when selecting wrong index', () => {
     const content = parse('hello $123\n * a\n  aa\n * b\n  ba\n');
     const dialogue = Interpreter(content);
-    expect(dialogue.getContent()).toEqual({ id: '123', type: 'options', name: 'hello', options: [{ label: 'a' }, { label: 'b' } ] });
+    expect(dialogue.getContent()).toEqual({ id: '123', type: 'options', text: 'hello', options: [{ text: 'a' }, { text: 'b' } ] });
     expect(() => dialogue.choose(66)).toThrow(/Index 66 not available./);
   });
 
@@ -200,27 +200,27 @@ Jules: Let's get to work!
 `
     );
     const dialogue = Interpreter(content);
-    const firstOptions = [{ label: 'Is hash legal there?'}, { label: 'Something about Europe.' }, { label: 'Nah, maybe another time' }];
+    const firstOptions = [{ text: 'Is hash legal there?'}, { text: 'Something about Europe.' }, { text: 'Nah, maybe another time' }];
     const secondOptions = [
-      { label: 'You can buy a beer in a movie theatre.' },
-      { label: 'You know what they call a Quarter Pounder with Cheese in Paris?' },
-      { label: 'What they put on the french fries instead of ketchup.' },
-      { label: "I'm suddenly not interested anymore." },
+      { text: 'You can buy a beer in a movie theatre.' },
+      { text: 'You know what they call a Quarter Pounder with Cheese in Paris?' },
+      { text: 'What they put on the french fries instead of ketchup.' },
+      { text: "I'm suddenly not interested anymore." },
     ];
 
-    expect(dialogue.getContent()).toEqual({ type: 'options', speaker: 'Vincent', name: 'What do you want to know?', options: firstOptions });
+    expect(dialogue.getContent()).toEqual({ type: 'options', speaker: 'Vincent', text: 'What do you want to know?', options: firstOptions });
 
     dialogue.choose(1);
     expect((dialogue.getContent() as DialogueLine).text).toEqual('You know what the funniest thing about Europe is?');
     expect((dialogue.getContent() as DialogueLine).text).toEqual('what?');
     expect((dialogue.getContent() as DialogueLine).text).toEqual("It's the little differences. A lotta the same sh*t we got here, they they got there, but there they're a little different.");
-    expect(dialogue.getContent()).toEqual({ type: 'options', speaker: 'Jules', name: 'Examples?', options: secondOptions });
+    expect(dialogue.getContent()).toEqual({ type: 'options', speaker: 'Jules', text: 'Examples?', options: secondOptions });
 
     dialogue.choose(0);
 
     expect((dialogue.getContent() as DialogueLine).text).toEqual("Well, in Amsterdam, you can buy beer in a movie theatre. And I don't mean in a paper cup either. They give you a glass of beer,");
     secondOptions.splice(0, 1);
-    expect(dialogue.getContent()).toEqual({ type: 'options', speaker: 'Jules', name: 'Examples?', options: secondOptions });
+    expect(dialogue.getContent()).toEqual({ type: 'options', speaker: 'Jules', text: 'Examples?', options: secondOptions });
   });
 
   it('shows label for action content', () => {
@@ -234,7 +234,7 @@ hey
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello', speaker: 'speaker', options: [{ text: 'a' },{ text: 'b' }] });
     dialogue.choose(0);
     expect((dialogue.getContent() as DialogueLine).text).toEqual('a');
     dialogue.start();
@@ -254,7 +254,7 @@ hey
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello', speaker: 'speaker', options: [{ text: 'a' },{ text: 'b' }] });
     dialogue.choose(0);
     expect((dialogue.getContent() as DialogueLine).text).toEqual('a');
     expect((dialogue.getContent() as DialogueLine).text).toEqual('hey you');
@@ -273,7 +273,7 @@ hey
     const dialogue = Interpreter(content);
 
     expect(dialogue.getContent()).toEqual({ type: 'line', text: 'Hey hey' });
-    expect(dialogue.getContent()).toEqual({ type: 'options', name: 'hello', speaker: 'speaker', options: [{ label: 'a' },{ label: 'b' }] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', text: 'hello', speaker: 'speaker', options: [{ text: 'a' },{ text: 'b' }] });
     dialogue.choose(0);
     expect((dialogue.getContent() as DialogueLine).text).toEqual('a');
     dialogue.start();

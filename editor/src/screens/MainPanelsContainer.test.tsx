@@ -334,7 +334,7 @@ what do you think?
       const store = createMockStore(
         { isEditorEnabled: false, isInterpreterEnabled: true },
         { currentValue: content },
-        { timeline: [{ type: 'options', options: [{ label: 'yes' }]}] }
+        { timeline: [{ type: 'options', options: [{ text: 'yes' }]}] }
       );
       const { getByLabelText, getByText } = render(<Provider store={store}><MainPanelsContainer /></Provider>);
 

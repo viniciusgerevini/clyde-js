@@ -102,7 +102,7 @@ function DialogueOptions(props) {
     id,
     tags,
     speaker,
-    name,
+    text,
     options,
     onSelection,
     selected,
@@ -120,7 +120,7 @@ function DialogueOptions(props) {
     <DialogueBubble>
       { speaker ? <DialogueSpeaker>{speaker}</DialogueSpeaker> : undefined }
       <DialogueContent>
-        {name} <DialogueMetadata id={id} tags={tags} isVisible={showMetadata}/>
+        {text} <DialogueMetadata id={id} tags={tags} isVisible={showMetadata}/>
         <DialogueOptionsList>
           { options.map((option, index) => (
             <DialogueOption
@@ -128,7 +128,7 @@ function DialogueOptions(props) {
               optionSelected={selected}
               index={index}
             >
-              <span onClick={e => { e.stopPropagation(); select(index) }}>{option.label} <DialogueMetadata {...option} isVisible={showMetadata}/></span>
+              <span onClick={e => { e.stopPropagation(); select(index) }}>{option.text} <DialogueMetadata {...option} isVisible={showMetadata}/></span>
 
             </DialogueOption>
             ))}

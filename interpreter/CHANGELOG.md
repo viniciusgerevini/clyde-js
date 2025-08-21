@@ -4,9 +4,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## Unreleased
 
+### Breaking changes
+
+- match is a reserved word inside logic block.
+- Dialogue options `name` and `label` properties are now called `text`.
+
 ### Added
 
-- Match block support
+- Match block support.
+
+### Changed
+
+- Options `name` and `label` properties are now called `text`.
 
 ## 4.2.0 (2024-11-26)
 

@@ -55,16 +55,16 @@ I believe this is all
     );
     const dialogue = Interpreter(content);
 
-    expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'always' },{ label: 'one time' }, { label: 'twice' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ text: 'always' },{ text: 'one time' }, { text: 'twice' } ] });
     dialogue.choose(2);
     expect((dialogue.getContent() as DialogueLine).text).toEqual('b');
 
-    expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'always' }, { label: 'twice' } ] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ text: 'always' }, { text: 'twice' } ] });
 
     dialogue.choose(1);
     expect((dialogue.getContent() as DialogueLine).text).toEqual('b');
 
-    expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ label: 'always' }] });
+    expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ text: 'always' }] });
   });
 });
 
