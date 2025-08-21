@@ -31,7 +31,11 @@ const DialogueOptionsList = styled.ol`
 
 const DialogueOption = styled.li`
   position: relative;
-  opacity: ${p => p.optionSelected !== undefined && p.optionSelected !== p.index ? 0.5 : 1 };
+  opacity: ${
+    p => p.optionSelected !== undefined ?
+      p.optionSelected !== p.index ? 0.5 : 1
+    : p.optionVisited === true ? 0.5 : 1
+  };
   ${p => p.optionSelected === p.index ? 'font-weight: 600;' : '' }
   cursor: ${p => p.optionSelected === undefined ? 'pointer' : 'default' };
   margin: 4px;
@@ -126,6 +130,7 @@ function DialogueOptions(props) {
             <DialogueOption
               key={index}
               optionSelected={selected}
+              optionVisited={option.visited}
               index={index}
             >
               <span onClick={e => { e.stopPropagation(); select(index) }}>{option.text} <DialogueMetadata {...option} isVisible={showMetadata}/></span>
