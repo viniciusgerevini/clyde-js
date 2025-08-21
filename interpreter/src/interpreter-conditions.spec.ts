@@ -1,5 +1,6 @@
 import { parse } from '@clyde-lang/parser';
 import { Interpreter, DialogueLine } from './interpreter';
+import { option, options } from '../test/helpers';
 
 describe("Interpreter: conditions", () => {
   it('show only lines that meet the criteria', () => {
@@ -55,16 +56,16 @@ I believe this is all
     );
     const dialogue = Interpreter(content);
 
-    expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ text: 'always' },{ text: 'one time' }, { text: 'twice' } ] });
+    expect(dialogue.getContent()).toEqual(options({ options: [option({ text: 'always' }),option({ text: 'one time' }), option({ text: 'twice' }) ] }));
     dialogue.choose(2);
     expect((dialogue.getContent() as DialogueLine).text).toEqual('b');
 
-    expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ text: 'always' }, { text: 'twice' } ] });
+    expect(dialogue.getContent()).toEqual(options({ options: [option({ text: 'always' }), option({ text: 'twice', visited: true }) ] }));
 
     dialogue.choose(1);
     expect((dialogue.getContent() as DialogueLine).text).toEqual('b');
 
-    expect(dialogue.getContent()).toEqual({ type: 'options', options: [{ text: 'always' }] });
+    expect(dialogue.getContent()).toEqual(options({ options: [option({ text: 'always' })] }));
   });
 });
 
