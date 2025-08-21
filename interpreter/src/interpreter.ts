@@ -58,6 +58,7 @@ export type DialogueOption = {
   speaker?: string;
   tags?: string[];
   id?: string;
+  visited: boolean;
 };
 
 export type DialogueEnd = {
@@ -488,11 +489,12 @@ export function Interpreter(
       id: optionsNode.id,
       tags: optionsNode.tags,
       text: replaceVariables(translateText(optionsNode.name as string, optionsNode.id, optionsNode.id_suffixes)),
-      options: options.map((t: ActionContentNode | OptionNode) => t.type === 'action_content' ? t.content : t).map((t: OptionNode) => ({
+      options: options.map((t: ActionContentNode | OptionNode) => t.type === 'action_content' ? t.content : t).map((t: OptionNode & WorkingNode) => ({
         text: replaceVariables(translateText(t.name!, t.id, t.id_suffixes)),
         speaker: t.speaker,
         tags: t.tags,
-        id: t.id
+        id: t.id,
+        visited: mem.wasAlreadyAccessed(t._index!),
       }))
     };
   };

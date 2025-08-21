@@ -531,7 +531,7 @@ third line
       fireEvent.click(getByLabelText(/Forward until next choice/i));
 
       expect(addDialogueLineStub).toHaveBeenCalledTimes(4);
-      expect(addDialogueLineStub).toHaveBeenLastCalledWith({ type: 'options', options: [{ text: 'yes' }]});
+      expect(addDialogueLineStub).toHaveBeenLastCalledWith({ type: 'options', options: [{ text: 'yes', visited: false }]});
     });
 
     it('stops in the end when no option found', () => {
