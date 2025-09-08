@@ -241,11 +241,11 @@ const printLine = (line: DialogueLine, verbose: boolean) => {
 
 const printOptions = (content: DialogueOptions, verbose: boolean) => {
   const speaker = content.speaker ? `${content.speaker}: ` : '';
-  const text = content.name ? `${content.name}` : '';
+  const text = content.text ? `${content.text}` : '';
   const info = verbose ? extras(content) : '';
   console.log(breakText(`${speaker}${text}${info}\n`));
   content.options.forEach( (option: DialogueOption, index: number) => {
-    console.log(breakText(`\t${index + 1} - ${option.label} ${verbose ? extras(option) : ''}`));
+    console.log(breakText(`\t${index + 1} - ${option.text} ${verbose ? extras(option) : ''}`));
   });
   console.log('');
 };
