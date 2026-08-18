@@ -3,7 +3,7 @@
   "version": "4.0.0",
   "description": "CLI tool for executing, parsing and debugging Clyde dialogue files",
   "license": "MIT",
-  "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
+  "author": "Vinicius Gerevini <thisisvini.com>",
   "bin": {
     "clyde": "./dist/cjs/cli.js"
   },

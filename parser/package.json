@@ -4,7 +4,7 @@
   "description": "Parser for Clyde dialogue language",
   "keywords": [],
   "license": "MIT",
-  "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
+  "author": "Vinicius Gerevini <thisisvini.com>",
   "files": [
     "./dist",
     "README.md",

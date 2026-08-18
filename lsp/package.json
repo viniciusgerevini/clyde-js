@@ -1,0 +1,30 @@
+{
+  "name": "@clyde-lang/lsp",
+  "version": "0.0.1",
+  "private": false,
+  "description": "Language server for Clyde dialogues",
+  "license": "MIT",
+  "author": "Vinicius Gerevini (thisisvini.com)",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@clyde-lang/parser": "^2.6.0",
+    "vscode-languageserver": "^10.1.0",
+    "vscode-languageserver-textdocument": "^1.0.12"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.4.2",
+    "oxfmt": "^0.63.0",
+    "oxlint": "^1.78.0",
+    "typescript": "^7.0.2"
+  }
+}

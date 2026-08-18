@@ -3,7 +3,7 @@
   "version": "5.0.0",
   "description": "Interpreter for Clyde dialogue language",
   "license": "MIT",
-  "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
+  "author": "Vinicius Gerevini <thisisvini.com>",
   "files": [
     "./dist",
     "README.md",
