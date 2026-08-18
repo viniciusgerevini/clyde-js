@@ -1,66 +1,73 @@
 export class ClydeDocumentRoot {
-  public readonly type = 'document';
-  constructor(public content: ContentNode[] = [], public blocks: BlockNode[] = [], public links = {}) {};
+  public readonly type = "document";
+  constructor(
+    public content: ContentNode[] = [],
+    public blocks: BlockNode[] = [],
+    public links = {},
+  ) {}
 }
 
 export class ContentNode {
-  public readonly type = 'content';
-  constructor(public content: any) {}; // TODO check if there is a better definition
+  public readonly type = "content";
+  constructor(public content: any) {} // TODO check if there is a better definition
 }
 
 export class BlockNode {
-  public readonly type = 'block';
-  constructor(public name: string, public content: ContentNode) {};
+  public readonly type = "block";
+  constructor(
+    public name: string,
+    public content: ContentNode,
+  ) {}
 }
 
 export class LineNode {
-  public readonly type = 'line';
+  public readonly type = "line";
 
-  constructor (
+  constructor(
     public value: string,
     public speaker?: string,
     public id?: string,
     public tags?: string[],
-    public id_suffixes?: string[]
-  ) {};
+    public id_suffixes?: string[],
+  ) {}
 }
 
 export class OptionsNode {
-  public readonly type = 'options';
+  public readonly type = "options";
 
-  constructor (
+  constructor(
     public content: (LogicBlockNode | OptionNode)[],
     public name?: string,
     public id?: string,
     public speaker?: string,
     public tags?: string[],
-    public id_suffixes?: string[]
-  ) {};
+    public id_suffixes?: string[],
+  ) {}
 }
 
 export class OptionNode {
-  public readonly type = 'option';
+  public readonly type = "option";
 
-  constructor (
+  constructor(
     public content: ContentNode,
     public mode?: string,
     public name?: string,
     public id?: string,
     public speaker?: string,
     public tags?: string[],
-    public id_suffixes?: string[]
-  ) {};
+    public id_suffixes?: string[],
+  ) {}
 }
 
-export class DivertNode { 
-  public readonly type = 'divert';
+export class DivertNode {
+  public readonly type = "divert";
   public target: string | object;
 
-  constructor (target: string) {
+  constructor(target: string) {
     if (target.startsWith("{")) {
       this.target = JSON.parse(target);
-    } else if (target === 'END') {
-      this.target = '<end>';
+    } else if (target === "END") {
+      this.target = "<end>";
     } else {
       this.target = target;
     }
@@ -68,28 +75,31 @@ export class DivertNode {
 }
 
 export class VariationsNode {
-  public readonly type = 'variations';
-  constructor(public mode: string, public content: ContentNode[] = []) {};
+  public readonly type = "variations";
+  constructor(
+    public mode: string,
+    public content: ContentNode[] = [],
+  ) {}
 }
 
 export class VariableNode {
-  public readonly type = 'variable';
-  constructor(public name: string) {};
+  public readonly type = "variable";
+  constructor(public name: string) {}
 }
 
 export type OperandNode = LiteralNode | NullTokenNode | ExpressionNode | VariableNode;
 
 export interface LiteralNode {
-  type: 'literal';
+  type: "literal";
   name: string;
   value: any;
 }
 
 export class NumberLiteralNode implements LiteralNode {
-  public type = 'literal' as 'literal';
+  public type = "literal" as const;
   public name = "number";
 
-  constructor(public value: number) {};
+  constructor(public value: number) {}
 
   static create(value: string) {
     return new NumberLiteralNode(Number(value));
@@ -97,21 +107,21 @@ export class NumberLiteralNode implements LiteralNode {
 }
 
 export class BooleanLiteralNode implements LiteralNode {
-  public type = 'literal' as 'literal';
+  public type = "literal" as const;
   public name = "boolean";
 
-  constructor(public value: boolean) {};
+  constructor(public value: boolean) {}
 
   static create(value: string) {
-    return new BooleanLiteralNode(value === 'true');
+    return new BooleanLiteralNode(value === "true");
   }
 }
 
 export class StringLiteralNode implements LiteralNode {
-  public type = 'literal' as 'literal';
+  public type = "literal" as const;
   public name = "string";
 
-  constructor(public value: string) {};
+  constructor(public value: string) {}
 
   static create(value: string) {
     return new StringLiteralNode(value);
@@ -119,26 +129,32 @@ export class StringLiteralNode implements LiteralNode {
 }
 
 export class NullTokenNode {
-  public readonly type = 'null';
+  public readonly type = "null";
 }
 
 export class ConditionalContentNode {
-  public readonly type = 'conditional_content';
-  constructor (public conditions: OperandNode, public content?: any) {}; // TODO replace any with something
+  public readonly type = "conditional_content";
+  constructor(
+    public conditions: OperandNode,
+    public content?: any,
+  ) {} // TODO replace any with something
 }
 
 export class ActionContentNode {
-  public readonly type = 'action_content';
-  constructor (public action: EventsNode | AssignmentsNode, public content?: any) {}; // TODO replace any with something
+  public readonly type = "action_content";
+  constructor(
+    public action: EventsNode | AssignmentsNode,
+    public content?: any,
+  ) {} // TODO replace any with something
 }
 
 export class MatchBlockNode {
-  public readonly type = 'match';
-  constructor (
+  public readonly type = "match";
+  constructor(
     public condition: OperandNode,
     public branches: MatchBlockBranch[],
-    public default_branch: ContentNode | undefined
-  ) {};
+    public default_branch: ContentNode | undefined,
+  ) {}
 }
 
 export class MatchBlockBranch {
@@ -147,38 +163,48 @@ export class MatchBlockBranch {
 }
 
 export class ExpressionNode {
-  public readonly type = 'expression';
-  constructor(public name: string, public elements: OperandNode[]) {};
+  public readonly type = "expression";
+  constructor(
+    public name: string,
+    public elements: OperandNode[],
+  ) {}
 }
 
 export class AssignmentsNode {
-  public type = 'assignments';
-  constructor (public assignments: AssignmentNode[]) {};
+  public type = "assignments";
+  constructor(public assignments: AssignmentNode[]) {}
 }
 
 export class AssignmentNode {
-  public type = 'assignment';
-  constructor (public variable: VariableNode, public operation: string, public value: OperandNode | AssignmentNode) {};
+  public type = "assignment";
+  constructor(
+    public variable: VariableNode,
+    public operation: string,
+    public value: OperandNode | AssignmentNode,
+  ) {}
 }
 
 export class EventsNode {
-  public type = 'events';
-  constructor (public events: EventNode[]) {};
+  public type = "events";
+  constructor(public events: EventNode[]) {}
 }
 
 export class EventNode {
-  public type = 'event';
-  constructor (public name: string, public params: Array<OperandNode> | undefined = undefined) {};
+  public type = "event";
+  constructor(
+    public name: string,
+    public params: Array<OperandNode> | undefined = undefined,
+  ) {}
 }
 
 export type LogicBlockNode = ConditionalContentNode | ActionContentNode;
 
 export type ActionableNode =
-  AssignmentsNode |
-  DivertNode |
-  EventsNode |
-  LineNode |
-  LogicBlockNode |
-  MatchBlockNode |
-  OptionsNode |
-  VariationsNode;
+  | AssignmentsNode
+  | DivertNode
+  | EventsNode
+  | LineNode
+  | LogicBlockNode
+  | MatchBlockNode
+  | OptionsNode
+  | VariationsNode;

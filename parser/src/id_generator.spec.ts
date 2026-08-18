@@ -1,6 +1,7 @@
-import { addIds } from './id_generator';
+/* oxlint-disable no-useless-escape */
+import { addIds } from "./id_generator";
 
-describe('ID Generator', () => {
+describe("ID Generator", () => {
   let idIncrement = 0;
   const fakeIdfunction = () => `abc${idIncrement++}`;
 
@@ -8,12 +9,12 @@ describe('ID Generator', () => {
     idIncrement = 0;
   });
 
-  it('adds id to simple line content', () => {
-    const clydeContent = 'This';
+  it("adds id to simple line content", () => {
+    const clydeContent = "This";
     expect(addIds(clydeContent)).toMatch(/This \$[A-z|0-9]{9}/);
   });
 
-  it('adds ids using custom id generator', () => {
+  it("adds ids using custom id generator", () => {
     const clydeContent = `
 This is the first line
 This is the second line
@@ -24,7 +25,7 @@ This is the second line $abc1
     `);
   });
 
-  it('keeps existing ids', () => {
+  it("keeps existing ids", () => {
     const clydeContent = `
 This is the first line
 This is the second line $existingId
@@ -37,7 +38,7 @@ This is the third line $abc1
     `);
   });
 
-  it('avoids id clashing', () => {
+  it("avoids id clashing", () => {
     const clydeContent = `
 This is the first line
 This is the second line $abc1
@@ -50,7 +51,7 @@ This is the third line $abc2
     `);
   });
 
-  it('keeps id among tags', () => {
+  it("keeps id among tags", () => {
     const clydeContent = `
 This is the first line #tag
 This is the second line #some_tag $existingId #another_tag
@@ -61,7 +62,7 @@ This is the second line #some_tag $existingId #another_tag
     `);
   });
 
-  it('adds to multiline', () => {
+  it("adds to multiline", () => {
     const clydeContent = `
 speaker: this is the
          first multiline
@@ -80,7 +81,7 @@ speaker: this is a second $some
     `);
   });
 
-  it('adds to options', () => {
+  it("adds to options", () => {
     const clydeContent = `
 does it work?
   * it should
@@ -109,7 +110,7 @@ does it work? $abc0
     `);
   });
 
-  it('adds to variations', () => {
+  it("adds to variations", () => {
     const clydeContent = `
 does it work?
 (
@@ -140,7 +141,7 @@ does it work? $abc0
     `);
   });
 
-  it('adds to quotted text', () => {
+  it("adds to quotted text", () => {
     const clydeContent = `
 "this is a text"
 "this is another text"
@@ -163,7 +164,7 @@ breaks for the win" $abc4
     `);
   });
 
-  it('ignore logic blocks', () => {
+  it("ignore logic blocks", () => {
     const clydeContent = `
 Hello { set a = "we should totally ignore blocks" }
 { set a = "for realz" }
@@ -178,7 +179,7 @@ still counts $abc1
     `);
   });
 
-  it('ignore comments', () => {
+  it("ignore comments", () => {
     const clydeContent = `
 Hello
 -- do nothing with this line
@@ -193,7 +194,7 @@ still counts $abc1
     `);
   });
 
-  it('handle some nasty nesting', () => {
+  it("handle some nasty nesting", () => {
     const clydeContent = `
 * hello
     what are my options
@@ -232,13 +233,13 @@ still counts $abc1
     `);
   });
 
-  it('uses id prefix', () => {
+  it("uses id prefix", () => {
     const clydeContent = `
 This is the first line
 This is the second line $abc1
 This is the third line
     `;
-    expect(addIds(clydeContent, { idGenerator: fakeIdfunction, idPrefix: 'MY_PREFIX_' })).toEqual(`
+    expect(addIds(clydeContent, { idGenerator: fakeIdfunction, idPrefix: "MY_PREFIX_" })).toEqual(`
 This is the first line $MY_PREFIX_abc0
 This is the second line $abc1
 This is the third line $MY_PREFIX_abc1
@@ -323,7 +324,8 @@ Vincent: What do you want to know?
 
 Jules: Enough talk. Let's get to work!
     `;
-    expect(addIds(clydeContent, { idGenerator: fakeIdfunction })).toEqual(`-- Pulp Fiction: Jules and Vincent first car scene.
+    expect(addIds(clydeContent, { idGenerator: fakeIdfunction }))
+      .toEqual(`-- Pulp Fiction: Jules and Vincent first car scene.
 -- adapted for showing off features.
 
 { not introductionMade } Jules: Okay now, tell me about that. $abc0 { set introductionMade =  true, europeTopicsTalked = 0 }

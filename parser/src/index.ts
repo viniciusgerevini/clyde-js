@@ -1,4 +1,4 @@
-import parse from './parser';
+import parse from "./parser";
 export { parse };
 
 export {
@@ -26,6 +26,6 @@ export {
   LogicBlockNode,
   ActionableNode,
   MatchBlockNode,
-} from './nodes';
+} from "./nodes";
 
-export { addIds } from './id_generator';
+export { addIds } from "./id_generator";

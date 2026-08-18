@@ -19,6 +19,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added
 
 - Support speaker blocks
+
 ```
 Vinny:
     Multiple lines can be set with same speaker.
@@ -110,16 +111,21 @@ Supporting new language options behaviour.
 Dialogues starting with single quotes escape especial characters.
 
 For example:
+
 ```
 'This is a #quoted text'
 ```
+
 Would previously return:
+
 ```
 TEXT: 'this is a
 TAG:  quoted
 TEXT: text'
 ```
+
 Now it returns:
+
 ```
 TEXT: This is a #quoted text
 ```
@@ -127,9 +133,8 @@ TEXT: This is a #quoted text
 ### Changed
 
 - support single quotes for logic block string literals and escaping dialogues.
-    - `{ set string_literal = 'valid string' }`
-    - `'This is a valid escaped dialogue line # $ '`
-
+  - `{ set string_literal = 'valid string' }`
+  - `'This is a valid escaped dialogue line # $ '`
 
 ### Thanks
 
