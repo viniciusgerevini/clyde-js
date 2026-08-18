@@ -38,15 +38,19 @@ describe("parse", () => {
 
     it("constains error metadata", () => {
       try {
-        parse(`$id id should be after text`);
+        parse(`$someid id should be after text`);
         fail("Parsing should not have succeeded");
       } catch (e) {
         expect(e.name).toEqual("WrongTokenError");
         expect(e.message).toContain('Unexpected token "$id" on line 1 column 1');
         expect(e.meta).toEqual({
-          line: 0,
-          column: 0,
-          expectedTokens: expect.arrayContaining(["EOF", "<speaker name>:", "text"]),
+          token: {
+            token: "LINE_ID",
+            line: 0,
+            column: 0,
+            value: "someid",
+          },
+          expectedTokens: expect.arrayContaining(["EOF", "SPEAKER", "TEXT"]),
         });
       }
     });

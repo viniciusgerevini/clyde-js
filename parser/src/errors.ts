@@ -1,6 +1,7 @@
+import { Token } from "./lexer";
+
 interface WrongTokenErrorMeta {
-  line: number;
-  column: number;
+  token: Token;
   expectedTokens: string[];
 }
 

@@ -86,13 +86,11 @@ export default function parse(doc: string): ClydeDocumentRoot {
   let isMultilineEnabled = true;
 
   const wrongTokenError = (token: Token, expected: string[]) => {
-    const expectedTokens = expected.map(getTokenFriendlyHint);
     throw new WrongTokenError(
-      `Unexpected token "${getTokenFriendlyHint(token.token)}" on line ${token.line + 1} column ${token.column + 1}. Expected ${expectedTokens.join(", ")} `,
+      `Unexpected token "${getTokenFriendlyHint(token.token)}" on line ${token.line + 1} column ${token.column + 1}. Expected ${expected.map(getTokenFriendlyHint).join(", ")} `,
       {
-        line: token.line,
-        column: token.column,
-        expectedTokens,
+        token,
+        expectedTokens: expected,
       },
     );
   };
