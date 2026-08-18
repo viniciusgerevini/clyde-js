@@ -35,5 +35,20 @@ describe("parse", () => {
         /Unexpected token "EOF" on line 1 column 9. Expected .+/,
       );
     });
+
+    it("constains error metadata", () => {
+      try {
+        parse(`$id id should be after text`);
+        fail("Parsing should not have succeeded");
+      } catch (e) {
+        expect(e.name).toEqual("WrongTokenError");
+        expect(e.message).toContain('Unexpected token "$id" on line 1 column 1');
+        expect(e.meta).toEqual({
+          line: 0,
+          column: 0,
+          expectedTokens: expect.arrayContaining(["EOF", "<speaker name>:", "text"]),
+        });
+      }
+    });
   });
 });
