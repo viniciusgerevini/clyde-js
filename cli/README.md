@@ -58,7 +58,8 @@ Options:
 ```
 
 autoid:
-``` 
+
+```
 clyde autoid <input file> [output file]
 clyde autoid -i <input> -o <output>
 
@@ -76,6 +77,7 @@ Options:
 ```
 
 csv:
+
 ```
 Usage:
 clyde csv <source file path> [output file path]

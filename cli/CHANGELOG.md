@@ -47,6 +47,7 @@ Bumping major dependencies to support match block and changes in the language
 ## 2.1.2 (2022-07-04)
 
 ### Fixed
+
 - Update parser and interpreter to fix inconsistencies with logic blocks in tab indented files.
 
 ## 2.1.1 (2022-07-04)
@@ -113,10 +114,10 @@ Dialogues starting with single quotes escape especial characters.
   - `'This is a valid escaped dialogue line # $ '`
 - Updated @clyde-lang/interpreter to 1.0.0
 
-
 ## 0.1.2 (2021-10-05)
 
 ### Fixed
+
 - upgrade @clyde-lang/interpreter to align shuffle behaviour with docs.
 
 ## 0.1.1 (2021-06-04)

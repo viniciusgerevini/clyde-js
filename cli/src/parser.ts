@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import { parse } from '@clyde-lang/parser';
-import yargs from 'yargs';
+import fs from "fs";
+import path from "path";
+import { parse } from "@clyde-lang/parser";
+import yargs from "yargs";
 
 interface ParserCliArgs {
   input: string;
@@ -16,24 +16,27 @@ interface ParserCliArgs {
 
 export function buildParserArgsParser(yargs: yargs.Argv) {
   return yargs
-    .usage(`Usage:\n$0 parse <source file path> <output file path>\n$0 parse -i <input> -o <output>`)
+    .usage(
+      `Usage:\n$0 parse <source file path> <output file path>\n$0 parse -i <input> -o <output>`,
+    )
     .check((a: any, _options) => {
       const argv = a as ParserCliArgs;
       if (argv.batch) {
         if (argv.batchOutput) {
           if (argv.batchOutput.length !== argv.batch.length) {
-            throw new Error('ERROR: input and output paths for batch operation should have same number of arguments.')
+            throw new Error(
+              "ERROR: input and output paths for batch operation should have same number of arguments.",
+            );
           }
         } else {
-          argv.batchOutput = argv.batch.map(i => outputFilename(i));
+          argv.batchOutput = argv.batch.map((i) => outputFilename(i));
         }
         return true;
       }
 
       if (argv._.length === 1 && !argv.input) {
-        throw new Error('ERROR: Source file not provided.');
+        throw new Error("ERROR: Source file not provided.");
       }
-
 
       if (!argv.input) {
         argv.input = argv._[1];
@@ -64,7 +67,7 @@ export function buildParserArgsParser(yargs: yargs.Argv) {
 
         const outputStats = fs.statSync(argv.folderOutput);
         if (!outputStats.isDirectory()) {
-          throw new Error('ERROR: output must be a folder when input is a folder.');
+          throw new Error("ERROR: output must be a folder when input is a folder.");
         }
         return true;
       }
@@ -80,35 +83,36 @@ export function buildParserArgsParser(yargs: yargs.Argv) {
       return true;
     })
 
-    .option('input', {
-      alias: 'i',
-      type: 'string',
-      description: 'Path to .clyde dialogue file'
+    .option("input", {
+      alias: "i",
+      type: "string",
+      description: "Path to .clyde dialogue file",
     })
 
-    .option('output', {
-      alias: 'o',
-      type: 'string',
-      description: 'Path to output .json file. Default: <input>.json'
+    .option("output", {
+      alias: "o",
+      type: "string",
+      description: "Path to output .json file. Default: <input>.json",
     })
 
-    .option('batch', {
-      alias: 'b',
-      type: 'array',
-      description: 'Parse multiple files at same time'
+    .option("batch", {
+      alias: "b",
+      type: "array",
+      description: "Parse multiple files at same time",
     })
 
-    .option('batch-output', {
-      type: 'array',
-      description: 'Path output names for batched files result. Should have same number of arguments as in --batch.'
+    .option("batch-output", {
+      type: "array",
+      description:
+        "Path output names for batched files result. Should have same number of arguments as in --batch.",
     })
 
-    .option('dry-run', {
-      alias: 'd',
-      type: 'boolean',
-      description: 'Do not generate output file. Only check for syntax errors.'
+    .option("dry-run", {
+      alias: "d",
+      type: "boolean",
+      description: "Do not generate output file. Only check for syntax errors.",
     })
-    .help()
+    .help();
 }
 
 export function executeParser(argv: ParserCliArgs, exitCallback: Function): void {
@@ -117,8 +121,8 @@ export function executeParser(argv: ParserCliArgs, exitCallback: Function): void
       argv.batch.forEach((input, i) => {
         parseFile(input, argv.batchOutput[i], argv.dryRun);
       });
-    } else if(argv.folderInput) {
-      fs.readdirSync(argv.folderInput).forEach(file => {
+    } else if (argv.folderInput) {
+      fs.readdirSync(argv.folderInput).forEach((file) => {
         if ((file.match(/\.clyde$/) || []).length > 0) {
           const input = path.resolve(argv.folderInput, file);
           const output = path.resolve(argv.folderOutput, outputFilename(file));
@@ -133,20 +137,19 @@ export function executeParser(argv: ParserCliArgs, exitCallback: Function): void
     console.log(`ERROR: ${e.message}`);
     exitCallback(1);
   }
-};
-
-const outputFilename = (input: string): string => {
-  let output = input.replace(/\.clyde$/, '.json');
-  if (input === output) {
-    output += '.json';
-  }
-  return output;
 }
 
+const outputFilename = (input: string): string => {
+  let output = input.replace(/\.clyde$/, ".json");
+  if (input === output) {
+    output += ".json";
+  }
+  return output;
+};
+
 const parseFile = (path: string, output: string, isDryRun: boolean): void => {
-  const content = parse(fs.readFileSync(path, 'utf8'));
+  const content = parse(fs.readFileSync(path, "utf8"));
   if (!isDryRun) {
     fs.writeFileSync(output, JSON.stringify(content));
   }
 };
-
