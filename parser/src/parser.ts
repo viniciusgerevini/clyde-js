@@ -29,7 +29,7 @@ import {
   MatchBlockBranch,
 } from "./nodes";
 
-import { WrongTokenError } from "./errors";
+import { UnexpectedTokenError } from "./errors";
 
 const variationsModes = [
   "sequence",
@@ -86,7 +86,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
   let isMultilineEnabled = true;
 
   const wrongTokenError = (token: Token, expected: string[]) => {
-    throw new WrongTokenError(
+    throw new UnexpectedTokenError(
       `Unexpected token "${getTokenFriendlyHint(token.token)}" on line ${token.line + 1} column ${token.column + 1}. Expected ${expected.map(getTokenFriendlyHint).join(", ")} `,
       {
         token,

@@ -5,12 +5,15 @@ interface WrongTokenErrorMeta {
   expectedTokens: string[];
 }
 
-export class WrongTokenError extends Error {
+/**
+ * Error returned when the parser finds an unexpected token.
+ **/
+export class UnexpectedTokenError extends Error {
   constructor(
     message: string,
     public meta: WrongTokenErrorMeta,
   ) {
     super(message);
-    this.name = "WrongTokenError";
+    this.name = "UnexpectedTokenError";
   }
 }
