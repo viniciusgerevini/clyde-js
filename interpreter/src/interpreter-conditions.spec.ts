@@ -1,9 +1,9 @@
-import { parse } from '@clyde-lang/parser';
-import { Interpreter, DialogueLine } from './interpreter';
-import { option, options } from '../test/helpers';
+import { parse } from "@clyde-lang/parser";
+import { Interpreter, DialogueLine } from "./interpreter";
+import { option, options } from "../test/helpers";
 
 describe("Interpreter: conditions", () => {
-  it('show only lines that meet the criteria', () => {
+  it("show only lines that meet the criteria", () => {
     const content = parse(`
 Start with hp 100 {set hp = 100}
 { hp > 90 } you should see this line.
@@ -22,25 +22,26 @@ Set hp 90. {set hp = 90}
 { not goodbye and goodbye } Almost...
 { hp / 2 == 45 } It accepts mafs
 I believe this is all
-`
-    );
+`);
     const dialogue = Interpreter(content);
 
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('Start with hp 100');
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('you should see this line.');
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('Set hp 90.');
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('but you should see this line.');
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('but you should see this other line.');
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('and also this line.');
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('this one.');
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('and this one.');
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('and this one for sure.');
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('Almost there!');
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('It accepts mafs');
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('I believe this is all');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("Start with hp 100");
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("you should see this line.");
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("Set hp 90.");
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("but you should see this line.");
+    expect((dialogue.getContent() as DialogueLine).text).toEqual(
+      "but you should see this other line.",
+    );
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("and also this line.");
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("this one.");
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("and this one.");
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("and this one for sure.");
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("Almost there!");
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("It accepts mafs");
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("I believe this is all");
   });
 
-  it('use condition on options', () => {
+  it("use condition on options", () => {
     const content = parse(`
 {set choice_count = 0 }
 + always
@@ -52,20 +53,28 @@ I believe this is all
 + { choice_count < 2 } twice
   b { set choice_count += 1 }
   <-
-`
-    );
+`);
     const dialogue = Interpreter(content);
 
-    expect(dialogue.getContent()).toEqual(options({ options: [option({ text: 'always' }),option({ text: 'one time' }), option({ text: 'twice' }) ] }));
+    expect(dialogue.getContent()).toEqual(
+      options({
+        options: [
+          option({ text: "always" }),
+          option({ text: "one time" }),
+          option({ text: "twice" }),
+        ],
+      }),
+    );
     dialogue.choose(2);
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('b');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("b");
 
-    expect(dialogue.getContent()).toEqual(options({ options: [option({ text: 'always' }), option({ text: 'twice', visited: true }) ] }));
+    expect(dialogue.getContent()).toEqual(
+      options({ options: [option({ text: "always" }), option({ text: "twice", visited: true })] }),
+    );
 
     dialogue.choose(1);
-    expect((dialogue.getContent() as DialogueLine).text).toEqual('b');
+    expect((dialogue.getContent() as DialogueLine).text).toEqual("b");
 
-    expect(dialogue.getContent()).toEqual(options({ options: [option({ text: 'always' })] }));
+    expect(dialogue.getContent()).toEqual(options({ options: [option({ text: "always" })] }));
   });
 });
-

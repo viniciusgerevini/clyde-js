@@ -1,15 +1,16 @@
-import fs from 'fs';
-import parse from './parser';
+import fs from "fs";
+import parse from "./parser";
 
-describe('Check compilation results', () => {
-  const EXAMPLES_FOLDER = './test/samples/';
-  const RESULTS_FOLDER = './test/samples/results/';
+describe("Check compilation results", () => {
+  const EXAMPLES_FOLDER = "./test/samples/";
+  const RESULTS_FOLDER = "./test/samples/results/";
 
   const getSourceFiles = () => {
-    return fs.readdirSync(EXAMPLES_FOLDER, { withFileTypes: true })
-      .filter(f => f.isFile() && f.name.endsWith('.clyde'))
-      .map( f => f.name );
-  }
+    return fs
+      .readdirSync(EXAMPLES_FOLDER, { withFileTypes: true })
+      .filter((f) => f.isFile() && f.name.endsWith(".clyde"))
+      .map((f) => f.name);
+  };
 
   const getFile = (path) => fs.readFileSync(path, "utf8");
 
@@ -21,9 +22,10 @@ describe('Check compilation results', () => {
     return getFile(resultFilePath(sourceFileName));
   };
 
-  const resultFilePath = (sourceFileName) => `${RESULTS_FOLDER}${sourceFileName.replace(/\.clyde$/, '.json')}`;
+  const resultFilePath = (sourceFileName) =>
+    `${RESULTS_FOLDER}${sourceFileName.replace(/\.clyde$/, ".json")}`;
 
-  test.each(getSourceFiles())('check: %s', (sourceFileName) => {
+  test.each(getSourceFiles())("check: %s", (sourceFileName) => {
     const source = getSourceFile(sourceFileName);
     const result = parse(source);
 

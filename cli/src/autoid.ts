@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import { addIds } from '@clyde-lang/parser';
-import yargs from 'yargs';
+import fs from "fs";
+import path from "path";
+import { addIds } from "@clyde-lang/parser";
+import yargs from "yargs";
 
 interface IdGeneratorArgs {
   input: string;
@@ -25,14 +25,16 @@ $0 autoid -i <input> -o <output>`)
       if (argv.batch) {
         if (argv.batchOutput) {
           if (argv.batchOutput.length !== argv.batch.length) {
-            throw new Error('ERROR: input and output paths for batch operation should have same number of arguments.')
+            throw new Error(
+              "ERROR: input and output paths for batch operation should have same number of arguments.",
+            );
           }
         }
         return true;
       }
 
       if (argv._.length === 1 && !argv.input) {
-        throw new Error('ERROR: Source file not provided.');
+        throw new Error("ERROR: Source file not provided.");
       }
 
       if (!argv.input) {
@@ -62,7 +64,7 @@ $0 autoid -i <input> -o <output>`)
 
         const outputStats = argv.folderOutput && fs.statSync(argv.folderOutput);
         if (outputStats && !outputStats.isDirectory()) {
-          throw new Error('ERROR: output must be a folder when input is a folder.');
+          throw new Error("ERROR: output must be a folder when input is a folder.");
         }
         return true;
       }
@@ -76,39 +78,41 @@ $0 autoid -i <input> -o <output>`)
       return true;
     })
 
-    .option('input', {
-      alias: 'i',
-      type: 'string',
-      description: 'Path to .clyde dialogue file or directory.'
+    .option("input", {
+      alias: "i",
+      type: "string",
+      description: "Path to .clyde dialogue file or directory.",
     })
 
-    .option('output', {
-      alias: 'o',
-      type: 'string',
-      description: 'Path to output .clyde file or directory. If not provided, result is printed to stdout or original file is overwritten if --replace flag is provided.'
+    .option("output", {
+      alias: "o",
+      type: "string",
+      description:
+        "Path to output .clyde file or directory. If not provided, result is printed to stdout or original file is overwritten if --replace flag is provided.",
     })
 
-    .option('batch', {
-      alias: 'b',
-      type: 'array',
-      description: 'Parse multiple files at same time'
+    .option("batch", {
+      alias: "b",
+      type: "array",
+      description: "Parse multiple files at same time",
     })
 
-    .option('batch-output', {
-      type: 'array',
-      description: 'Path output names for batched files result. Should have same number of arguments as in --batch.'
+    .option("batch-output", {
+      type: "array",
+      description:
+        "Path output names for batched files result. Should have same number of arguments as in --batch.",
     })
 
-    .option('replace', {
-      alias: 'r',
-      type: 'boolean',
-      description: 'Ovewrite input file instead of printing to stdout.'
+    .option("replace", {
+      alias: "r",
+      type: "boolean",
+      description: "Ovewrite input file instead of printing to stdout.",
     })
 
-    .option('prefix',{
-      alias: 'p',
-      type: 'string',
-      description: 'Prefix to be added to ids'
+    .option("prefix", {
+      alias: "p",
+      type: "string",
+      description: "Prefix to be added to ids",
     })
     .help().argv;
 }
@@ -119,8 +123,8 @@ export function executeIdGenerator(argv: IdGeneratorArgs, exitCallback: Function
       argv.batch.forEach((input, i) => {
         generateIds(input, argv.batchOutput && argv.batchOutput[i], argv.replace, argv.prefix);
       });
-    } else if(argv.folderInput) {
-      fs.readdirSync(argv.folderInput).forEach(file => {
+    } else if (argv.folderInput) {
+      fs.readdirSync(argv.folderInput).forEach((file) => {
         if ((file.match(/\.clyde$/) || []).length > 0) {
           const input = path.resolve(argv.folderInput, file);
           const output = argv.folderOutput ? path.resolve(argv.folderOutput, file) : undefined;
@@ -135,15 +139,15 @@ export function executeIdGenerator(argv: IdGeneratorArgs, exitCallback: Function
     console.error(`ERROR: ${e.message}`);
     exitCallback(1);
   }
-};
+}
 
 const generateIds = (path: string, output: string, replace: boolean, idPrefix: string): void => {
-  const content = addIds(fs.readFileSync(path, 'utf8'), { idPrefix });
+  const content = addIds(fs.readFileSync(path, "utf8"), { idPrefix });
 
   if (output) {
     console.log(`Auto-generating line ids for ${path}`);
     if (replace) {
-      console.log("WARN: 'replace' option won't be used, because output path was provided.")
+      console.log("WARN: 'replace' option won't be used, because output path was provided.");
     }
     fs.writeFileSync(output, content);
   } else if (replace) {
@@ -153,4 +157,3 @@ const generateIds = (path: string, output: string, replace: boolean, idPrefix: s
     console.log(content);
   }
 };
-

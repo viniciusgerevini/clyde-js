@@ -2,12 +2,11 @@
 
 [![npm version](https://badge.fury.io/js/%40clyde-lang%2Finterpreter.svg)](https://www.npmjs.com/package/@clyde-lang/interpreter)
 
-
 Interpreter library for [Clyde dialogue language](https://github.com/viniciusgerevini/clyde/blob/main/LANGUAGE.md).
 
 ```javascript
-import { parse } from '@clyde-lang/parser';
-import { Interpreter } from '@clyde-lang/interpreter';
+import { parse } from "@clyde-lang/parser";
+import { Interpreter } from "@clyde-lang/interpreter";
 
 const content = parse(`
 
@@ -20,11 +19,11 @@ Harry: I'm a what?
 
 const dialogue = Interpreter(content);
 
-dialogue.getContent()
+dialogue.getContent();
 
 //respone: { type: 'line', text: 'Yer a wizard, Harry!', speaker: 'Hagrid }
 
-dialogue.getContent()
+dialogue.getContent();
 
 // response:
 // {
@@ -37,10 +36,9 @@ dialogue.getContent()
 //     ]
 // }
 
+dialogue.choose(1);
 
-dialogue.choose(1)
-
-dialogue.getContent()
+dialogue.getContent();
 
 // response: { type: 'line', text: 'Yer a wizard', speaker: 'Hagrid }
 ```

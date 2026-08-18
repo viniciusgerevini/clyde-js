@@ -5,7 +5,7 @@
 Parser for [Clyde dialogue language](https://github.com/viniciusgerevini/clyde/blob/master/LANGUAGE.md).
 
 ```javascript
-import { parse } from '@clyde-lang/parser';
+import { parse } from "@clyde-lang/parser";
 
 const result = parse(`
 

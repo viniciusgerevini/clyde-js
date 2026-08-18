@@ -1,30 +1,30 @@
-import { EventType, EventsInstance } from './events';
+import { EventType, EventsInstance } from "./events";
 
-const SPECIAL_VARIABLE_NAMES = [ 'OPTIONS_COUNT' ];
-const EXTERNAL_VARIABLE_PREFIX = '@';
+const SPECIAL_VARIABLE_NAMES = ["OPTIONS_COUNT"];
+const EXTERNAL_VARIABLE_PREFIX = "@";
 
 export type InternalMemory = {
   access: any;
   variables: any;
   internal: any;
-}
+};
 
 export type DialogueData = Omit<InternalMemory, "e_variables">;
 
 export interface MemoryManager {
-    setAsAccessed(id: string): void;
-    wasAlreadyAccessed(id: string): boolean;
-    getVariable<T>(id: string, defaultValue?: T): T;
-    setVariable<T>(id: string, value: T): T;
-    getExternalVariable<T>(id: string): T;
-    setExternalVariable<T>(id: string, value: T): T;
-    setInternalVariable<T>(id: string, value: T): T;
-    getInternalVariable<T>(id: string, defaultValue?: T): T;
-    onExternalVariableFetch(callback: ((name: string) => any) | undefined): void;
-    onExternalVariableUpdate(callback: ((name: string, value: any) => void) | undefined): void;
-    getAll(): DialogueData;
-    load(data: DialogueData): void;
-    clear(): void;
+  setAsAccessed(id: string): void;
+  wasAlreadyAccessed(id: string): boolean;
+  getVariable<T>(id: string, defaultValue?: T): T;
+  setVariable<T>(id: string, value: T): T;
+  getExternalVariable<T>(id: string): T;
+  setExternalVariable<T>(id: string, value: T): T;
+  setInternalVariable<T>(id: string, value: T): T;
+  getInternalVariable<T>(id: string, defaultValue?: T): T;
+  onExternalVariableFetch(callback: ((name: string) => any) | undefined): void;
+  onExternalVariableUpdate(callback: ((name: string, value: any) => void) | undefined): void;
+  getAll(): DialogueData;
+  load(data: DialogueData): void;
+  clear(): void;
 }
 
 export function Memory(listeners: EventsInstance, init?: InternalMemory): MemoryManager {
@@ -67,8 +67,12 @@ export function Memory(listeners: EventsInstance, init?: InternalMemory): Memory
         return this.setExternalVariable(id, value);
       }
 
-      listeners.triggerEvent(EventType.VARIABLE_CHANGED, { name: id, value, previousValue: mem.variables[id] });
-      return mem.variables[id] = value;
+      listeners.triggerEvent(EventType.VARIABLE_CHANGED, {
+        name: id,
+        value,
+        previousValue: mem.variables[id],
+      });
+      return (mem.variables[id] = value);
     },
 
     getExternalVariable(id: string): any {
@@ -94,7 +98,7 @@ export function Memory(listeners: EventsInstance, init?: InternalMemory): Memory
     },
 
     setInternalVariable<T>(id: string, value: T): T {
-      return mem.internal[id] = value;
+      return (mem.internal[id] = value);
     },
 
     getInternalVariable(id: string, defaultValue?: any): any {
@@ -131,7 +135,6 @@ export function Memory(listeners: EventsInstance, init?: InternalMemory): Memory
     },
     onExternalVariableUpdate(callback: ((name: string, value: any) => void) | undefined): void {
       onExternalVariableUpdateCallback = callback;
-    }
+    },
   };
-};
-
+}

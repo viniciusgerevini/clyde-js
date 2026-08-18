@@ -1,4 +1,4 @@
-import { TOKENS, Token, tokenize } from './lexer';
+import { TOKENS, Token, tokenize } from "./lexer";
 
 export interface AddIdsOptions {
   // Custom id generation function
@@ -9,11 +9,11 @@ export interface AddIdsOptions {
 
 export function addIds(clydeDocument: string, options: AddIdsOptions = {}) {
   const idGenerator = options.idGenerator || generateSimpleId;
-  const idPrefix = options.idPrefix || '';
+  const idPrefix = options.idPrefix || "";
   const tokens = tokenize(clydeDocument).getAll();
   const lines = clydeDocument.split("\n");
 
-  const existingIds = tokens.filter(t => t.token === TOKENS.LINE_ID).map(t => t.value);
+  const existingIds = tokens.filter((t) => t.token === TOKENS.LINE_ID).map((t) => t.value);
 
   const generateUniqueId = () => {
     const id = idPrefix + idGenerator();
@@ -29,12 +29,12 @@ export function addIds(clydeDocument: string, options: AddIdsOptions = {}) {
     let idPosition: IdPosition;
     if ([TOKENS.OPTION, TOKENS.STICKY_OPTION, TOKENS.FALLBACK_OPTION].includes(token.token)) {
       let offset = i + 1;
-      for (;offset < tokens.length; offset++) {
+      for (; offset < tokens.length; offset++) {
         if (tokens[offset].token === TOKENS.TEXT) {
           break;
         }
       }
-      idPosition = findPositionForId(tokens, offset, false)
+      idPosition = findPositionForId(tokens, offset, false);
     } else if (token.token === TOKENS.TEXT) {
       idPosition = findPositionForId(tokens, i);
     }
@@ -46,7 +46,8 @@ export function addIds(clydeDocument: string, options: AddIdsOptions = {}) {
         if (idPosition.startColumn > 0 && ['"', "'"].includes(line[idPosition.startColumn - 1])) {
           if (line[idPosition.column]) {
             idPosition.column += 1;
-          } else { // this means the quotted text has line breaks
+          } else {
+            // this means the quotted text has line breaks
             idPosition.column = idPosition.column - line.length;
             idPosition.line += 1;
             line = lines[idPosition.line];
@@ -69,7 +70,11 @@ interface IdPosition {
   index: number;
 }
 
-function findPositionForId(tokens: Token[], startingPosition: number, allowIndent: boolean = true): IdPosition {
+function findPositionForId(
+  tokens: Token[],
+  startingPosition: number,
+  allowIndent: boolean = true,
+): IdPosition {
   let placeToken = tokens[startingPosition];
   let index = startingPosition;
   let allowText = false;
@@ -109,7 +114,7 @@ function addAt(text: string, extraContent: string, position: number) {
 }
 
 function generateSimpleId() {
-  return idPiece() + idPiece() + idPiece()
+  return idPiece() + idPiece() + idPiece();
 }
 
 function idPiece() {

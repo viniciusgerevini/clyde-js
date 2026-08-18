@@ -2,19 +2,36 @@
   "name": "@clyde-lang/cli",
   "version": "4.0.0",
   "description": "CLI tool for executing, parsing and debugging Clyde dialogue files",
-  "main": "./dist/cjs/index.js",
-  "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
   "license": "MIT",
+  "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
+  "bin": {
+    "clyde": "./dist/cjs/cli.js"
+  },
+  "files": [
+    "./dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/mjs/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/mjs/index.js",
+      "default": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "prepublish": "npm run build",
     "build": "rm -rf dist/* && tsc -p tsconfig.json && tsc-esm-fix --target dist/mjs && tsc -p tsconfig-cjs.json && ./configure_dist_modules",
     "test": "jest --coverage",
-    "start": "node ./dist/cjs/cli.js"
+    "start": "node ./dist/cjs/cli.js",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix"
   },
-  "bin": {
-    "clyde": "./dist/cjs/cli.js"
-  },
-  "files": ["./dist", "README.md", "CHANGELOG.md"],
   "dependencies": {
     "@clyde-lang/interpreter": "5.0.0",
     "@clyde-lang/parser": "2.6.0",
@@ -24,18 +41,11 @@
     "@types/jest": "^28.1.1",
     "@types/yargs": "^17.0.10",
     "jest": "^28.1.1",
+    "oxfmt": "^0.63.0",
+    "oxlint": "^1.78.0",
     "ts-jest": "^28.0.4",
     "tsc-esm-fix": "^2.18.0",
     "typescript": "^4.7.3"
-  },
-  "module": "./dist/mjs/index.js",
-  "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/mjs/index.js",
-      "default": "./dist/cjs/index.js"
-    },
-    "./package.json": "./package.json"
   },
   "jest": {
     "preset": "ts-jest",

@@ -70,7 +70,6 @@ the external variable methods `set_external_variable` and `get_external_variable
 
 - Changing block order in file does not impact persisted options and variations anymore.
 
-
 ## 3.1.0 (2022-08-25)
 
 ### Added
@@ -133,6 +132,7 @@ Dialogues starting with single quotes escape especial characters.
 ### Breaking Changes
 
 Cycle is default variation when using shuffle without explictly declaring mode.
+
 ```
 ( shuffle
     - variation 1
@@ -144,8 +144,8 @@ Cycle is default variation when using shuffle without explictly declaring mode.
     - variation 2
 )
 ```
-It used to be `sequence`, which is wrong according to the documentation. As the documentation always stated this behaviour, I'll only bump a patch.
 
+It used to be `sequence`, which is wrong according to the documentation. As the documentation always stated this behaviour, I'll only bump a patch.
 
 ### Fixed
 

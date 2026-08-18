@@ -1,9 +1,9 @@
-import fs from 'fs';
-import path from 'path';
-import yargs from 'yargs';
-import { parse } from '@clyde-lang/parser';
+import fs from "fs";
+import path from "path";
+import yargs from "yargs";
+import { parse } from "@clyde-lang/parser";
 
-import { csvConverter } from './csv_converter';
+import { csvConverter } from "./csv_converter";
 
 interface CsvCLIArgs {
   input: string;
@@ -27,18 +27,19 @@ export function buildCsvArgsParser(yargs: yargs.Argv) {
       if (argv.batch) {
         if (argv.batchOutput) {
           if (argv.batchOutput.length !== argv.batch.length) {
-            throw new Error('ERROR: input and output paths for batch operation should have same number of arguments.')
+            throw new Error(
+              "ERROR: input and output paths for batch operation should have same number of arguments.",
+            );
           }
         } else {
-          argv.batchOutput = argv.batch.map(i => outputFilename(i));
+          argv.batchOutput = argv.batch.map((i) => outputFilename(i));
         }
         return true;
       }
 
       if (argv._.length === 1 && !argv.input) {
-        throw new Error('ERROR: Source file not provided.');
+        throw new Error("ERROR: Source file not provided.");
       }
-
 
       if (!argv.input) {
         argv.input = argv._[1];
@@ -69,7 +70,7 @@ export function buildCsvArgsParser(yargs: yargs.Argv) {
 
         const outputStats = fs.statSync(argv.folderOutput);
         if (!outputStats.isDirectory()) {
-          throw new Error('ERROR: output must be a folder when input is a folder.');
+          throw new Error("ERROR: output must be a folder when input is a folder.");
         }
         return true;
       }
@@ -85,53 +86,54 @@ export function buildCsvArgsParser(yargs: yargs.Argv) {
       return true;
     })
 
-    .option('input', {
-      alias: 'i',
-      type: 'string',
-      description: 'Path to .clyde dialogue file'
+    .option("input", {
+      alias: "i",
+      type: "string",
+      description: "Path to .clyde dialogue file",
     })
 
-    .option('output', {
-      alias: 'o',
-      type: 'string',
-      description: 'Path to output .csv file. Default: <input>.csv'
+    .option("output", {
+      alias: "o",
+      type: "string",
+      description: "Path to output .csv file. Default: <input>.csv",
     })
 
-    .option('batch', {
-      alias: 'b',
-      type: 'array',
-      description: 'Parse multiple files at same time'
+    .option("batch", {
+      alias: "b",
+      type: "array",
+      description: "Parse multiple files at same time",
     })
 
-    .option('batch-output', {
-      type: 'array',
-      description: 'Path output names for batched files result. Should have same number of arguments as in --batch.'
+    .option("batch-output", {
+      type: "array",
+      description:
+        "Path output names for batched files result. Should have same number of arguments as in --batch.",
     })
 
-    .option('header', {
-      alias: 'h',
-      type: 'string',
-      description: 'CSV file first line. Default: "id;text"'
+    .option("header", {
+      alias: "h",
+      type: "string",
+      description: 'CSV file first line. Default: "id;text"',
     })
 
-    .option('separator', {
-      alias: 's',
-      type: 'string',
-      description: 'CSV file separator. Default: ; (semicolon)'
+    .option("separator", {
+      alias: "s",
+      type: "string",
+      description: "CSV file separator. Default: ; (semicolon)",
     })
 
-    .option('with-metadata', {
-      alias: 'm',
-      type: 'boolean',
-      description: 'Include metadata column with extra info (speaker, tags, etc)'
+    .option("with-metadata", {
+      alias: "m",
+      type: "boolean",
+      description: "Include metadata column with extra info (speaker, tags, etc)",
     })
 
-    .option('dry-run', {
-      alias: 'd',
-      type: 'boolean',
-      description: 'Do not generate output file. Prints to stdout.'
+    .option("dry-run", {
+      alias: "d",
+      type: "boolean",
+      description: "Do not generate output file. Prints to stdout.",
     })
-    .help()
+    .help();
 }
 
 export function executeCsvConverter(argv: CsvCLIArgs, exitCallback: Function): void {
@@ -140,8 +142,8 @@ export function executeCsvConverter(argv: CsvCLIArgs, exitCallback: Function): v
       argv.batch.forEach((input, i) => {
         parseFile(input, argv.batchOutput[i], argv);
       });
-    } else if(argv.folderInput) {
-      fs.readdirSync(argv.folderInput).forEach(file => {
+    } else if (argv.folderInput) {
+      fs.readdirSync(argv.folderInput).forEach((file) => {
         if ((file.match(/\.clyde$/) || []).length > 0) {
           const input = path.resolve(argv.folderInput, file);
           const output = path.resolve(argv.folderOutput, outputFilename(file));
@@ -159,16 +161,20 @@ export function executeCsvConverter(argv: CsvCLIArgs, exitCallback: Function): v
 }
 
 const outputFilename = (input: string): string => {
-  let output = input.replace(/\.clyde$/, '.csv');
+  let output = input.replace(/\.clyde$/, ".csv");
   if (input === output) {
-    output += '.csv';
+    output += ".csv";
   }
   return output;
-}
+};
 
 const parseFile = (path: string, output: string, argv: CsvCLIArgs): void => {
-  const content = parse(fs.readFileSync(path, 'utf8'));
-  const csv = csvConverter(content, { separator: argv.separator, header: argv.header, withMetadata: argv.withMetadata });
+  const content = parse(fs.readFileSync(path, "utf8"));
+  const csv = csvConverter(content, {
+    separator: argv.separator,
+    header: argv.header,
+    withMetadata: argv.withMetadata,
+  });
   if (!argv.dryRun) {
     fs.writeFileSync(output, csv);
   } else {
