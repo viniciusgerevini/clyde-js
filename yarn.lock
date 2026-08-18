@@ -7369,7 +7369,7 @@ optionator@^0.9.1:
 
 oxfmt@^0.63.0:
   version "0.63.0"
-  resolved "https://registry.npmjs.org/oxfmt/-/oxfmt-0.63.0.tgz"
+  resolved "https://registry.yarnpkg.com/oxfmt/-/oxfmt-0.63.0.tgz#c7338e6c43a68d5cf8dc61c08b617d77cb54e323"
   integrity sha512-kgdDwv35wvVf6554U2Ab8Jnd0zTM+TsEQWwaB70RAjK3gICFAFGO+2Hd3Be27GMoXj3XRL9IKSNRVl7KBQL6iw==
   dependencies:
     tinypool "2.1.0"

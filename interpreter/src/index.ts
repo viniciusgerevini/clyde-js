@@ -7,6 +7,6 @@ export {
   Interpreter,
   InterpreterInstance,
   RuntimeClydeDocumentRoot,
-} from './interpreter';
+} from "./interpreter";
 
-export { EventType } from './events';
+export { EventType } from "./events";

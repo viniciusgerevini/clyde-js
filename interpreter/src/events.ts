@@ -1,7 +1,7 @@
 export enum EventType {
-  VARIABLE_CHANGED = 'variable_changed',
-  EVENT_TRIGGERED = 'event_triggered'
-};
+  VARIABLE_CHANGED = "variable_changed",
+  EVENT_TRIGGERED = "event_triggered",
+}
 
 export interface EventsInstance {
   triggerEvent(name: EventType, data: any): void;
@@ -28,9 +28,9 @@ export function Events(): EventsInstance {
     removeListener(name: EventType, callback: Function) {
       const index = listeners[name].indexOf(callback);
       if (index === -1) {
-        throw new Error('Listener not defined');
+        throw new Error("Listener not defined");
       }
       listeners[name].splice(index, 1);
-    }
-  }
+    },
+  };
 }
