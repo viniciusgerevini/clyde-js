@@ -16,4 +16,8 @@ export class UnexpectedTokenError extends Error {
     super(message);
     this.name = "UnexpectedTokenError";
   }
+
+  static isUnexpectedTokenError(error: Error): error is UnexpectedTokenError {
+    return error.name === "UnexpectedTokenError";
+  }
 }

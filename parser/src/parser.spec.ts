@@ -1,3 +1,4 @@
+import { UnexpectedTokenError } from "./errors";
 import parse from "./parser";
 
 describe("parse", () => {
@@ -36,12 +37,12 @@ describe("parse", () => {
       );
     });
 
-    it("constains error metadata", () => {
+    it("contains error metadata", () => {
       try {
         parse(`$someid id should be after text`);
         fail("Parsing should not have succeeded");
       } catch (e) {
-        expect(e.name).toEqual("UnexpectedTokenError");
+        expect(UnexpectedTokenError.isUnexpectedTokenError(e)).toBe(true);
         expect(e.message).toContain('Unexpected token "$<id>" on line 1 column 1');
         expect(e.meta).toEqual({
           token: {
