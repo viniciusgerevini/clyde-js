@@ -42,7 +42,7 @@ describe("parse", () => {
         fail("Parsing should not have succeeded");
       } catch (e) {
         expect(e.name).toEqual("WrongTokenError");
-        expect(e.message).toContain('Unexpected token "$id" on line 1 column 1');
+        expect(e.message).toContain('Unexpected token "$<id>" on line 1 column 1');
         expect(e.meta).toEqual({
           token: {
             token: "LINE_ID",
