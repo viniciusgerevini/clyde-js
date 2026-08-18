@@ -1278,7 +1278,7 @@ now another dedent`);
   });
 
   it("parse token friendly hint", () => {
-    expect(getTokenFriendlyHint(TOKENS.LINE_ID)).toEqual("$id");
+    expect(getTokenFriendlyHint(TOKENS.LINE_ID)).toEqual("$<id>");
     expect(getTokenFriendlyHint("some_unkown_token")).toEqual("some_unkown_token");
   });
 

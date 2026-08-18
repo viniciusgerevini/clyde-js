@@ -1,3 +1,4 @@
+import { UnexpectedTokenError } from "./errors";
 import parse from "./parser";
 
 describe("parse", () => {
@@ -34,6 +35,25 @@ describe("parse", () => {
       expect(() => parse(`speaker:`)).toThrow(
         /Unexpected token "EOF" on line 1 column 9. Expected .+/,
       );
+    });
+
+    it("contains error metadata", () => {
+      try {
+        parse(`$someid id should be after text`);
+        fail("Parsing should not have succeeded");
+      } catch (e) {
+        expect(UnexpectedTokenError.isUnexpectedTokenError(e)).toBe(true);
+        expect(e.message).toContain('Unexpected token "$<id>" on line 1 column 1');
+        expect(e.meta).toEqual({
+          token: {
+            token: "LINE_ID",
+            line: 0,
+            column: 0,
+            value: "someid",
+          },
+          expectedTokens: expect.arrayContaining(["EOF", "SPEAKER", "TEXT"]),
+        });
+      }
     });
   });
 });

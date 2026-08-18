@@ -28,4 +28,6 @@ export {
   MatchBlockNode,
 } from "./nodes";
 
+export { UnexpectedTokenError } from "./errors";
+
 export { addIds } from "./id_generator";
