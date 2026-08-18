@@ -6,11 +6,13 @@ on:
     paths:
       - interpreter/**
       - parser/**
+      - cli/**
   pull_request:
     branches: [ master ]
     paths:
       - interpreter/**
       - parser/**
+      - cli/**
 
 jobs:
   parser:
@@ -21,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16, 18]
+        node-version: [22, 24]
 
     steps:
     - uses: actions/checkout@v2
@@ -30,7 +32,13 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     # using workspace as yarn workspaces only geenrate lock files in the root
-    - run: cd .. && yarn workspace @clyde-lang/parser install && yarn workspace @clyde-lang/parser build && yarn workspace @clyde-lang/parser test --coverage
+    - run: |
+        cd ..
+        yarn workspace @clyde-lang/parser install
+        yarn workspace @clyde-lang/parser build
+        yarn workspace @clyde-lang/parser lint
+        yarn workspace @clyde-lang/parser fmt:check
+        yarn workspace @clyde-lang/parser test --coverage
 
     - name: Coveralls
       uses: coverallsapp/github-action@master
@@ -49,7 +57,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16, 18]
+        node-version: [22, 24]
 
     steps:
     - uses: actions/checkout@v2
@@ -57,7 +65,15 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: cd .. && yarn workspace @clyde-lang/parser install && yarn workspace @clyde-lang/parser build && yarn workspace @clyde-lang/interpreter install && yarn workspace @clyde-lang/interpreter build && yarn workspace @clyde-lang/interpreter test --coverage
+    - run: |
+        cd ..
+        yarn workspace @clyde-lang/parser install
+        yarn workspace @clyde-lang/parser build
+        yarn workspace @clyde-lang/interpreter install
+        yarn workspace @clyde-lang/interpreter build
+        yarn workspace @clyde-lang/interpreter lint
+        yarn workspace @clyde-lang/interpreter fmt:check
+        yarn workspace @clyde-lang/interpreter test --coverage
 
     - name: Coveralls
       uses: coverallsapp/github-action@master
@@ -67,6 +83,42 @@ jobs:
         parallel: true
         base-path: ./interpreter
         path-to-lcov: ./interpreter/coverage/lcov.info
+
+  cli:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./cli
+
+    strategy:
+      matrix:
+        node-version: [22, 24]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Parser - Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+          node-version: ${{ matrix.node-version }}
+      # using workspace as yarn workspaces only geenrate lock files in the root
+    - run: |
+        cd ..
+        yarn workspace @clyde-lang/parser install
+        yarn workspace @clyde-lang/parser build
+        yarn workspace @clyde-lang/interpreter install
+        yarn workspace @clyde-lang/interpreter build
+        yarn workspace @clyde-lang/cli lint
+        yarn workspace @clyde-lang/cli fmt:check
+        yarn workspace @clyde-lang/cli test --coverage
+
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        flag-name: run-parser-${{ matrix.node-version }}
+        parallel: true
+        base-path: ./cli
+        path-to-lcov: ./cli/coverage/lcov.info
 
   finish:
     needs: [parser, interpreter]
