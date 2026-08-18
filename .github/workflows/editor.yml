@@ -2,11 +2,11 @@ name: Editor tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - editor/**
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - editor/**
 
@@ -19,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18]
+        node-version: [24]
 
     steps:
     - uses: actions/checkout@v2

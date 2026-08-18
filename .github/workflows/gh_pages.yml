@@ -2,7 +2,7 @@ name: Publish Demo Page
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - editor/**
       - interpreter/**

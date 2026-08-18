@@ -2,13 +2,13 @@ name: Parser and Interpreter CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - interpreter/**
       - parser/**
       - cli/**
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - interpreter/**
       - parser/**

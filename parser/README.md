@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40clyde-lang%2Fparser.svg)](https://www.npmjs.com/package/@clyde-lang/parser)
 
-Parser for [Clyde dialogue language](https://github.com/viniciusgerevini/clyde/blob/master/LANGUAGE.md).
+Parser for [Clyde dialogue language](https://github.com/viniciusgerevini/clyde/blob/main/LANGUAGE.md).
 
 ```javascript
 import { parse } from "@clyde-lang/parser";

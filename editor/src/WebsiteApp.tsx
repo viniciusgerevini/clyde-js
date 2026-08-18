@@ -42,7 +42,7 @@ export default function WebsiteApp() {
             Clyde is a language for writing dialogues.
             <a href="https://github.com/viniciusgerevini/clyde-js">Github</a>
             <a href="https://github.com/viniciusgerevini/clyde/blob/main/LANGUAGE.md">Language Docs</a>
-            <a href="https://github.com/viniciusgerevini/clyde-js/tree/master/cli">CLI</a>
+            <a href="https://github.com/viniciusgerevini/clyde-js/tree/main/cli">CLI</a>
             <a href="https://github.com/viniciusgerevini/godot-clyde-dialogue">Godot Plugin</a>
           </p>
         </AboutContent>

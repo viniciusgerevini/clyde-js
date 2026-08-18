@@ -1,9 +1,9 @@
 # Clyde Dialogue Language for JavaScript/TypeScript
 
-![Parser and Interpreter tests](https://github.com/viniciusgerevini/clyde-js/actions/workflows/main.yml/badge.svg?branch=master)
-![Editor tests](https://github.com/viniciusgerevini/clyde-js/actions/workflows/editor.yml/badge.svg?branch=master)
-![Playground deploy](https://github.com/viniciusgerevini/clyde-js/actions/workflows/gh_pages.yml/badge.svg?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/viniciusgerevini/clyde-js/badge.svg?branch=master)](https://coveralls.io/github/viniciusgerevini/clyde-js?branch=master)
+![Parser and Interpreter tests](https://github.com/viniciusgerevini/clyde-js/actions/workflows/main.yml/badge.svg?branch=main)
+![Editor tests](https://github.com/viniciusgerevini/clyde-js/actions/workflows/editor.yml/badge.svg?branch=main)
+![Playground deploy](https://github.com/viniciusgerevini/clyde-js/actions/workflows/gh_pages.yml/badge.svg?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/viniciusgerevini/clyde-js/badge.svg?branch=main)](https://coveralls.io/github/viniciusgerevini/clyde-js?branch=main)
 
 <p align="center"><img src="icon.png" alt=/></p>
 
