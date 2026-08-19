@@ -97,7 +97,6 @@ export function buildSemanticResponseForDocument(document: WorkingDocument): Sem
     const semanticData = getTokenSemanticData(token);
 
     if (semanticData) {
-      logger.debug("CONVERT CLYDE TOKEN", token);
       builder.push(
         semanticData.line,
         semanticData.column,

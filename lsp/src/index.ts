@@ -6,6 +6,9 @@ import {
   type InitializeResult,
   type TextDocumentPositionParams,
   type CompletionItem,
+  // type InitializeParams,
+  Diagnostic,
+  DiagnosticSeverity,
   // CompletionItemKind,
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
@@ -16,16 +19,33 @@ import {
   semanticTokensLegend,
 } from "./document/semantic_tokens.js";
 import { WorkingDocumentsControl } from "./document/working_documents_control.js";
+import { type ErrorInfo } from "./document/working_document.js";
 
 const connection = createConnection();
 
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
-const workingDocuments: WorkingDocumentsControl = new WorkingDocumentsControl();
+const workingDocuments: WorkingDocumentsControl = new WorkingDocumentsControl(onParseFinished);
 
 const logger = getLogger();
 
 connection.onInitialize(() => {
-  logger.debug("Initialize server");
+  // connection.onInitialize((params: InitializeParams) => {
+  logger.info("Server initializing");
+  // const capabilities = params.capabilities;
+  //
+
+  // hasDiagnosticRelatedInformationCapability = !!(
+  //   capabilities.textDocument &&
+  //     capabilities.textDocument.publishDiagnostics &&
+  //     capabilities.textDocument.publishDiagnostics.relatedInformation
+  // );
+  // hasConfigurationCapability = !!(
+  //   capabilities.workspace && !!capabilities.workspace.configuration
+  // );
+  // hasWorkspaceFolderCapability = !!(
+  //   capabilities.workspace && !!capabilities.workspace.workspaceFolders
+  // );
+
   const result: InitializeResult = {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Full,
@@ -101,49 +121,6 @@ documents.onDidChangeContent((change) => {
   logger.info("File content changed", { uri: change.document.uri });
   const workingDocument = workingDocuments.getOrInitWorkingDocument(change.document.uri);
   workingDocument.updateContent(change.document.getText());
-
-  // TODO parse should happen inside update content
-  // TODO hasDiagnostics()
-  // TODO send diagnostics back
-
-  // const text = textDocument.getText();
-  // try {
-  //   const parseDoc = parse(text);
-  // } catch (e) {}
-  // TODO run lexer
-  // TODO run parser
-  // TODO store latest successfull parse result
-  //   let diagnostics: Diagnostic[] = [];
-  //     let diagnostic: Diagnostic = {
-  //       severity: DiagnosticSeverity.Warning,
-  //       range: {
-  //         start: textDocument.positionAt(m.index),
-  //         end: textDocument.positionAt(m.index + m[0].length),
-  //       },
-  //       message: `${m[0]} is all uppercase.`,
-  //       source: "ex",
-  //     };
-  //     if (hasDiagnosticRelatedInformationCapability) {
-  //       diagnostic.relatedInformation = [
-  //         {
-  //           location: {
-  //             uri: textDocument.uri,
-  //             range: Object.assign({}, diagnostic.range),
-  //           },
-  //           message: "Spelling matters",
-  //         },
-  //         {
-  //           location: {
-  //             uri: textDocument.uri,
-  //             range: Object.assign({}, diagnostic.range),
-  //           },
-  //           message: "Particularly for names",
-  //         },
-  //       ];
-  //     }
-  //     diagnostics.push(diagnostic);
-  //
-  //   connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 });
 
 connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
@@ -176,3 +153,25 @@ connection.languages.semanticTokens.on((params) => {
 documents.listen(connection);
 
 connection.listen();
+
+function onParseFinished(uri: string, error: ErrorInfo | undefined): void {
+  if (error) {
+    let diagnostics: Diagnostic[] = [];
+    let diagnostic: Diagnostic = {
+      severity: DiagnosticSeverity.Error,
+      range: {
+        start: error.start,
+        end: error.end,
+      },
+      message: error.details,
+      source: "Clyde LSP",
+    };
+
+    diagnostics.push(diagnostic);
+    logger.debug("Send diagnostics", { diagnostics });
+    connection.sendDiagnostics({ uri, diagnostics });
+  } else {
+    logger.debug("Clear diagnostics");
+    connection.sendDiagnostics({ uri, diagnostics: [] });
+  }
+}

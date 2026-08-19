@@ -1,5 +1,12 @@
 import fs from "node:fs";
 
+enum LogLevel {
+  DISABLED = 0,
+  ERROR_ONLY = 1,
+  NORMAL = 2,
+  DEBUG = 3,
+}
+
 interface ILogger {
   info(message: string, extras?: object): void;
   warn(message: string, extras?: object): void;
@@ -10,12 +17,18 @@ interface ILogger {
 const LOG_FILE = "/var/tmp/clydelsp.log";
 
 class FileLogger implements ILogger {
+  constructor(private level: LogLevel) {}
+
   info(message: string, extras?: object): void {
-    this._writeLogLine(message, extras);
+    if (this._isLogEnabled(LogLevel.NORMAL)) {
+      this._writeLogLine(message, extras);
+    }
   }
 
   warn(message: string, extras?: object): void {
-    this._writeLogLine(`WARN: ${message}`, extras);
+    if (this._isLogEnabled(LogLevel.NORMAL)) {
+      this._writeLogLine(`WARN: ${message}`, extras);
+    }
   }
 
   error(error: string | Error, extras?: object): void {
@@ -30,7 +43,13 @@ class FileLogger implements ILogger {
   }
 
   debug(message: string, extras?: object): void {
-    this._writeLogLine(`DEBUG: ${message}`, extras);
+    if (this._isLogEnabled(LogLevel.DEBUG)) {
+      this._writeLogLine(`DEBUG: ${message}`, extras);
+    }
+  }
+
+  private _isLogEnabled(level: LogLevel): boolean {
+    return this.level >= level;
   }
 
   private _writeLogLine(message: string, extras: object | undefined): void {
@@ -44,7 +63,20 @@ class FileLogger implements ILogger {
   }
 }
 
+class NoopLogger implements ILogger {
+  info(_message: string, _extras?: object): void {}
+  warn(_message: string, _extras?: object): void {}
+  error(_error: string | Error, _extras?: object): void {}
+  debug(_message: string, _extras?: object): void {}
+}
+
 export function getLogger(): ILogger {
-  // TODO add debugger option to return a noop if not in debug node
-  return new FileLogger();
+  if (getCurrentLevel() === LogLevel.DISABLED) {
+    return new NoopLogger();
+  }
+  return new FileLogger(getCurrentLevel());
+}
+
+function getCurrentLevel(): LogLevel {
+  return Number(process.env["LOG_LEVEL"]) || 0;
 }
