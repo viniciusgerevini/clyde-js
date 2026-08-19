@@ -1,6 +1,9 @@
 import parse from "./parser";
 export { parse };
 
+import * as Lexer from "./lexer";
+export { Lexer };
+
 export {
   ClydeDocumentRoot,
   ContentNode,

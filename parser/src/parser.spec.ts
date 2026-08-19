@@ -50,6 +50,7 @@ describe("parse", () => {
             line: 0,
             column: 0,
             value: "someid",
+            length: 7,
           },
           expectedTokens: expect.arrayContaining(["EOF", "SPEAKER", "TEXT"]),
         });
