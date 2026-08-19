@@ -1,7 +1,27 @@
+// import {SemanticTokens, SemanticTokensBuilder} from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
-// import { parse } from "@clyde-lang/parser";
+import { WorkingDocument } from "./document/working_document.js";
+// import { getLogger } from "./logger.js";
+import { buildSemanticResponseForDocument } from "./document/semantic_tokens.js";
+import type { SemanticTokens } from "vscode-languageserver";
 
-export function validateDocument(_textDocument: TextDocument): void {
+// const logger = getLogger();
+const workingDocuments: Map<string, WorkingDocument> =  new Map();
+
+export function notifyContentChange(textDocument: TextDocument): void {
+  textDocument.uri;
+
+}
+
+export function validateDocument(textDocument: TextDocument): void {
+  const workingDocument = getWorkingDocument(textDocument.uri);
+
+  workingDocument.updateContent(textDocument.getText());
+
+  // TODO parse should happen inside update content
+  // TODO hasDiagnostics()
+  // TODO send diagnostics back
+
   // const text = textDocument.getText();
   // try {
   //   const parseDoc = parse(text);
@@ -42,6 +62,20 @@ export function validateDocument(_textDocument: TextDocument): void {
   //   connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
 
+export function getSemanticTokens(uri: string): SemanticTokens {
+  const workingDocument = getWorkingDocument(uri);
+  return buildSemanticResponseForDocument(workingDocument);
+}
+
 export function clearWorkingData(_uri: string): void {
   // TODO clear working data
+}
+
+
+function getWorkingDocument(uri: string): WorkingDocument {
+  if (!workingDocuments.has(uri)) {
+    workingDocuments.set(uri, new WorkingDocument(uri));
+  }
+
+  return workingDocuments.get(uri)!;
 }

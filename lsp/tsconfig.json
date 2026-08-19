@@ -8,10 +8,11 @@
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
-    "target": "esnext",
+    "moduleResolution": "nodenext",
+    "target": "es2020",
     "types": [],
     // For nodejs:
-    "lib": ["esnext"],
+    // "lib": ["esnext"],
     "types": ["node"],
     // and npm install -D @types/node
 
