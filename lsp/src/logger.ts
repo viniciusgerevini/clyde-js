@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import fs from "node:fs";
 
 interface ILogger {
   info(message: string, extras?: object): void;
@@ -7,7 +7,7 @@ interface ILogger {
   debug(message: string, extras?: object): void;
 }
 
-const LOG_FILE = "/var/tmp/clydelsp.log"
+const LOG_FILE = "/var/tmp/clydelsp.log";
 
 class FileLogger implements ILogger {
   info(message: string, extras?: object): void {
@@ -19,8 +19,8 @@ class FileLogger implements ILogger {
   }
 
   error(error: string | Error, extras?: object): void {
-    let message = ""
-    if (typeof error === 'string') {
+    let message = "";
+    if (typeof error === "string") {
       message = error;
     } else {
       message = `${error.name}: ${error.message}`;
@@ -34,16 +34,17 @@ class FileLogger implements ILogger {
   }
 
   private _writeLogLine(message: string, extras: object | undefined): void {
-    const content = `${message}${extras ? ` | ${JSON.stringify(extras)}` :''}\n`;
+    const content = `${message}${extras ? ` | ${JSON.stringify(extras)}` : ""}\n`;
     try {
       fs.appendFileSync(LOG_FILE, content);
-    } catch(_e) {
+      // eslint-disable-next-line no-unused-vars
+    } catch (e) {
       // nothing I can do unfortunately
     }
   }
 }
 
-export function getLogger():  ILogger {
+export function getLogger(): ILogger {
   // TODO add debugger option to return a noop if not in debug node
   return new FileLogger();
 }

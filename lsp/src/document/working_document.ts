@@ -3,7 +3,6 @@ import { Lexer } from "@clyde-lang/parser";
 export class WorkingDocument {
   private content: string;
 
-  // @ts-ignore
   constructor(private documentUri: string) {
     this.content = "";
   }
@@ -18,9 +17,13 @@ export class WorkingDocument {
       return [];
     }
     return Lexer.tokenize(this.content).getAll();
-  } 
+  }
 
   getContent(): string {
     return this.content;
+  }
+
+  getDocumentUri(): string {
+    return this.documentUri;
   }
 }

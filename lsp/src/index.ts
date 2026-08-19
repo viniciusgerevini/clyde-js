@@ -8,15 +8,19 @@ import {
   type CompletionItem,
   // CompletionItemKind,
 } from "vscode-languageserver/node";
-
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { clearWorkingData, getSemanticTokens, validateDocument } from "./document_validator.js";
+
 import { getLogger } from "./logger.js";
-import { semanticTokensLegend } from "./document/semantic_tokens.js";
+import {
+  buildSemanticResponseForDocument,
+  semanticTokensLegend,
+} from "./document/semantic_tokens.js";
+import { WorkingDocumentsControl } from "./document/working_documents_control.js";
 
 const connection = createConnection();
 
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
+const workingDocuments: WorkingDocumentsControl = new WorkingDocumentsControl();
 
 const logger = getLogger();
 
@@ -48,7 +52,6 @@ connection.onInitialize(() => {
 
       // documentHighlightProvider?: boolean | DocumentHighlightOptions;
 
-
       // codeLensProvider?: CodeLensOptions;
 
       // documentLinkProvider?: DocumentLinkOptions;
@@ -56,7 +59,6 @@ connection.onInitialize(() => {
       // documentFormattingProvider?: boolean | DocumentFormattingOptions;
 
       // documentOnTypeFormattingProvider?: DocumentOnTypeFormattingOptions;
-
 
       // foldingRangeProvider?: boolean | FoldingRangeOptions
       // | FoldingRangeRegistrationOptions;
@@ -91,13 +93,57 @@ connection.onInitialize(() => {
 });
 
 documents.onDidClose((event: TextDocumentChangeEvent<TextDocument>) => {
-  logger.debug("File closed", { uri: event.document.uri });
-  clearWorkingData(event.document.uri);
+  logger.info("File closed", { uri: event.document.uri });
+  workingDocuments.removeWorkingDocument(event.document.uri);
 });
 
 documents.onDidChangeContent((change) => {
-  logger.debug("File content changed", { uri: change.document.uri });
-  validateDocument(change.document);
+  logger.info("File content changed", { uri: change.document.uri });
+  const workingDocument = workingDocuments.getOrInitWorkingDocument(change.document.uri);
+  workingDocument.updateContent(change.document.getText());
+
+  // TODO parse should happen inside update content
+  // TODO hasDiagnostics()
+  // TODO send diagnostics back
+
+  // const text = textDocument.getText();
+  // try {
+  //   const parseDoc = parse(text);
+  // } catch (e) {}
+  // TODO run lexer
+  // TODO run parser
+  // TODO store latest successfull parse result
+  //   let diagnostics: Diagnostic[] = [];
+  //     let diagnostic: Diagnostic = {
+  //       severity: DiagnosticSeverity.Warning,
+  //       range: {
+  //         start: textDocument.positionAt(m.index),
+  //         end: textDocument.positionAt(m.index + m[0].length),
+  //       },
+  //       message: `${m[0]} is all uppercase.`,
+  //       source: "ex",
+  //     };
+  //     if (hasDiagnosticRelatedInformationCapability) {
+  //       diagnostic.relatedInformation = [
+  //         {
+  //           location: {
+  //             uri: textDocument.uri,
+  //             range: Object.assign({}, diagnostic.range),
+  //           },
+  //           message: "Spelling matters",
+  //         },
+  //         {
+  //           location: {
+  //             uri: textDocument.uri,
+  //             range: Object.assign({}, diagnostic.range),
+  //           },
+  //           message: "Particularly for names",
+  //         },
+  //       ];
+  //     }
+  //     diagnostics.push(diagnostic);
+  //
+  //   connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 });
 
 connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
@@ -123,7 +169,8 @@ connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Comp
 
 connection.languages.semanticTokens.on((params) => {
   logger.debug("Semantic tokens requested", { uri: params.textDocument.uri });
-  return getSemanticTokens(params.textDocument.uri);
+  const workingDocument = workingDocuments.getOrInitWorkingDocument(params.textDocument.uri);
+  return buildSemanticResponseForDocument(workingDocument);
 });
 
 documents.listen(connection);

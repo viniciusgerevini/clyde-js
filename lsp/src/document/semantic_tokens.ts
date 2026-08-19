@@ -22,16 +22,14 @@ const tokenTypes: SemanticTokenTypes[] = [
   SemanticTokenTypes.type,
   SemanticTokenTypes.function,
   SemanticTokenTypes.struct,
-]
+];
 
-const tokenModifiers: SemanticTokenModifiers[] = [
-  SemanticTokenModifiers.definition,
-]
+const tokenModifiers: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
 
 export const semanticTokensLegend: SemanticTokensLegend = {
   tokenTypes,
   tokenModifiers,
-}
+};
 
 const tokenMapping: Record<string, number> = {
   [Lexer.TOKENS.OPTION]: tokenIndex(SemanticTokenTypes.function),
@@ -105,7 +103,7 @@ export function buildSemanticResponseForDocument(document: WorkingDocument): Sem
         semanticData.column,
         semanticData.length,
         semanticData.semanticIndex,
-        -1
+        -1,
       );
     }
   }
@@ -115,8 +113,9 @@ export function buildSemanticResponseForDocument(document: WorkingDocument): Sem
   return builder.build();
 }
 
-
-function getTokenSemanticData(token: Lexer.Token): {line: number; column: number; length: number; semanticIndex: number} | undefined { 
+function getTokenSemanticData(
+  token: Lexer.Token,
+): { line: number; column: number; length: number; semanticIndex: number } | undefined {
   const tokenIndex = tokenMapping[token.token];
 
   if (!tokenIndex) {
@@ -137,14 +136,8 @@ function handleFullLines(content: string, builder: SemanticTokensBuilder): void 
 
   for (let line in lines) {
     if (lines[line]?.startsWith("--")) {
-      builder.push(
-        Number(line),
-        0,
-        lines[line].length,
-        tokenIndex(SemanticTokenTypes.comment),
-        -1
-      );
-    } else if(lines[line]?.startsWith("@link")) {
+      builder.push(Number(line), 0, lines[line].length, tokenIndex(SemanticTokenTypes.comment), -1);
+    } else if (lines[line]?.startsWith("@link")) {
       handleFileLink(Number(line), lines[line], builder);
     }
   }
@@ -165,14 +158,8 @@ enum LinkParts {
 }
 
 function handleFileLink(lineNumber: number, line: string, builder: SemanticTokensBuilder): void {
-  let column: number = 0
-  builder.push(
-    lineNumber,
-    column,
-    5,
-    tokenIndex(SemanticTokenTypes.keyword),
-    -1
-  );
+  let column: number = 0;
+  builder.push(lineNumber, column, 5, tokenIndex(SemanticTokenTypes.keyword), -1);
   column += 5;
 
   const matches = line.match(LINK_REGEX);
@@ -198,7 +185,7 @@ function handleFileLink(lineNumber: number, line: string, builder: SemanticToken
       column,
       identifier.length,
       tokenIndex(SemanticTokenTypes.variable),
-      -1
+      -1,
     );
     column += identifier.length;
   }
@@ -211,7 +198,7 @@ function handleFileLink(lineNumber: number, line: string, builder: SemanticToken
       column,
       assignment.length,
       tokenIndex(SemanticTokenTypes.operator),
-      -1
+      -1,
     );
     column += assignment.length;
   }
@@ -219,12 +206,6 @@ function handleFileLink(lineNumber: number, line: string, builder: SemanticToken
   column += postAssignmentSpaces.length;
 
   if (path.length) {
-    builder.push(
-      lineNumber,
-      column,
-      path.length,
-      tokenIndex(SemanticTokenTypes.string),
-      -1
-    );
+    builder.push(lineNumber, column, path.length, tokenIndex(SemanticTokenTypes.string), -1);
   }
 }

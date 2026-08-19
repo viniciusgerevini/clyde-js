@@ -8,7 +8,7 @@ This is a language server for Clyde Dialogue Language.
 ## TO DO
 
 - [ ] basic server info (language version, etc)
-- [ ] syntax highlighting
+- [x] syntax highlighting
 - [ ] auto complete
   - [ ] divert > block
   - [ ] Variable name
