@@ -1,6 +1,6 @@
-import { describe, it, vi, beforeEach, Mock, expect, afterEach } from 'vitest'
+import { describe, it, vi, beforeEach, Mock, expect, afterEach } from "vitest";
 import fs from "node:fs";
-import { FileLogger, getLogger, LOG_FILE, LogLevel, NoopLogger } from './logger';
+import { FileLogger, getLogger, LOG_FILE, LogLevel, NoopLogger } from "./logger";
 
 // TODO make sure tests actually use noop logger
 describe("Logger", () => {
@@ -63,7 +63,10 @@ describe("Logger", () => {
 
         logger.error(error);
 
-        expect(appendFileSyncStub).toHaveBeenCalledWith(LOG_FILE, `ERROR: ${errorName}: ${errorMessage}\n`);
+        expect(appendFileSyncStub).toHaveBeenCalledWith(
+          LOG_FILE,
+          `ERROR: ${errorName}: ${errorMessage}\n`,
+        );
       });
 
       it("logs error string to file", () => {
@@ -77,11 +80,14 @@ describe("Logger", () => {
       it("logs error with extras", () => {
         const logger = new FileLogger(LogLevel.ERROR_ONLY);
         const errorMessage = "This is a test error";
-        const extras = { details: 'yep' };
+        const extras = { details: "yep" };
 
         logger.error(errorMessage, extras);
 
-        expect(appendFileSyncStub).toHaveBeenCalledWith(LOG_FILE, `ERROR: ${errorMessage} | ${JSON.stringify(extras)}\n`);
+        expect(appendFileSyncStub).toHaveBeenCalledWith(
+          LOG_FILE,
+          `ERROR: ${errorMessage} | ${JSON.stringify(extras)}\n`,
+        );
       });
     });
 
@@ -98,11 +104,14 @@ describe("Logger", () => {
       it("logs info with extras", () => {
         const logger = new FileLogger(LogLevel.NORMAL);
         const message = "This is a test";
-        const extras = { details: 'yep' };
+        const extras = { details: "yep" };
 
         logger.info(message, extras);
 
-        expect(appendFileSyncStub).toHaveBeenCalledWith(LOG_FILE, `${message} | ${JSON.stringify(extras)}\n`);
+        expect(appendFileSyncStub).toHaveBeenCalledWith(
+          LOG_FILE,
+          `${message} | ${JSON.stringify(extras)}\n`,
+        );
       });
 
       it("does not log info to file when log level is ERROR_ONLY", () => {
@@ -125,11 +134,14 @@ describe("Logger", () => {
       it("logs warn with extras", () => {
         const logger = new FileLogger(LogLevel.NORMAL);
         const message = "This is a test";
-        const extras = { details: 'yep' };
+        const extras = { details: "yep" };
 
         logger.warn(message, extras);
 
-        expect(appendFileSyncStub).toHaveBeenCalledWith(LOG_FILE, `WARN: ${message} | ${JSON.stringify(extras)}\n`);
+        expect(appendFileSyncStub).toHaveBeenCalledWith(
+          LOG_FILE,
+          `WARN: ${message} | ${JSON.stringify(extras)}\n`,
+        );
       });
 
       it("does not log warn to file when log level is ERROR_ONLY", () => {
@@ -152,11 +164,14 @@ describe("Logger", () => {
       it("logs debug with extras", () => {
         const logger = new FileLogger(LogLevel.DEBUG);
         const message = "This is a test";
-        const extras = { details: 'yep' };
+        const extras = { details: "yep" };
 
         logger.debug(message, extras);
 
-        expect(appendFileSyncStub).toHaveBeenCalledWith(LOG_FILE, `DEBUG: ${message} | ${JSON.stringify(extras)}\n`);
+        expect(appendFileSyncStub).toHaveBeenCalledWith(
+          LOG_FILE,
+          `DEBUG: ${message} | ${JSON.stringify(extras)}\n`,
+        );
       });
 
       it("does not log debug to file when log level is NORMAL", () => {

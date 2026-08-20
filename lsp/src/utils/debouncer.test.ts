@@ -1,5 +1,5 @@
-import { describe, it, vi, beforeEach, Mock, expect, afterEach } from 'vitest'
-import { debounce } from './debouncer';
+import { describe, it, vi, beforeEach, Mock, expect, afterEach } from "vitest";
+import { debounce } from "./debouncer";
 
 describe("Debouncer", () => {
   let methodToDebounce: Mock;

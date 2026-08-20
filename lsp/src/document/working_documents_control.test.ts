@@ -1,5 +1,5 @@
-import { describe, it, vi, beforeEach, Mock, expect, afterEach } from 'vitest'
-import { WorkingDocumentsControl } from './working_documents_control';
+import { describe, it, vi, beforeEach, Mock, expect, afterEach } from "vitest";
+import { WorkingDocumentsControl } from "./working_documents_control";
 
 describe("Working Documents Control", () => {
   let parseFinishedCallbackStub: Mock;

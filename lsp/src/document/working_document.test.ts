@@ -1,6 +1,6 @@
-import { describe, it, vi, beforeEach, Mock, expect, afterEach } from 'vitest'
+import { describe, it, vi, beforeEach, Mock, expect, afterEach } from "vitest";
 import * as clydeParser from "@clyde-lang/parser";
-import { ErrorInfo, WorkingDocument } from './working_document';
+import { ErrorInfo, WorkingDocument } from "./working_document";
 
 describe("Working Document", () => {
   const testDocumentUri = "fake_document";
@@ -79,8 +79,8 @@ describe("Working Document", () => {
     const errorInfo: ErrorInfo = {
       start: { line: 0, character: 6 },
       end: { line: 0, character: 22 },
-      details: "Unexpected token \"<speaker name>:\" on line 1 column 7. Expected text ",
-    }
+      details: 'Unexpected token "<speaker name>:" on line 1 column 7. Expected text ',
+    };
 
     workingDocument.updateContent(documentContent);
     // give time for parse to kick in
@@ -100,8 +100,8 @@ describe("Working Document", () => {
     const errorInfo: ErrorInfo = {
       start: { line: 0, character: 1 },
       end: { line: 0, character: 1 },
-      details: "Unexpected token \"{\" on line 1 column 2. Expected } ",
-    }
+      details: 'Unexpected token "{" on line 1 column 2. Expected } ',
+    };
 
     workingDocument.updateContent(documentContent);
     // give time for parse to kick in
@@ -112,7 +112,7 @@ describe("Working Document", () => {
   });
 
   it("notifies listeners when parse fails with unexpected error", () => {
-    vi.spyOn(clydeParser, 'parse').mockThrow(new Error("unexpected error"));
+    vi.spyOn(clydeParser, "parse").mockThrow(new Error("unexpected error"));
 
     vi.useFakeTimers();
     workingDocument.addParseFinishedListener(parseFinishedCallbackStub);
@@ -123,7 +123,7 @@ describe("Working Document", () => {
       start: { line: 0, character: 0 },
       end: { line: 0, character: 0 },
       details: "File parsing failed",
-    }
+    };
 
     workingDocument.updateContent(documentContent);
     // give time for parse to kick in
@@ -135,12 +135,12 @@ describe("Working Document", () => {
   it("returns all lexical tokens for document", () => {
     const documentContent = "vini: Hello there! #intro";
     const expectedTokensForDocument = [
-      { token: 'SPEAKER', line: 0, column: 0, value: 'vini', length: 5 },
-      { token: 'TEXT', line: 0, column: 6, value: 'Hello there!' },
-      { token: 'TAG', line: 0, column: 19, value: 'intro', length: 6 },
-      { token: 'EOF', line: 0, column: 25 }
+      { token: "SPEAKER", line: 0, column: 0, value: "vini", length: 5 },
+      { token: "TEXT", line: 0, column: 6, value: "Hello there!" },
+      { token: "TAG", line: 0, column: 19, value: "intro", length: 6 },
+      { token: "EOF", line: 0, column: 25 },
     ];
- 
+
     workingDocument.updateContent(documentContent);
 
     expect(workingDocument.getTokens()).toEqual(expectedTokensForDocument);

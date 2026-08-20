@@ -80,7 +80,7 @@ const tokenMapping: Record<string, number> = {
   // [Lexer.TOKENS.LINK_FILE]: tokenIndex(SemanticTokenTypes.type),
 };
 
-function tokenIndex(semanticToken: SemanticTokenTypes): number {
+export function tokenIndex(semanticToken: SemanticTokenTypes): number {
   return tokenTypes.indexOf(semanticToken);
 }
 
@@ -162,8 +162,8 @@ function handleFileLink(lineNumber: number, line: string, builder: SemanticToken
     return;
   }
 
-  const preIdSpaces = matches[LinkParts.PRE_IDENTIFIER_SPACES] || "";
-  const identifier = matches[LinkParts.IDENTIFIER] || "";
+  const preIdSpaces = matches[LinkParts.PRE_IDENTIFIER_SPACES]!;
+  const identifier = matches[LinkParts.IDENTIFIER]!;
   const postIdSpaces = matches[LinkParts.POST_IDENTIFIER_SPACES] || "";
   const assignment = matches[LinkParts.ASSIGNMENT] || "";
   const postAssignmentSpaces = matches[LinkParts.POST_ASSIGNMENT_SPACES] || "";

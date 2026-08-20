@@ -22,7 +22,7 @@ import { WorkingDocumentsControl } from "./document/working_documents_control.js
 import { type ErrorInfo } from "./document/working_document.js";
 
 // TODO get this from the right place to avoid duplication
-const SERVER_VERSION = "0.0.1"
+const SERVER_VERSION = "0.0.1";
 
 const connection = createConnection();
 
@@ -125,7 +125,10 @@ documents.onDidChangeContent((change) => {
 });
 
 connection.onCompletion((completionParams: CompletionParams): CompletionItem[] => {
-  logger.debug("Completion requested", { uri: completionParams.textDocument.uri, completionParams });
+  logger.debug("Completion requested", {
+    uri: completionParams.textDocument.uri,
+    completionParams,
+  });
 
   // get completion context for position (line, column)
   //   - go through tokens till find the one closest to the column
