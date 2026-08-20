@@ -21,4 +21,8 @@ export class WorkingDocumentsControl {
   removeWorkingDocument(uri: string): void {
     this.workingDocuments.delete(uri);
   }
+
+  getWorkingDocumentsCount(): number {
+    return this.workingDocuments.size;
+  }
 }

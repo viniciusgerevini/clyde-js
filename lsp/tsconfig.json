@@ -14,8 +14,6 @@
     // For nodejs:
     // "lib": ["esnext"],
     "types": ["node"],
-    // and npm install -D @types/node
-
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
@@ -41,5 +39,11 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "vitest.config.ts"
+  ]
 }

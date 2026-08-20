@@ -4,22 +4,25 @@ import {
   TextDocuments,
   type TextDocumentChangeEvent,
   type InitializeResult,
-  type TextDocumentPositionParams,
   type CompletionItem,
   // type InitializeParams,
   Diagnostic,
   DiagnosticSeverity,
+  type CompletionParams,
   // CompletionItemKind,
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
-import { getLogger } from "./logger.js";
+import { getLogger } from "./utils/logger.js";
 import {
   buildSemanticResponseForDocument,
   semanticTokensLegend,
 } from "./document/semantic_tokens.js";
 import { WorkingDocumentsControl } from "./document/working_documents_control.js";
 import { type ErrorInfo } from "./document/working_document.js";
+
+// TODO get this from the right place to avoid duplication
+const SERVER_VERSION = "0.0.1"
 
 const connection = createConnection();
 
@@ -91,8 +94,6 @@ connection.onInitialize(() => {
 
       // workspaceSymbolProvider?: boolean | WorkspaceSymbolOptions;
 
-      // inlineCompletionProvider?: boolean | InlineCompletionOptions;
-
       /**
        * Workspace specific server capabilities
        */
@@ -105,7 +106,7 @@ connection.onInitialize(() => {
     },
     serverInfo: {
       name: "Clyde",
-      version: "0.0.1", // TODO get version from package
+      version: SERVER_VERSION,
     },
   };
 
@@ -123,8 +124,14 @@ documents.onDidChangeContent((change) => {
   workingDocument.updateContent(change.document.getText());
 });
 
-connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-  logger.debug("Completion requested", { uri: textDocumentPosition.textDocument.uri });
+connection.onCompletion((completionParams: CompletionParams): CompletionItem[] => {
+  logger.debug("Completion requested", { uri: completionParams.textDocument.uri, completionParams });
+
+  // get completion context for position (line, column)
+  //   - go through tokens till find the one closest to the column
+  //   - do I need to operate on the contet? probably
+  // positioon: line, character
+  //
   // TODO detect what is being requested
   // - divert, blocks name
   // - speaker:

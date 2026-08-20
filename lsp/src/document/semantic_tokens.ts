@@ -6,7 +6,6 @@ import {
   SemanticTokensBuilder,
   SemanticTokens,
 } from "vscode-languageserver/node";
-import { getLogger } from "../logger.js";
 import type { WorkingDocument } from "./working_document.js";
 
 const tokenTypes: SemanticTokenTypes[] = [
@@ -85,8 +84,6 @@ function tokenIndex(semanticToken: SemanticTokenTypes): number {
   return tokenTypes.indexOf(semanticToken);
 }
 
-const logger = getLogger();
-
 export function buildSemanticResponseForDocument(document: WorkingDocument): SemanticTokens {
   const tokens = document.getTokens();
   const content = document.getContent();
@@ -131,8 +128,6 @@ function getTokenSemanticData(
 function handleFullLines(content: string, builder: SemanticTokensBuilder): void {
   const lines = content.split("\n");
 
-  logger.info(builder.id);
-
   for (let line in lines) {
     if (lines[line]?.startsWith("--")) {
       builder.push(Number(line), 0, lines[line].length, tokenIndex(SemanticTokenTypes.comment), -1);
@@ -166,8 +161,6 @@ function handleFileLink(lineNumber: number, line: string, builder: SemanticToken
   if (!matches) {
     return;
   }
-
-  logger.debug("LINK MATCHES", { matches });
 
   const preIdSpaces = matches[LinkParts.PRE_IDENTIFIER_SPACES] || "";
   const identifier = matches[LinkParts.IDENTIFIER] || "";

@@ -1,5 +1,5 @@
 import { Lexer, parse, ClydeDocumentRoot, UnexpectedTokenError } from "@clyde-lang/parser";
-import { getLogger } from "../logger.js";
+import { getLogger } from "../utils/logger.js";
 import { debounce } from "../utils/debouncer.js";
 
 const logger = getLogger();
@@ -24,7 +24,7 @@ export class WorkingDocument {
     this.content = "";
     this.debouncedParse = debounce(() => {
       this.parse();
-    }, 300);
+    }, 500);
   }
 
   updateContent(newContent: string) {
@@ -43,9 +43,8 @@ export class WorkingDocument {
       logger.error(error);
       if (UnexpectedTokenError.isUnexpectedTokenError(error)) {
         this._notifyParseListeners(errorToDiagnosticInfo(error));
-      } else {
-        this._notifyParseListeners(undefined);
       }
+      this._notifyParseListeners(genericErroInfo("File parsing failed"));
     }
   }
 
@@ -71,6 +70,18 @@ export class WorkingDocument {
   private _notifyParseListeners(error: ErrorInfo | undefined): void {
     this.parseListeners.forEach((listener) => listener(error));
   }
+}
+
+function genericErroInfo(message: string): ErrorInfo {
+  const position = {
+    line: 0,
+    character: 0,
+  };
+  return {
+    start: position,
+    end: position,
+    details: message,
+  };
 }
 
 function errorToDiagnosticInfo(error: UnexpectedTokenError): ErrorInfo {

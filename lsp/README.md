@@ -19,7 +19,7 @@ This is a language server for Clyde Dialogue Language.
   - [ ] block
   - [ ] block from linked file
   - [ ] file
-- [ ] diagnostics / parsing errors
+- [x] diagnostics / parsing errors
 - [ ] rename
   - [ ] speakers
   - [ ] variables

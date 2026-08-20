@@ -13,7 +13,7 @@
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "build": "tsc",
-    "test": "jest"
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "@clyde-lang/parser": "^2.6.0",
@@ -21,11 +21,12 @@
     "vscode-languageserver-textdocument": "^1.0.12"
   },
   "devDependencies": {
-    "@types/jest": "^30.0.0",
     "@types/node": "^26.2.0",
-    "jest": "^30.4.2",
+    "@vitest/coverage-istanbul": "^4.1.11",
+    "@vitest/coverage-v8": "4.1.11",
     "oxfmt": "^0.63.0",
     "oxlint": "^1.78.0",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
   }
 }
