@@ -2,7 +2,7 @@ import { Lexer, parse, ClydeDocumentRoot, UnexpectedTokenError } from "@clyde-la
 import { getLogger } from "../utils/logger.js";
 import { debounce } from "../utils/debouncer.js";
 import { getParseDelayInMs } from "../config.js";
-import { pathToFileURL, resolve } from "node:url";
+import { pathToFileURL, URL } from "node:url";
 import { isAbsolute } from "node:path";
 
 const logger = getLogger();
@@ -120,7 +120,7 @@ export class WorkingDocument {
 
     // TODO if it's relative but has no "./" or "../", get path from default dialogues folder
 
-    return resolve(this.documentUri, link);
+    return new URL(link, this.documentUri).href;
   }
 
   addParseFinishedListener(callback: ParseFinishedCallback) {
