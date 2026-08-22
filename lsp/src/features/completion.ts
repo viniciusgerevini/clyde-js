@@ -6,10 +6,7 @@ import {
   type CompletionParams,
 } from "vscode-languageserver";
 import type { WorkingDocument } from "../document/working_document.js";
-import { getLogger } from "../utils/logger.js";
 import { Lexer } from "@clyde-lang/parser";
-
-const logger = getLogger();
 
 const DIVERT_REGEX = /->(\s*)(@?([\w\s]+)?)?$/;
 const VARIATION_REGEX = /^\s*({.*})?\s*\(\s*(\w+\s*\w*)?\s*\)?$/;

@@ -1,5 +1,4 @@
-import { describe, expect, it, beforeEach, vi, Mock, afterEach } from "vitest";
-import fs from "node:fs";
+import { describe, expect, it, beforeEach, vi, afterEach } from "vitest";
 import { type CompletionParams, CompletionItemKind } from "vscode-languageserver/node";
 import { getCompletionOptions } from "./completion";
 
@@ -8,10 +7,7 @@ import { WorkingDocument } from "../document/working_document";
 describe("Completion", () => {
   const docUri = "file:///a.clyde";
   let doc: WorkingDocument;
-  // let existsSyncStub: Mock;
-  // let readFileSyncStub: Mock;
-  //
-  //
+
   const createParams = ({
     line,
     character,
