@@ -2,7 +2,7 @@ import { describe, expect, it, beforeEach, vi, Mock, afterEach } from "vitest";
 import fs from "node:fs";
 import { type DefinitionParams } from "vscode-languageserver/node";
 
-import { onDefinitionRequest } from "./go_to_definition";
+import { onDefinitionRequest } from "./definitions";
 import { WorkingDocument } from "../document/working_document";
 
 describe("Go to definition", () => {

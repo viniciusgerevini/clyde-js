@@ -30,7 +30,7 @@ This is a language server for Clyde Dialogue Language.
 - [ ] rename
   - [ ] speakers
   - [ ] block
-  - [ ] variables (?) (var, id sufix, interpolation)
+  - [ ] tags
 - [ ] distribution
   - [ ] npm package
   - [ ] standalone (SEA, bun or dino, whatever is easier)
@@ -40,5 +40,5 @@ This is a language server for Clyde Dialogue Language.
 - [ ] enhancements (stretch, maybe won't do)
   - [ ] diagnostics, show warning for diverts with no existing blocks
 - [ ] workspace
-  - [ ] define clyde.config file
+  - [ ] define clyde.config.json file
   - [ ] use clyde.config or default

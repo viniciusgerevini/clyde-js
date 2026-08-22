@@ -21,10 +21,12 @@ import {
   semanticTokensLegend,
 } from "./features/semantic_tokens.js";
 import { getCompletionOptions } from "./features/completion.js";
-import { onDefinitionRequest } from "./features/go_to_definition.js";
+import { onDefinitionRequest } from "./features/definitions.js";
 import { WorkingDocumentsControl } from "./document/working_documents_control.js";
 import { type ErrorInfo } from "./document/working_document.js";
 import { SERVER_VERSION } from "./config.js";
+
+// TODO turn this into a proper class that can be tested
 
 const connection = createConnection();
 
@@ -47,31 +49,8 @@ connection.onInitialize(() => {
       },
       definitionProvider: true,
 
-      // codeActionProvider?: boolean | CodeActionOptions;
-      // hoverProvider?: boolean | HoverOptions;
-      // renameProvider?: boolean | RenameOptions;
-      // documentSymbolProvider: true,
-
-      // signatureHelpProvider?: SignatureHelpOptions;
-
-      // referencesProvider?: boolean | ReferenceOptions;
-
-      // codeLensProvider?: CodeLensOptions;
-
-      // documentLinkProvider?: DocumentLinkOptions;
-
-      // documentFormattingProvider?: boolean | DocumentFormattingOptions;
-
-      // documentOnTypeFormattingProvider?: DocumentOnTypeFormattingOptions;
-
-      // foldingRangeProvider?: boolean | FoldingRangeOptions
-      // | FoldingRangeRegistrationOptions;
-
-      // executeCommandProvider?: ExecuteCommandOptions;
-
-      // semanticTokensProvider?: SemanticTokensOptions | SemanticTokensRegistrationOptions;
-
-      // diagnosticProvider?: DiagnosticOptions | DiagnosticRegistrationOptions;
+      // TODO renameProvider?: boolean | RenameOptions;
+      // - rename speakers, tags and blocks
     },
     serverInfo: {
       name: "Clyde",
