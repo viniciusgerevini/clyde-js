@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { SemanticTokenTypes } from "vscode-languageserver/node";
-import { WorkingDocument } from "./working_document";
+import { WorkingDocument } from "../document/working_document.js";
 import { buildSemanticResponseForDocument, tokenIndex } from "./semantic_tokens";
 import { Lexer } from "@clyde-lang/parser";
 

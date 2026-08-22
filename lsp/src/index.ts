@@ -5,11 +5,13 @@ import {
   type TextDocumentChangeEvent,
   type InitializeResult,
   type CompletionItem,
-  // type InitializeParams,
   Diagnostic,
   DiagnosticSeverity,
   type CompletionParams,
-  // CompletionItemKind,
+  CompletionList,
+  type DefinitionParams,
+  type Definition,
+  type DefinitionLink,
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
@@ -17,12 +19,12 @@ import { getLogger } from "./utils/logger.js";
 import {
   buildSemanticResponseForDocument,
   semanticTokensLegend,
-} from "./document/semantic_tokens.js";
+} from "./features/semantic_tokens.js";
+import { getCompletionOptions } from "./features/completion.js";
+import { onDefinitionRequest } from "./features/go_to_definition.js";
 import { WorkingDocumentsControl } from "./document/working_documents_control.js";
 import { type ErrorInfo } from "./document/working_document.js";
-
-// TODO get this from the right place to avoid duplication
-const SERVER_VERSION = "0.0.1";
+import { SERVER_VERSION } from "./config.js";
 
 const connection = createConnection();
 
@@ -32,34 +34,18 @@ const workingDocuments: WorkingDocumentsControl = new WorkingDocumentsControl(on
 const logger = getLogger();
 
 connection.onInitialize(() => {
-  // connection.onInitialize((params: InitializeParams) => {
   logger.info("Server initializing");
-  // const capabilities = params.capabilities;
-  //
-
-  // hasDiagnosticRelatedInformationCapability = !!(
-  //   capabilities.textDocument &&
-  //     capabilities.textDocument.publishDiagnostics &&
-  //     capabilities.textDocument.publishDiagnostics.relatedInformation
-  // );
-  // hasConfigurationCapability = !!(
-  //   capabilities.workspace && !!capabilities.workspace.configuration
-  // );
-  // hasWorkspaceFolderCapability = !!(
-  //   capabilities.workspace && !!capabilities.workspace.workspaceFolders
-  // );
 
   const result: InitializeResult = {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Full,
-      completionProvider: {
-        // triggerCharacters: [">"],
-      },
+      completionProvider: {},
       semanticTokensProvider: {
         legend: semanticTokensLegend,
         range: false,
         full: true,
       },
+      definitionProvider: true,
 
       // codeActionProvider?: boolean | CodeActionOptions;
       // hoverProvider?: boolean | HoverOptions;
@@ -67,13 +53,8 @@ connection.onInitialize(() => {
       // documentSymbolProvider: true,
 
       // signatureHelpProvider?: SignatureHelpOptions;
-      // declarationProvider?: boolean | DeclarationOptions | DeclarationRegistrationOptions;
-      //
-      // definitionProvider?: boolean | DefinitionOptions;
 
       // referencesProvider?: boolean | ReferenceOptions;
-
-      // documentHighlightProvider?: boolean | DocumentHighlightOptions;
 
       // codeLensProvider?: CodeLensOptions;
 
@@ -91,18 +72,6 @@ connection.onInitialize(() => {
       // semanticTokensProvider?: SemanticTokensOptions | SemanticTokensRegistrationOptions;
 
       // diagnosticProvider?: DiagnosticOptions | DiagnosticRegistrationOptions;
-
-      // workspaceSymbolProvider?: boolean | WorkspaceSymbolOptions;
-
-      /**
-       * Workspace specific server capabilities
-       */
-      // workspace?: WorkspaceOptions;
-
-      /**
-       * Experimental server capabilities.
-       */
-      // experimental?: LSPAny;
     },
     serverInfo: {
       name: "Clyde",
@@ -124,34 +93,23 @@ documents.onDidChangeContent((change) => {
   workingDocument.updateContent(change.document.getText());
 });
 
-connection.onCompletion((completionParams: CompletionParams): CompletionItem[] => {
+connection.onCompletion((completionParams: CompletionParams): CompletionItem[] | CompletionList => {
   logger.debug("Completion requested", {
     uri: completionParams.textDocument.uri,
     completionParams,
   });
+  const workingDocument = workingDocuments.getOrInitWorkingDocument(
+    completionParams.textDocument.uri,
+  );
 
-  // get completion context for position (line, column)
-  //   - go through tokens till find the one closest to the column
-  //   - do I need to operate on the contet? probably
-  // positioon: line, character
-  //
-  // TODO detect what is being requested
-  // - divert, blocks name
-  // - speaker:
-  return [];
-  // return [
-  //   {
-  //     label: "TypeScript",
-  //     kind: CompletionItemKind.Text,
-  //     data: 1,
-  //   },
-  //   {
-  //     label: "JavaScript",
-  //     kind: CompletionItemKind.Text,
-  //     data: 2,
-  //   },
-  // ];
-  //
+  const results = getCompletionOptions(completionParams, workingDocument);
+
+  return results;
+});
+
+connection.onDefinition((params: DefinitionParams): Definition | DefinitionLink[] | undefined => {
+  const workingDocument = workingDocuments.getOrInitWorkingDocument(params.textDocument.uri);
+  return onDefinitionRequest(params, workingDocument);
 });
 
 connection.languages.semanticTokens.on((params) => {
@@ -174,7 +132,7 @@ function onParseFinished(uri: string, error: ErrorInfo | undefined): void {
         end: error.end,
       },
       message: error.details,
-      source: "Clyde LSP",
+      source: "Clyde LS",
     };
 
     diagnostics.push(diagnostic);

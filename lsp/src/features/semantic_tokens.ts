@@ -6,7 +6,7 @@ import {
   SemanticTokensBuilder,
   SemanticTokens,
 } from "vscode-languageserver/node";
-import type { WorkingDocument } from "./working_document.js";
+import type { WorkingDocument } from "../document/working_document.js";
 
 const tokenTypes: SemanticTokenTypes[] = [
   SemanticTokenTypes.comment,

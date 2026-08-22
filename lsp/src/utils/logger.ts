@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { getLogLevel, LOG_FILE } from "../config.js";
 
 export enum LogLevel {
   DISABLED = 0,
@@ -13,9 +14,6 @@ interface ILogger {
   error(error: string | Error, extras?: object): void;
   debug(message: string, extras?: object): void;
 }
-
-// TODO this should be made configurable at some point
-export const LOG_FILE = "/var/tmp/clydelsp.log";
 
 export class FileLogger implements ILogger {
   constructor(public readonly level: LogLevel) {}
@@ -71,13 +69,9 @@ export class NoopLogger implements ILogger {
   debug(_message: string, _extras?: object): void {}
 }
 
-export function getLogger(logLevel: LogLevel = getCurrentLevel()): ILogger {
+export function getLogger(logLevel: LogLevel = getLogLevel()): ILogger {
   if (logLevel === LogLevel.DISABLED) {
     return new NoopLogger();
   }
   return new FileLogger(logLevel);
-}
-
-function getCurrentLevel(): LogLevel {
-  return Number(process.env["LOG_LEVEL"]) || 0;
 }

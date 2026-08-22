@@ -5,22 +5,40 @@
 
 This is a language server for Clyde Dialogue Language.
 
+## Features
+
+- Syntax highlighting (semantic tokens)
+- Diagnostics (parsing errors)
+- Autocomplete (Block names, Speakers, Linked files)
+- Go to definition (go to block from divert)
+
 ## TO DO
 
-- [ ] basic server info (language version, etc)
+- [x] basic server info (language version, etc)
 - [x] syntax highlighting
-- [ ] auto complete
-  - [ ] divert > block
-  - [ ] Variable name
-  - [ ] Speakers
-  - [ ] linked files
-  - [ ] block from linked file
+- [x] auto complete
+  - [x] divert > block
+  - [x] Speakers
+  - [x] linked files
+  - [x] block from linked file
 - [ ] go to definition
-  - [ ] block
-  - [ ] block from linked file
-  - [ ] file
+  - [x] block
+  - [x] block from linked file
+  - [x] file
+    - [ ] deal with shorthands (file without extension, file without path (default folder))
 - [x] diagnostics / parsing errors
 - [ ] rename
   - [ ] speakers
-  - [ ] variables
   - [ ] block
+  - [ ] variables (?) (var, id sufix, interpolation)
+- [ ] distribution
+  - [ ] npm package
+  - [ ] standalone (SEA, bun or dino, whatever is easier)
+- [ ] setup instructions
+  - [ ] NVIM
+  - [ ] VS Code? Others?
+- [ ] enhancements (stretch, maybe won't do)
+  - [ ] diagnostics, show warning for diverts with no existing blocks
+- [ ] workspace
+  - [ ] define clyde.config file
+  - [ ] use clyde.config or default

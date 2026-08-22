@@ -1,8 +1,8 @@
 import { describe, it, vi, beforeEach, Mock, expect, afterEach } from "vitest";
 import fs from "node:fs";
-import { FileLogger, getLogger, LOG_FILE, LogLevel, NoopLogger } from "./logger";
+import { LOG_FILE } from "../config";
+import { FileLogger, getLogger, LogLevel, NoopLogger } from "./logger";
 
-// TODO make sure tests actually use noop logger
 describe("Logger", () => {
   let appendFileSyncStub: Mock;
 

@@ -3,7 +3,7 @@ import * as clydeParser from "@clyde-lang/parser";
 import { ErrorInfo, WorkingDocument } from "./working_document";
 
 describe("Working Document", () => {
-  const testDocumentUri = "fake_document";
+  const testDocumentUri = "file:///a/b/fake_document";
   let parseFinishedCallbackStub: Mock;
   let workingDocument: WorkingDocument;
 
@@ -15,6 +15,7 @@ describe("Working Document", () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("updates content and triggers parsing", () => {
@@ -146,8 +147,134 @@ describe("Working Document", () => {
     expect(workingDocument.getTokens()).toEqual(expectedTokensForDocument);
   });
 
+  it("cache tokens until content is updated", () => {
+    const documentContent = "vini: Hello";
+
+    workingDocument.updateContent(documentContent);
+
+    const tokens = workingDocument.getTokens();
+    const sameTokens = workingDocument.getTokens();
+
+    workingDocument.updateContent(documentContent);
+
+    const differentTokens = workingDocument.getTokens();
+
+    expect(tokens).toBe(sameTokens);
+    expect(tokens).not.toBe(differentTokens);
+  });
+
   it("returns empty tokens list when document is empty", () => {
     workingDocument.updateContent("");
     expect(workingDocument.getTokens()).toEqual([]);
+  });
+
+  it("returns block names", () => {
+    vi.useFakeTimers();
+    const documentContent = `
+== block one
+hello
+
+== block two
+hi
+
+== block three
+he
+`;
+    workingDocument.updateContent(documentContent);
+    vi.advanceTimersByTime(1000);
+
+    expect(workingDocument.getBlocksNames()).toEqual(["block one", "block two", "block three"]);
+  });
+
+  it("returns empty blocks when no parsed document", () => {
+    expect(workingDocument.getBlocksNames()).toEqual([]);
+  });
+
+  it("returns block position by name", () => {
+    const documentContent = `
+== block one
+hello
+
+== block two
+hi
+`;
+    workingDocument.updateContent(documentContent);
+
+    const blockPosition = workingDocument.getBlockPosition("block two");
+
+    expect(blockPosition).toEqual({ line: 4, column: 0, length: 12 });
+  });
+
+  it("returns undefined if block not found", () => {
+    const documentContent = `== block one
+hello
+`;
+    workingDocument.updateContent(documentContent);
+
+    const blockPosition = workingDocument.getBlockPosition("block two");
+
+    expect(blockPosition).toBe(undefined);
+  });
+
+  it("returns links", () => {
+    vi.useFakeTimers();
+    const documentContent = `
+@link another_file
+@link one_other_file
+`;
+    workingDocument.updateContent(documentContent);
+    vi.advanceTimersByTime(1000);
+
+    expect(workingDocument.getLinks()).toEqual({
+      another_file: "another_file",
+      one_other_file: "one_other_file",
+    });
+  });
+
+  it("gets link by name", () => {
+    vi.useFakeTimers();
+    const documentContent = `
+@link another_file = ../banana.clyde
+@link one_other_file
+`;
+    workingDocument.updateContent(documentContent);
+    vi.advanceTimersByTime(1000);
+
+    expect(workingDocument.getLink("another_file")).toEqual("../banana.clyde");
+  });
+
+  it("gets undefined if link does not exist", () => {
+    vi.useFakeTimers();
+    const documentContent = `
+@link another_file = ../banana.clyde
+@link one_other_file
+`;
+    workingDocument.updateContent(documentContent);
+    vi.advanceTimersByTime(1000);
+
+    expect(workingDocument.getLink("something_else")).toBeUndefined();
+  });
+
+  it("gets link as document uri", () => {
+    vi.useFakeTimers();
+    const documentContent = `
+@link relative_file = ../relative/banana.clyde
+@link absolute_file = /absolute/banana.clyde
+@link one_other_file
+`;
+    workingDocument.updateContent(documentContent);
+    vi.advanceTimersByTime(1000);
+
+    expect(workingDocument.getLinkDocumentUri("absolute_file")).toEqual(
+      "file:///absolute/banana.clyde",
+    );
+    expect(workingDocument.getLinkDocumentUri("relative_file")).toEqual(
+      "file:///a/relative/banana.clyde",
+    );
+    expect(workingDocument.getLinkDocumentUri("does_not_exist")).toBeUndefined();
+  });
+
+  it("returns empty blocks when no parsed document", () => {
+    expect(workingDocument.getLinks()).toEqual({});
   });
 });

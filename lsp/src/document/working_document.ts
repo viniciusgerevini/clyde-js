@@ -1,6 +1,9 @@
 import { Lexer, parse, ClydeDocumentRoot, UnexpectedTokenError } from "@clyde-lang/parser";
 import { getLogger } from "../utils/logger.js";
 import { debounce } from "../utils/debouncer.js";
+import { getParseDelayInMs } from "../config.js";
+import { pathToFileURL, resolve } from "node:url";
+import { isAbsolute } from "node:path";
 
 const logger = getLogger();
 
@@ -14,21 +17,24 @@ type ParseFinishedCallback = (error: ErrorInfo | undefined) => void;
 
 export class WorkingDocument {
   private content: string;
-  //@ts-ignore
   private parsedDoc: ClydeDocumentRoot | undefined;
 
   private parseListeners: ParseFinishedCallback[] = [];
   private debouncedParse: Function;
 
+  private wasContentProcessed: boolean = false;
+  private tokens: Lexer.Token[] = [];
+
   constructor(private documentUri: string) {
     this.content = "";
     this.debouncedParse = debounce(() => {
       this.parse();
-    }, 500);
+    }, getParseDelayInMs());
   }
 
   updateContent(newContent: string) {
     this.content = newContent;
+    this.wasContentProcessed = false;
     this.debouncedParse();
   }
 
@@ -43,8 +49,9 @@ export class WorkingDocument {
       logger.error(error);
       if (UnexpectedTokenError.isUnexpectedTokenError(error)) {
         this._notifyParseListeners(errorToDiagnosticInfo(error));
+      } else {
+        this._notifyParseListeners(genericErroInfo("File parsing failed"));
       }
-      this._notifyParseListeners(genericErroInfo("File parsing failed"));
     }
   }
 
@@ -52,7 +59,11 @@ export class WorkingDocument {
     if (!this.content) {
       return [];
     }
-    return Lexer.tokenize(this.content).getAll();
+    if (!this.wasContentProcessed) {
+      this.wasContentProcessed = true;
+      this.tokens = Lexer.tokenize(this.content).getAll();
+    }
+    return this.tokens;
   }
 
   getContent(): string {
@@ -61,6 +72,55 @@ export class WorkingDocument {
 
   getDocumentUri(): string {
     return this.documentUri;
+  }
+
+  getBlocksNames(): string[] {
+    if (!this.parsedDoc) {
+      return [];
+    }
+    return this.parsedDoc.blocks.map((b) => b.name);
+  }
+
+  getBlockPosition(
+    blockName: string,
+  ): { line: number; column: number; length: number } | undefined {
+    const tokens = this.getTokens();
+
+    for (let token of tokens) {
+      if (token.token === Lexer.TOKENS.BLOCK && token.value === blockName) {
+        return { line: token.line, column: token.column, length: token.length! };
+      }
+    }
+
+    return;
+  }
+
+  getLinks(): Record<string, string> {
+    if (!this.parsedDoc) {
+      return {};
+    }
+    return this.parsedDoc?.links;
+  }
+
+  getLink(linkName: string): string | undefined {
+    return this.getLinks()[linkName];
+  }
+
+  getLinkDocumentUri(linkName: string): string | undefined {
+    const link = this.getLink(linkName);
+
+    if (!link) {
+      return link;
+    }
+
+    // TODO if has no .clyde (append it)
+    if (isAbsolute(link)) {
+      return pathToFileURL(link).href;
+    }
+
+    // TODO if it's relative but has no "./" or "../", get path from default dialogues folder
+
+    return resolve(this.documentUri, link);
   }
 
   addParseFinishedListener(callback: ParseFinishedCallback) {
