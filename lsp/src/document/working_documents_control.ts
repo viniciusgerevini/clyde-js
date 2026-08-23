@@ -1,47 +1,24 @@
 import {
-  TextDocumentSyncKind,
-  type InitializeResult,
   type CompletionItem,
   type CompletionParams,
   type DefinitionParams,
   type DefinitionLink,
+  type RenameParams,
+  WorkspaceEdit,
+  type PrepareRenameParams,
+  Range,
 } from "vscode-languageserver/node";
-import {
-  buildSemanticResponseForDocument,
-  semanticTokensLegend,
-} from "../features/semantic_tokens.js";
+import { buildSemanticResponseForDocument } from "../features/semantic_tokens.js";
 import { getCompletionOptions } from "../features/completion.js";
 import { onDefinitionRequest } from "../features/definitions.js";
 import { WorkingDocument, type ErrorInfo } from "./working_document.js";
-import { SERVER_VERSION } from "../config.js";
+import { onPrepareRenameRequest, onRenameRequest } from "../features/renames.js";
 
 type ParseCallback = (uri: string, error: ErrorInfo | undefined) => void;
 
 export class WorkingDocumentsControl {
   private workingDocuments: Map<string, WorkingDocument> = new Map();
   constructor(private onParseCallback: ParseCallback) {}
-
-  getInitialServerInfo(): InitializeResult {
-    return {
-      capabilities: {
-        textDocumentSync: TextDocumentSyncKind.Full,
-        completionProvider: {},
-        semanticTokensProvider: {
-          legend: semanticTokensLegend,
-          range: false,
-          full: true,
-        },
-        definitionProvider: true,
-
-        // TODO renameProvider?: boolean | RenameOptions;
-        // - rename speakers, tags and blocks
-      },
-      serverInfo: {
-        name: "Clyde",
-        version: SERVER_VERSION,
-      },
-    };
-  }
 
   updateDocumentContent(uri: string, content: string): void {
     const workingDocument = this.getOrInitWorkingDocument(uri);
@@ -65,6 +42,14 @@ export class WorkingDocumentsControl {
 
   getDocument(uri: string): WorkingDocument {
     return this.getOrInitWorkingDocument(uri);
+  }
+
+  getRenameEdit(params: RenameParams): WorkspaceEdit | undefined {
+    return onRenameRequest(params, this.getDocument(params.textDocument.uri));
+  }
+
+  getPrepareRenameCheck(params: PrepareRenameParams): Range | undefined {
+    return onPrepareRenameRequest(params, this.getDocument(params.textDocument.uri));
   }
 
   removeDocument(uri: string) {

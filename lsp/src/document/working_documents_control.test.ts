@@ -1,10 +1,9 @@
 import { describe, it, beforeEach, expect, afterEach, vi, Mock } from "vitest";
-import { TextDocumentSyncKind } from "vscode-languageserver/node";
-import { SERVER_VERSION } from "../config";
 
 import * as semanticTokensModule from "../features/semantic_tokens.js";
 import * as completionModule from "../features/completion.js";
 import * as definitionsModule from "../features/definitions.js";
+import * as renamesModule from "../features/renames.js";
 
 import { WorkingDocumentsControl } from "./working_documents_control";
 
@@ -21,26 +20,6 @@ describe("Working Documents Control", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.useRealTimers();
-  });
-
-  it("returns service info with capabilities", () => {
-    const info = workingDocuments.getInitialServerInfo();
-    expect(info).toEqual({
-      capabilities: {
-        textDocumentSync: TextDocumentSyncKind.Full,
-        completionProvider: {},
-        semanticTokensProvider: {
-          legend: semanticTokensModule.semanticTokensLegend,
-          range: false,
-          full: true,
-        },
-        definitionProvider: true,
-      },
-      serverInfo: {
-        name: "Clyde",
-        version: SERVER_VERSION,
-      },
-    });
   });
 
   it("initializes a new working document", () => {
@@ -133,6 +112,38 @@ describe("Working Documents Control", () => {
 
     expect(result).toBe(expectedResult);
     expect(buildSemanticResponseStub).toHaveBeenCalledWith(workingDocument);
+  });
+
+  it("checks prepare rename payload", () => {
+    const mockedResult = [];
+    const workingDocument = workingDocuments.getDocument(testDocUri);
+    const prepareRenameParams = {
+      textDocument: { uri: testDocUri },
+    };
+
+    const parepareRenameStub = vi.spyOn(renamesModule, "onPrepareRenameRequest");
+    parepareRenameStub.mockReturnValue(mockedResult);
+
+    const result = workingDocuments.getPrepareRenameCheck(prepareRenameParams);
+
+    expect(result).toBe(mockedResult);
+    expect(parepareRenameStub).toHaveBeenCalledWith(prepareRenameParams, workingDocument);
+  });
+
+  it("gets rename edits", () => {
+    const mockedResult = [];
+    const workingDocument = workingDocuments.getDocument(testDocUri);
+    const params = {
+      textDocument: { uri: testDocUri },
+    };
+
+    const renameStub = vi.spyOn(renamesModule, "onRenameRequest");
+    renameStub.mockReturnValue(mockedResult);
+
+    const result = workingDocuments.getRenameEdit(params);
+
+    expect(result).toBe(mockedResult);
+    expect(renameStub).toHaveBeenCalledWith(params, workingDocument);
   });
 
   it("removes document from working documents", () => {

@@ -1,21 +1,17 @@
 import {
   createConnection,
   TextDocuments,
-  type TextDocumentChangeEvent,
-  type CompletionItem,
   Diagnostic,
   DiagnosticSeverity,
-  type CompletionParams,
-  CompletionList,
-  type DefinitionParams,
-  type Definition,
-  type DefinitionLink,
+  TextDocumentSyncKind,
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 import { getLogger } from "./utils/logger.js";
 import { type ErrorInfo } from "./document/working_document.js";
 import { WorkingDocumentsControl } from "./document/working_documents_control.js";
+import { semanticTokensLegend } from "./features/semantic_tokens.js";
+import { SERVER_VERSION } from "./config.js";
 
 export function startServer(): void {
   const connection = createConnection();
@@ -49,10 +45,29 @@ export function startServer(): void {
 
   connection.onInitialize(() => {
     logger.info("Server initializing");
-    return workingDocuments.getInitialServerInfo();
+
+    return {
+      capabilities: {
+        textDocumentSync: TextDocumentSyncKind.Full,
+        completionProvider: {},
+        semanticTokensProvider: {
+          legend: semanticTokensLegend,
+          range: false,
+          full: true,
+        },
+        definitionProvider: true,
+        renameProvider: {
+          prepareProvider: true,
+        },
+      },
+      serverInfo: {
+        name: "Clyde",
+        version: SERVER_VERSION,
+      },
+    };
   });
 
-  documents.onDidClose((event: TextDocumentChangeEvent<TextDocument>) => {
+  documents.onDidClose((event) => {
     logger.info("File closed", { uri: event.document.uri });
     workingDocuments.removeDocument(event.document.uri);
   });
@@ -62,18 +77,24 @@ export function startServer(): void {
     workingDocuments.updateDocumentContent(change.document.uri, change.document.getText());
   });
 
-  connection.onCompletion(
-    (completionParams: CompletionParams): CompletionItem[] | CompletionList => {
-      logger.debug("Completion requested", {
-        uri: completionParams.textDocument.uri,
-        completionParams,
-      });
-      return workingDocuments.getCodeCompletionOptions(completionParams);
-    },
-  );
+  connection.onCompletion((completionParams) => {
+    logger.debug("Completion requested", {
+      uri: completionParams.textDocument.uri,
+      completionParams,
+    });
+    return workingDocuments.getCodeCompletionOptions(completionParams);
+  });
 
-  connection.onDefinition((params: DefinitionParams): Definition | DefinitionLink[] | undefined => {
+  connection.onDefinition((params) => {
     return workingDocuments.getDefinitionLinks(params);
+  });
+
+  connection.onPrepareRename((params) => {
+    return workingDocuments.getPrepareRenameCheck(params);
+  });
+
+  connection.onRenameRequest((params) => {
+    return workingDocuments.getRenameEdit(params);
   });
 
   connection.languages.semanticTokens.on((params) => {

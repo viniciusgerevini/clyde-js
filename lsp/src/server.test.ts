@@ -1,11 +1,17 @@
 import { describe, it, expect, vi, Mock, beforeEach, afterEach } from "vitest";
 
 import * as languageServerModule from "vscode-languageserver/node";
-import { TextDocuments, DiagnosticSeverity } from "vscode-languageserver/node";
+import {
+  TextDocuments,
+  TextDocumentSyncKind,
+  DiagnosticSeverity,
+} from "vscode-languageserver/node";
 import { startServer } from "./server";
 import { WorkingDocumentsControl } from "./document/working_documents_control";
 import * as workingDocumentsModule from "./document/working_documents_control";
 import { ErrorInfo } from "./document/working_document";
+import { semanticTokensLegend } from "./features/semantic_tokens";
+import { SERVER_VERSION } from "./config";
 
 describe("Server", () => {
   let connectionStub: {
@@ -13,6 +19,8 @@ describe("Server", () => {
     onInitialize: Mock;
     onCompletion: Mock;
     onDefinition: Mock;
+    onPrepareRename: Mock;
+    onRenameRequest: Mock;
     languages: {
       semanticTokens: {
         on: Mock;
@@ -29,6 +37,8 @@ describe("Server", () => {
       onInitialize: vi.fn(),
       onCompletion: vi.fn(),
       onDefinition: vi.fn(),
+      onPrepareRename: vi.fn(),
+      onRenameRequest: vi.fn(),
       languages: {
         semanticTokens: {
           on: vi.fn(),
@@ -59,12 +69,25 @@ describe("Server", () => {
   });
 
   it("initialize with clyde server info", () => {
-    const fakeServerInfo = { fake: "server info " };
-    const getInitialServerInfoStub = vi.spyOn(
-      WorkingDocumentsControl.prototype,
-      "getInitialServerInfo",
-    );
-    getInitialServerInfoStub.mockReturnValue(fakeServerInfo);
+    const serverInfo = {
+      capabilities: {
+        textDocumentSync: TextDocumentSyncKind.Full,
+        completionProvider: {},
+        semanticTokensProvider: {
+          legend: semanticTokensLegend,
+          range: false,
+          full: true,
+        },
+        definitionProvider: true,
+        renameProvider: {
+          prepareProvider: true,
+        },
+      },
+      serverInfo: {
+        name: "Clyde",
+        version: SERVER_VERSION,
+      },
+    };
 
     startServer();
 
@@ -73,27 +96,7 @@ describe("Server", () => {
     const initCallback = connectionStub.onInitialize.mock.lastCall![0];
     const result = initCallback();
 
-    expect(result).toEqual(fakeServerInfo);
-    expect(getInitialServerInfoStub).toHaveBeenCalled();
-  });
-
-  it("initialize with clyde server info", () => {
-    const fakeServerInfo = { fake: "server info " };
-    const getInitialServerInfoStub = vi.spyOn(
-      WorkingDocumentsControl.prototype,
-      "getInitialServerInfo",
-    );
-    getInitialServerInfoStub.mockReturnValue(fakeServerInfo);
-
-    startServer();
-
-    expect(connectionStub.onInitialize).toHaveBeenCalled();
-
-    const initCallback = connectionStub.onInitialize.mock.lastCall![0];
-    const result = initCallback();
-
-    expect(result).toEqual(fakeServerInfo);
-    expect(getInitialServerInfoStub).toHaveBeenCalled();
+    expect(result).toEqual(serverInfo);
   });
 
   it("fetches code completion options on completion requested", () => {
@@ -145,6 +148,40 @@ describe("Server", () => {
 
     expect(result).toEqual(fakeTokensResponse);
     expect(stubbedMethod).toHaveBeenCalledWith(fakeParams.textDocument.uri);
+  });
+
+  it("fetches rename prepare check data", () => {
+    const fakeResponse = [{ label: "fake response" }];
+    const fakeParams = { textDocument: { uri: "fake" } };
+    const stubbedMethod = vi.spyOn(WorkingDocumentsControl.prototype, "getPrepareRenameCheck");
+    stubbedMethod.mockReturnValue(fakeResponse);
+
+    startServer();
+
+    expect(connectionStub.onPrepareRename).toHaveBeenCalled();
+
+    const callback = connectionStub.onPrepareRename.mock.lastCall![0];
+    const result = callback(fakeParams);
+
+    expect(result).toEqual(fakeResponse);
+    expect(stubbedMethod).toHaveBeenCalledWith(fakeParams);
+  });
+
+  it("fetches rename edits", () => {
+    const fakeResponse = [{ label: "fake response" }];
+    const fakeParams = { textDocument: { uri: "fake" } };
+    const stubbedMethod = vi.spyOn(WorkingDocumentsControl.prototype, "getRenameEdit");
+    stubbedMethod.mockReturnValue(fakeResponse);
+
+    startServer();
+
+    expect(connectionStub.onRenameRequest).toHaveBeenCalled();
+
+    const callback = connectionStub.onRenameRequest.mock.lastCall![0];
+    const result = callback(fakeParams);
+
+    expect(result).toEqual(fakeResponse);
+    expect(stubbedMethod).toHaveBeenCalledWith(fakeParams);
   });
 
   it("removes document when closed", () => {
