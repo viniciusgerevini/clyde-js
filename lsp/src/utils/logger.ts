@@ -8,7 +8,7 @@ export enum LogLevel {
   DEBUG = 3,
 }
 
-interface ILogger {
+export interface ILogger {
   info(message: string, extras?: object): void;
   warn(message: string, extras?: object): void;
   error(error: string | Error, extras?: object): void;

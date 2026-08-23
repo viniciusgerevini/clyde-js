@@ -5,5 +5,8 @@ export default defineConfig({
     env: {
       LOG_LEVEL: 0, // disable all logs from logger
     },
+    coverage: {
+      include: ["src/**/*.{ts,tsx}"],
+    },
   },
 });

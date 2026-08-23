@@ -1,7 +1,6 @@
 import {
   CompletionItem,
   CompletionItemKind,
-  CompletionList,
   Position,
   type CompletionParams,
 } from "vscode-languageserver";
@@ -21,7 +20,7 @@ const DIVERT_END_OPTION: CompletionItem = {
 export function getCompletionOptions(
   completionParams: CompletionParams,
   workingDocument: WorkingDocument,
-): CompletionItem[] | CompletionList {
+): CompletionItem[] {
   const position = completionParams.position;
   const content = workingDocument.getContent();
   const lines = content.split("\n");

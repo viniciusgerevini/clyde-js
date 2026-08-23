@@ -1,9 +1,21 @@
-import { describe } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 
-describe.todo("LSP Server: index", () => {
-  // update content on change
-  // remove working document on file close
-  // call om completion when completion request received
-  // request semeantic tokens when request received
-  // send diagnostics on parse finished
+import * as serverModule from "./server";
+
+import "./index";
+
+vi.mock("./server.js", () => {
+  return {
+    startServer: vi.fn(),
+  };
+});
+
+describe("Index", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("ensures start server is called on import", () => {
+    expect(vi.mocked(serverModule.startServer)).toHaveBeenCalled();
+  });
 });
