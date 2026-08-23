@@ -220,10 +220,7 @@ block
     });
 
     it("returns undefined when requested rename position not found", () => {
-      // this case should never happen as the prepare stage should have skipped any
-      // token not allowed. However, as prepare and rename are two separate requests
-      // I'm being defensive and making sure if this ever happened, at least it won't
-      // iterage over the whole file to find out
+      // like the one aboce, this is a safeguard and should never happen
       doc.updateContent(docContent);
       const params = createRenameParams({ newName: "something", line: 1, character: 22 });
 

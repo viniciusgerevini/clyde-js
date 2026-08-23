@@ -1,9 +1,9 @@
 import { Lexer, parse, ClydeDocumentRoot, UnexpectedTokenError } from "@clyde-lang/parser";
 import { getLogger } from "../utils/logger.js";
 import { debounce } from "../utils/debouncer.js";
-import { getParseDelayInMs } from "../config.js";
+import { getFileUriInDefaultDialogueFolder, getParseDelayInMs } from "../config.js";
 import { pathToFileURL, URL } from "node:url";
-import { isAbsolute } from "node:path";
+import { isAbsolute, extname } from "node:path";
 
 const logger = getLogger();
 
@@ -107,18 +107,23 @@ export class WorkingDocument {
   }
 
   getLinkDocumentUri(linkName: string): string | undefined {
-    const link = this.getLink(linkName);
+    let link = this.getLink(linkName);
 
     if (!link) {
       return link;
     }
 
-    // TODO if has no .clyde (append it)
+    if (extname(link) !== ".clyde") {
+      link += ".clyde";
+    }
+
     if (isAbsolute(link)) {
       return pathToFileURL(link).href;
     }
 
-    // TODO if it's relative but has no "./" or "../", get path from default dialogues folder
+    if (!link.startsWith(".")) {
+      return getFileUriInDefaultDialogueFolder(link);
+    }
 
     return new URL(link, this.documentUri).href;
   }

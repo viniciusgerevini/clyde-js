@@ -11,7 +11,7 @@ import { WorkingDocumentsControl } from "./document/working_documents_control";
 import * as workingDocumentsModule from "./document/working_documents_control";
 import { ErrorInfo } from "./document/working_document";
 import { semanticTokensLegend } from "./features/semantic_tokens";
-import { SERVER_VERSION } from "./config";
+import * as configModule from "./config";
 
 describe("Server", () => {
   let connectionStub: {
@@ -69,6 +69,8 @@ describe("Server", () => {
   });
 
   it("initialize with clyde server info", () => {
+    const findAndLoadConfigSpy = vi.spyOn(configModule, "findAndLoadConfig");
+    const workspaceFolders = [{ uri: "file:///project_folder" }];
     const serverInfo = {
       capabilities: {
         textDocumentSync: TextDocumentSyncKind.Full,
@@ -82,10 +84,15 @@ describe("Server", () => {
         renameProvider: {
           prepareProvider: true,
         },
+        workspace: {
+          workspaceFolders: {
+            supported: true,
+          },
+        },
       },
       serverInfo: {
         name: "Clyde",
-        version: SERVER_VERSION,
+        version: configModule.SERVER_VERSION,
       },
     };
 
@@ -94,9 +101,22 @@ describe("Server", () => {
     expect(connectionStub.onInitialize).toHaveBeenCalled();
 
     const initCallback = connectionStub.onInitialize.mock.lastCall![0];
-    const result = initCallback();
+    const result = initCallback({ workspaceFolders });
 
     expect(result).toEqual(serverInfo);
+    expect(findAndLoadConfigSpy).toHaveBeenCalled();
+  });
+
+  it("does not initialize config when workspace folders are not available", () => {
+    const findAndLoadConfigSpy = vi.spyOn(configModule, "findAndLoadConfig");
+    startServer();
+
+    expect(connectionStub.onInitialize).toHaveBeenCalled();
+
+    const initCallback = connectionStub.onInitialize.mock.lastCall![0];
+    initCallback({});
+
+    expect(findAndLoadConfigSpy).not.toHaveBeenCalled();
   });
 
   it("fetches code completion options on completion requested", () => {

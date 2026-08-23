@@ -11,12 +11,11 @@ import { getLogger } from "./utils/logger.js";
 import { type ErrorInfo } from "./document/working_document.js";
 import { WorkingDocumentsControl } from "./document/working_documents_control.js";
 import { semanticTokensLegend } from "./features/semantic_tokens.js";
-import { SERVER_VERSION } from "./config.js";
+import { findAndLoadConfig, SERVER_VERSION } from "./config.js";
 
 export function startServer(): void {
   const connection = createConnection();
   const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
-
   const workingDocuments = new WorkingDocumentsControl(onParseFinished);
 
   const logger = getLogger();
@@ -43,8 +42,12 @@ export function startServer(): void {
     }
   }
 
-  connection.onInitialize(() => {
+  connection.onInitialize((params) => {
     logger.info("Server initializing");
+
+    if (params.workspaceFolders) {
+      findAndLoadConfig(params.workspaceFolders);
+    }
 
     return {
       capabilities: {
@@ -58,6 +61,11 @@ export function startServer(): void {
         definitionProvider: true,
         renameProvider: {
           prepareProvider: true,
+        },
+        workspace: {
+          workspaceFolders: {
+            supported: true,
+          },
         },
       },
       serverInfo: {

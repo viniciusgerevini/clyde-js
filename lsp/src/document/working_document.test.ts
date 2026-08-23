@@ -1,6 +1,7 @@
 import { describe, it, vi, beforeEach, Mock, expect, afterEach } from "vitest";
 import * as clydeParser from "@clyde-lang/parser";
 import { ErrorInfo, WorkingDocument } from "./working_document";
+import * as configModule from "../config";
 
 describe("Working Document", () => {
   const testDocumentUri = "file:///a/b/fake_document";
@@ -257,10 +258,17 @@ hello
 
   it("gets link as document uri", () => {
     vi.useFakeTimers();
+    vi.spyOn(configModule, "getFileUriInDefaultDialogueFolder").mockImplementation((uri) => {
+      console.log(uri);
+      return new URL(uri, "file:///default_folder/").href;
+    });
+
     const documentContent = `
 @link relative_file = ../relative/banana.clyde
 @link absolute_file = /absolute/banana.clyde
-@link one_other_file
+@link file_from_default_folder
+@link relative_file_without_extension = ../relative/banana
+@link absolute_file_without_extension = /absolute/banana
 `;
     workingDocument.updateContent(documentContent);
     vi.advanceTimersByTime(1000);
@@ -270,6 +278,15 @@ hello
     );
     expect(workingDocument.getLinkDocumentUri("relative_file")).toEqual(
       "file:///a/relative/banana.clyde",
+    );
+    expect(workingDocument.getLinkDocumentUri("absolute_file_without_extension")).toEqual(
+      "file:///absolute/banana.clyde",
+    );
+    expect(workingDocument.getLinkDocumentUri("relative_file_without_extension")).toEqual(
+      "file:///a/relative/banana.clyde",
+    );
+    expect(workingDocument.getLinkDocumentUri("file_from_default_folder")).toEqual(
+      "file:///default_folder/file_from_default_folder.clyde",
     );
     expect(workingDocument.getLinkDocumentUri("does_not_exist")).toBeUndefined();
   });

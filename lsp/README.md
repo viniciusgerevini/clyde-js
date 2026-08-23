@@ -27,10 +27,10 @@ This is a language server for Clyde Dialogue Language.
   - [x] file
     - [ ] deal with shorthands (file without extension, file without path (default folder))
 - [x] diagnostics / parsing errors
-- [ ] rename
-  - [ ] speakers
-  - [ ] block
-  - [ ] tags
+- [x] rename
+  - [x] speakers
+  - [x] block
+  - [x] tags
 - [ ] distribution
   - [ ] npm package
   - [ ] standalone (SEA, bun or dino, whatever is easier)
