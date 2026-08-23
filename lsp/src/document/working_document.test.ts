@@ -218,13 +218,11 @@ hello
   });
 
   it("returns links", () => {
-    vi.useFakeTimers();
     const documentContent = `
 @link another_file
 @link one_other_file
 `;
     workingDocument.updateContent(documentContent);
-    vi.advanceTimersByTime(1000);
 
     expect(workingDocument.getLinks()).toEqual({
       another_file: "another_file",
@@ -233,13 +231,11 @@ hello
   });
 
   it("gets link by name", () => {
-    vi.useFakeTimers();
     const documentContent = `
 @link another_file = ../banana.clyde
 @link one_other_file
 `;
     workingDocument.updateContent(documentContent);
-    vi.advanceTimersByTime(1000);
 
     expect(workingDocument.getLink("another_file")).toEqual("../banana.clyde");
   });
@@ -289,9 +285,5 @@ hello
       "file:///default_folder/file_from_default_folder.clyde",
     );
     expect(workingDocument.getLinkDocumentUri("does_not_exist")).toBeUndefined();
-  });
-
-  it("returns empty blocks when no parsed document", () => {
-    expect(workingDocument.getLinks()).toEqual({});
   });
 });

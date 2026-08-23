@@ -127,7 +127,6 @@ export function onPrepareRenameRequest(
 }
 
 function isInTokenRange(token: Lexer.Token, character: number): boolean {
-  console.log("RRRRRRRRRRRRRRR ", token);
   const length = token.length!; // all supported tokens have length
   return character >= token.column && character < token.column + length;
 }

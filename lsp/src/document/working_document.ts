@@ -96,10 +96,16 @@ export class WorkingDocument {
   }
 
   getLinks(): Record<string, string> {
-    if (!this.parsedDoc) {
-      return {};
+    const tokens = this.getTokens();
+    const links: Record<string, string> = {};
+
+    for (let token of tokens) {
+      if (token.token === Lexer.TOKENS.LINK_FILE) {
+        const payload = JSON.parse(token.value!);
+        links[payload.name!] = payload.path!;
+      }
     }
-    return this.parsedDoc?.links;
+    return links;
   }
 
   getLink(linkName: string): string | undefined {

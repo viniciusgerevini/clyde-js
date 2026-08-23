@@ -21,16 +21,18 @@ This is a language server for Clyde Dialogue Language.
   - [x] Speakers
   - [x] linked files
   - [x] block from linked file
-- [ ] go to definition
+- [x] go to definition
   - [x] block
   - [x] block from linked file
   - [x] file
-    - [ ] deal with shorthands (file without extension, file without path (default folder))
+    - [x] deal with shorthands (file without extension, file without path (default folder))
+    - [x] use file tokens instead of parsed doc
 - [x] diagnostics / parsing errors
 - [x] rename
   - [x] speakers
   - [x] block
   - [x] tags
+  - [ ] link variables
 - [ ] distribution
   - [ ] npm package
   - [ ] standalone (SEA, bun or dino, whatever is easier)
@@ -39,6 +41,6 @@ This is a language server for Clyde Dialogue Language.
   - [ ] VS Code? Others?
 - [ ] enhancements (stretch, maybe won't do)
   - [ ] diagnostics, show warning for diverts with no existing blocks
-- [ ] workspace
-  - [ ] define clyde.config.json file
-  - [ ] use clyde.config or default
+- [x] workspace
+  - [x] define clyde.config.json file
+  - [x] use clyde.config or default
