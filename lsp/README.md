@@ -1,9 +1,9 @@
 # Clyde Language Server
 
 > [!WARNING]
-> This is a work in progress
+> This is a fairly new implementation. Please report any bugs or improvement suggestions as an issue in this repository.
 
-This is a language server for Clyde Dialogue Language.
+This is a language server implementation for [Clyde Dialogue Language](https://thisisvini.com/clyde).
 
 ## Features
 
@@ -32,7 +32,6 @@ This is a language server for Clyde Dialogue Language.
   - [x] speakers
   - [x] block
   - [x] tags
-  - [ ] link variables
 - [ ] distribution
   - [ ] npm package
   - [ ] standalone (SEA, bun or dino, whatever is easier)
