@@ -56,6 +56,10 @@ There are three Node libraries which can be used to play with this language:
 
 [@clyde-lang/cli](./cli): CLI tool for executing, parsing and debugging Clyde dialogues.
 
+### Language server
+
+[@clyde-lang/lsp](./lsp): Language Server for Clyde. Can be installed from the releases page or via NPM.
+
 ### Online Editor and Interpreter
 
 [Playground page](https://viniciusgerevini.github.io/clyde-js/).
