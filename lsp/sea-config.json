@@ -1,0 +1,6 @@
+{
+  "main": "./dist_sea/clyde.js",
+  "output": "./dist_sea/clydels",
+  "disableExperimentalSEAWarning": true,
+  "useCodeCache": false
+}

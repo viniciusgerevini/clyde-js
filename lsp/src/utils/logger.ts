@@ -55,8 +55,7 @@ export class FileLogger implements ILogger {
     const content = `${message}${extras ? ` | ${JSON.stringify(extras)}` : ""}\n`;
     try {
       fs.appendFileSync(LOG_FILE, content);
-      // eslint-disable-next-line no-unused-vars
-    } catch (e) {
+    } catch {
       // nothing I can do unfortunately
     }
   }

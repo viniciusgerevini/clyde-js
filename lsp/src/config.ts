@@ -6,7 +6,7 @@ import type { WorkspaceFolder } from "vscode-languageserver";
 export const SERVER_VERSION = "0.0.1";
 
 const CONFIG_FILE_NAME = "clyde.config.json";
-export const LOG_FILE = "/var/tmp/clydelsp.log";
+export const LOG_FILE = "/tmp/clydels.log";
 
 let defaultDialogueFolder: string = "";
 
