@@ -1,6 +1,6 @@
 import { describe, it, vi, beforeEach, Mock, expect, afterEach } from "vitest";
 import fs from "node:fs";
-import { LOG_FILE } from "../config";
+import { getLogFilePath, getLogLevel } from "../config";
 import { FileLogger, getLogger, LogLevel, NoopLogger } from "./logger";
 
 describe("Logger", () => {
@@ -27,28 +27,10 @@ describe("Logger", () => {
       expect(logger).toBeInstanceOf(FileLogger);
     });
 
-    it("returns logger based on LOG_LEVEL env variable when no level provided", () => {
-      const currentLogLevel = process.env["LOG_LEVEL"];
-      process.env["LOG_LEVEL"] = "3";
-
+    it("returns logger based on config log level when no level provided", () => {
       const logger = getLogger();
 
-      // reset back
-      process.env["LOG_LEVEL"] = currentLogLevel;
-
-      expect(logger).toBeInstanceOf(FileLogger);
-      expect((logger as FileLogger).level).toBe(3);
-    });
-
-    it("defaults to noop", () => {
-      const currentLogLevel = process.env["LOG_LEVEL"];
-      delete process.env["LOG_LEVEL"];
-
-      const logger = getLogger();
-
-      // reset back
-      process.env["LOG_LEVEL"] = currentLogLevel;
-
+      expect(getLogLevel()).toBe(LogLevel.DISABLED);
       expect(logger).toBeInstanceOf(NoopLogger);
     });
   });
@@ -64,7 +46,7 @@ describe("Logger", () => {
         logger.error(error);
 
         expect(appendFileSyncStub).toHaveBeenCalledWith(
-          LOG_FILE,
+          getLogFilePath(),
           `ERROR: ${errorName}: ${errorMessage}\n`,
         );
       });
@@ -74,7 +56,10 @@ describe("Logger", () => {
         const errorMessage = "This is a test error";
         logger.error(errorMessage);
 
-        expect(appendFileSyncStub).toHaveBeenCalledWith(LOG_FILE, `ERROR: ${errorMessage}\n`);
+        expect(appendFileSyncStub).toHaveBeenCalledWith(
+          getLogFilePath(),
+          `ERROR: ${errorMessage}\n`,
+        );
       });
 
       it("logs error with extras", () => {
@@ -85,7 +70,7 @@ describe("Logger", () => {
         logger.error(errorMessage, extras);
 
         expect(appendFileSyncStub).toHaveBeenCalledWith(
-          LOG_FILE,
+          getLogFilePath(),
           `ERROR: ${errorMessage} | ${JSON.stringify(extras)}\n`,
         );
       });
@@ -98,7 +83,7 @@ describe("Logger", () => {
 
         logger.info(message);
 
-        expect(appendFileSyncStub).toHaveBeenCalledWith(LOG_FILE, `${message}\n`);
+        expect(appendFileSyncStub).toHaveBeenCalledWith(getLogFilePath(), `${message}\n`);
       });
 
       it("logs info with extras", () => {
@@ -109,7 +94,7 @@ describe("Logger", () => {
         logger.info(message, extras);
 
         expect(appendFileSyncStub).toHaveBeenCalledWith(
-          LOG_FILE,
+          getLogFilePath(),
           `${message} | ${JSON.stringify(extras)}\n`,
         );
       });
@@ -128,7 +113,7 @@ describe("Logger", () => {
 
         logger.warn(message);
 
-        expect(appendFileSyncStub).toHaveBeenCalledWith(LOG_FILE, `WARN: ${message}\n`);
+        expect(appendFileSyncStub).toHaveBeenCalledWith(getLogFilePath(), `WARN: ${message}\n`);
       });
 
       it("logs warn with extras", () => {
@@ -139,7 +124,7 @@ describe("Logger", () => {
         logger.warn(message, extras);
 
         expect(appendFileSyncStub).toHaveBeenCalledWith(
-          LOG_FILE,
+          getLogFilePath(),
           `WARN: ${message} | ${JSON.stringify(extras)}\n`,
         );
       });
@@ -158,7 +143,7 @@ describe("Logger", () => {
 
         logger.debug(message);
 
-        expect(appendFileSyncStub).toHaveBeenCalledWith(LOG_FILE, `DEBUG: ${message}\n`);
+        expect(appendFileSyncStub).toHaveBeenCalledWith(getLogFilePath(), `DEBUG: ${message}\n`);
       });
 
       it("logs debug with extras", () => {
@@ -169,7 +154,7 @@ describe("Logger", () => {
         logger.debug(message, extras);
 
         expect(appendFileSyncStub).toHaveBeenCalledWith(
-          LOG_FILE,
+          getLogFilePath(),
           `DEBUG: ${message} | ${JSON.stringify(extras)}\n`,
         );
       });

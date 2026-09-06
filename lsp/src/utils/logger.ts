@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import { getLogLevel, LOG_FILE } from "../config.js";
+import { getLogLevel, getLogFilePath } from "../config.js";
 
 export enum LogLevel {
   DISABLED = 0,
@@ -54,7 +54,7 @@ export class FileLogger implements ILogger {
   private _writeLogLine(message: string, extras: object | undefined): void {
     const content = `${message}${extras ? ` | ${JSON.stringify(extras)}` : ""}\n`;
     try {
-      fs.appendFileSync(LOG_FILE, content);
+      fs.appendFileSync(getLogFilePath(), content);
     } catch {
       // nothing I can do unfortunately
     }

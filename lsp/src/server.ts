@@ -11,9 +11,11 @@ import { getLogger } from "./utils/logger.js";
 import { type ErrorInfo } from "./document/working_document.js";
 import { WorkingDocumentsControl } from "./document/working_documents_control.js";
 import { semanticTokensLegend } from "./features/semantic_tokens.js";
-import { findAndLoadConfig, SERVER_VERSION } from "./config.js";
+import { findAndLoadConfig, loadConfigFromArguments, SERVER_VERSION } from "./config.js";
 
 export function startServer(): void {
+  loadConfigFromArguments(process.argv);
+
   const connection = createConnection();
   const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
   const workingDocuments = new WorkingDocumentsControl(onParseFinished);

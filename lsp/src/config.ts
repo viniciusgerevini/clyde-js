@@ -5,24 +5,65 @@ import type { WorkspaceFolder } from "vscode-languageserver";
 
 export const SERVER_VERSION = "0.0.1";
 
-const CONFIG_FILE_NAME = "clyde.config.json";
-export const LOG_FILE = "/tmp/clydels.log";
+const CONFIG_FILE_NAME: string = "clyde.config.json";
+
+let logFile: string = "/tmp/clydels.log";
+let logLevel: number = 0;
+let parseDelayInMs: number = 300;
 
 let defaultDialogueFolder: string = "";
 
+export function loadConfigFromArguments(argv: string[]) {
+  logLevel = 0;
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === "--log-level") {
+      loadLogLevel(argv[i + 1]);
+      i++;
+      continue;
+    }
+    if (arg === "--parse-debounce-time") {
+      loadParseDelay(argv[i + 1]);
+      i++;
+      continue;
+    }
+    if (arg === "--log-file") {
+      loadLogFile(argv[i + 1]);
+      i++;
+      continue;
+    }
+  }
+}
+
+function loadLogLevel(arg: any) {
+  logLevel = isNaN(arg) ? 0 : Number(arg);
+}
+
+function loadParseDelay(arg: any) {
+  parseDelayInMs = isNaN(arg) ? 300 : Number(arg);
+}
+
+function loadLogFile(arg: any) {
+  logFile = arg;
+}
+
 export function getLogLevel(): LogLevel {
-  return isNaN(process.env["LOG_LEVEL"] as any) ? 0 : Number(process.env["LOG_LEVEL"]);
+  return logLevel;
+}
+
+export function getLogFilePath(): string {
+  return logFile;
 }
 
 export function getParseDelayInMs(): number {
-  return isNaN(process.env["PARSE_DELAY"] as any) ? 500 : Number(process.env["PARSE_DELAY"]);
+  return parseDelayInMs;
 }
 
 export function getFileUriInDefaultDialogueFolder(filePath: string): string {
   try {
     return new URL(filePath, defaultDialogueFolder).href;
-    // eslint-disable-next-line no-unused-vars
-  } catch (e) {
+  } catch {
     return "";
   }
 }
@@ -52,8 +93,7 @@ export function findAndLoadConfig(folders: WorkspaceFolder[]) {
         ).href;
         break;
       }
-      // eslint-disable-next-line no-unused-vars
-    } catch (e) {}
+    } catch {}
   }
 
   if (!defaultDialogueFolder) {

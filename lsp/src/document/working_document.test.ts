@@ -255,7 +255,6 @@ hello
   it("gets link as document uri", () => {
     vi.useFakeTimers();
     vi.spyOn(configModule, "getFileUriInDefaultDialogueFolder").mockImplementation((uri) => {
-      console.log(uri);
       return new URL(uri, "file:///default_folder/").href;
     });
 

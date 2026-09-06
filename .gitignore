@@ -4,3 +4,4 @@ out
 cjs
 dist
 dist_sea
+.DS_Store

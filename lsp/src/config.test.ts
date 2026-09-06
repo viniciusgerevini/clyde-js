@@ -3,62 +3,84 @@ import fs from "node:fs";
 import {
   findAndLoadConfig,
   getFileUriInDefaultDialogueFolder,
+  getLogFilePath,
   getLogLevel,
   getParseDelayInMs,
+  loadConfigFromArguments,
 } from "./config";
 
 describe("Config", () => {
-  describe("getLogLevel", () => {
-    let originalLogLevel: string | undefined;
+  describe("loadConfigFromArguments", () => {
+    const baseArgs = ["node", "script.js"];
 
-    beforeEach(() => {
-      originalLogLevel = process.env["LOG_LEVEL"];
+    describe("Log level", () => {
+      it("defaults to 0 when not set", () => {
+        loadConfigFromArguments(baseArgs);
+
+        expect(getLogLevel()).toEqual(0);
+      });
+
+      it("loads log level value from right argument", () => {
+        const args = baseArgs.concat(["--log-level", "2"]);
+        loadConfigFromArguments(args);
+
+        expect(getLogLevel()).toEqual(2);
+      });
+
+      it("fallback to 0 when --log-level has invalid value", () => {
+        const args = baseArgs.concat(["--log-level", "BANANA"]);
+
+        loadConfigFromArguments(args);
+
+        expect(getLogLevel()).toBe(0);
+      });
     });
 
-    afterEach(() => {
-      process.env["LOG_LEVEL"] = originalLogLevel;
+    describe("Log file path", () => {
+      it("Use default when not set", () => {
+        loadConfigFromArguments(baseArgs);
+
+        expect(getLogFilePath()).toEqual("/tmp/clydels.log");
+      });
+
+      it("loads log file path value from right argument", () => {
+        const args = baseArgs.concat(["--log-file", "/tmp/anotherfile"]);
+        loadConfigFromArguments(args);
+
+        expect(getLogFilePath()).toEqual("/tmp/anotherfile");
+      });
     });
 
-    it("returns log level from LOG_LEVEL env variable", () => {
-      process.env["LOG_LEVEL"] = "3";
-      expect(getLogLevel()).toBe(3);
+    describe("Parse delay", () => {
+      it("defaults to 300ms when not set", () => {
+        loadConfigFromArguments(baseArgs);
+        expect(getParseDelayInMs()).toBe(300);
+      });
+
+      it("returns delay info from --parse-debounce-time", () => {
+        const args = baseArgs.concat(["--parse-debounce-time", "335"]);
+
+        loadConfigFromArguments(args);
+
+        expect(getParseDelayInMs()).toBe(335);
+      });
+
+      it("fallback to default value when environment has invalid value", () => {
+        const args = baseArgs.concat(["--parse-debounce-time", "BANANA"]);
+
+        loadConfigFromArguments(args);
+
+        expect(getParseDelayInMs()).toBe(300);
+      });
     });
 
-    it("defaults to DISABLED when environment variable is not set", () => {
-      delete process.env["LOG_LEVEL"];
-      expect(getLogLevel()).toBe(0);
-    });
+    it("loads multiple configs", () => {
+      const args = baseArgs.concat(["--log-file", "/tmp/log", "--parse-debounce-time", "335"]);
 
-    it("fallback to DISABLED when LOG_LEVEL has invalid value", () => {
-      process.env["LOG_LEVEL"] = "banana";
-      expect(getLogLevel()).toBe(0);
-    });
-  });
+      loadConfigFromArguments(args);
 
-  describe("getParseDelayInMs", () => {
-    let originalParseDelay: string | undefined;
-
-    beforeEach(() => {
-      originalParseDelay = process.env["PARSE_DELAY"];
-    });
-
-    afterEach(() => {
-      process.env["PARSE_DELAY"] = originalParseDelay;
-    });
-
-    it("returns delay info from PARSE_DELAY env variable", () => {
-      process.env["PARSE_DELAY"] = "335";
+      expect(getLogFilePath()).toBe("/tmp/log");
       expect(getParseDelayInMs()).toBe(335);
-    });
-
-    it("defaults to 500ms when environment variable is not set", () => {
-      delete process.env["PARSE_DELAY"];
-      expect(getParseDelayInMs()).toBe(500);
-    });
-
-    it("fallback to 500 when environment has invalid value", () => {
-      process.env["PARSE_DELAY"] = "banana";
-      expect(getParseDelayInMs()).toBe(500);
     });
   });
 
