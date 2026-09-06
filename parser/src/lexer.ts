@@ -422,7 +422,13 @@ export function tokenize(input: string): TokenList {
       position += 1;
       column += 1;
     }
-    return {token: TOKENS.TAG, line, column: initialColumn, value: values.join(""), length: column- initialColumn };
+    return {
+      token: TOKENS.TAG,
+      line,
+      column: initialColumn,
+      value: values.join(""),
+      length: column - initialColumn,
+    };
   };
 
   const handleLink = () => {
@@ -487,7 +493,13 @@ export function tokenize(input: string): TokenList {
       position += 1;
       column += 1;
     }
-    return { token: TOKENS.BLOCK, line, column: initialColumn, value: values.join("").trim(), length: column - initialColumn };
+    return {
+      token: TOKENS.BLOCK,
+      line,
+      column: initialColumn,
+      value: values.join("").trim(),
+      length: column - initialColumn,
+    };
   };
 
   const handleDivert = (): TokenHandlerReturn => {
@@ -519,7 +531,7 @@ export function tokenize(input: string): TokenList {
         line,
         column: initialColumn,
         length: column - initialColumn,
-        value: values.join("").trim()
+        value: values.join("").trim(),
       };
     }
 
@@ -554,7 +566,13 @@ export function tokenize(input: string): TokenList {
 
     const value = JSON.stringify({ link: linkName, block: linkBlock });
 
-    return { token: TOKENS.DIVERT, line, column: initialColumn, value: value, length: column - initialColumn };
+    return {
+      token: TOKENS.DIVERT,
+      line,
+      column: initialColumn,
+      value: value,
+      length: column - initialColumn,
+    };
   };
 
   const handleDivertToParent = () => {
@@ -755,7 +773,7 @@ export function tokenize(input: string): TokenList {
       case "not":
         return { token: TOKENS.NOT, line, column: initialColumn, length: value.length };
       case "and":
-        return { token: TOKENS.AND, line, column: initialColumn, length: value.length  };
+        return { token: TOKENS.AND, line, column: initialColumn, length: value.length };
       case "or":
         return { token: TOKENS.OR, line, column: initialColumn, length: value.length };
       case "is":
@@ -812,14 +830,18 @@ export function tokenize(input: string): TokenList {
     position += 1;
 
     return {
-       ...token,
-       token: TOKENS.STRING_LITERAL,
-       column: initialColumn,
-       length: column - initialColumn
+      ...token,
+      token: TOKENS.STRING_LITERAL,
+      column: initialColumn,
+      length: column - initialColumn,
     };
   };
 
-  const createSimpleToken = (token: string, length: number, includeLength: boolean = false): Token => {
+  const createSimpleToken = (
+    token: string,
+    length: number,
+    includeLength: boolean = false,
+  ): Token => {
     const initialColumn = column;
     column += length;
     position += length;

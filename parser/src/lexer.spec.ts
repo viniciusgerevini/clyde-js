@@ -459,12 +459,17 @@ hello
 `).getAll();
       expect(tokens).toEqual([
         { token: TOKENS.TEXT, value: "hello", line: 1, column: 0 },
-        { token: TOKENS.DIVERT, value: "{\"link\":\"anotherfile\",\"block\":\"another block\"}", line: 2, column: 0, length: 29 },
+        {
+          token: TOKENS.DIVERT,
+          value: '{"link":"anotherfile","block":"another block"}',
+          line: 2,
+          column: 0,
+          length: 29,
+        },
         { token: TOKENS.LINE_BREAK, line: 2, column: 29 },
         { token: TOKENS.EOF, line: 3, column: 0 },
       ]);
     });
-
   });
 
   it("variations", () => {
