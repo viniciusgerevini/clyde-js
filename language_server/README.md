@@ -17,5 +17,5 @@ This is a language server implementation for [Clyde Dialogue Language](https://t
 You can install the server using the the platform specific binaries from the [releases](https://github.com/viniciusgerevini/clyde-js/releases) page, or via NPM:
 
 ```sh
-npm install -g @clyde-lang/lsp
+npm install -g @clyde-lang/language-server
 ```

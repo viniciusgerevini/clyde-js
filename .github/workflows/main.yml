@@ -141,6 +141,8 @@ jobs:
     # using workspace as yarn workspaces only geenrate lock files in the root
     - run: |
         cd ..
+        yarn workspace @clyde-lang/parser install
+        yarn workspace @clyde-lang/parser build
         yarn workspace @clyde-lang/language-server install
         yarn workspace @clyde-lang/language-server build
         yarn workspace @clyde-lang/language-server lint
