@@ -6,6 +6,7 @@ export default defineConfig({
       LOG_LEVEL: 0, // disable all logs from logger
     },
     coverage: {
+      reporter: ["text", "html", "clover", "json", "lcov"],
       include: ["src/**/*.{ts,tsx}"],
     },
   },

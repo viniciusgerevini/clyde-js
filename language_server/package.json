@@ -1,5 +1,5 @@
 {
-  "name": "@clyde-lang/ls",
+  "name": "@clyde-lang/language-server",
   "version": "0.0.1",
   "private": false,
   "description": "Language server for Clyde dialogues",

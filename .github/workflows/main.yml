@@ -7,12 +7,14 @@ on:
       - interpreter/**
       - parser/**
       - cli/**
+      - language_server/**
   pull_request:
     branches: [ main ]
     paths:
       - interpreter/**
       - parser/**
       - cli/**
+      - language_server/**
 
 jobs:
   parser:
@@ -120,8 +122,42 @@ jobs:
         base-path: ./cli
         path-to-lcov: ./cli/coverage/lcov.info
 
+  language_server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./language_server
+
+    strategy:
+      matrix:
+        node-version: [24, 26]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Language Server - Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    # using workspace as yarn workspaces only geenrate lock files in the root
+    - run: |
+        cd ..
+        yarn workspace @clyde-lang/language-server install
+        yarn workspace @clyde-lang/language-server build
+        yarn workspace @clyde-lang/language-server lint
+        yarn workspace @clyde-lang/language-server fmt:check
+        yarn workspace @clyde-lang/language-server test
+
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        flag-name: run-parser-${{ matrix.node-version }}
+        parallel: true
+        base-path: ./language_server
+        path-to-lcov: ./language_server/coverage/lcov.info
+
   finish:
-    needs: [parser, interpreter]
+    needs: [parser, interpreter, language_server]
     runs-on: ubuntu-latest
     steps:
     - name: Coveralls Finished
