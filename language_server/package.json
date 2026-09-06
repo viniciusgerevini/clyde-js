@@ -5,11 +5,11 @@
   "description": "Language server for Clyde dialogues",
   "license": "MIT",
   "author": "Vinicius Gerevini (thisisvini.com)",
-  "type": "module",
-  "main": "index.js",
   "bin": {
     "clydels": "./dist/index.js"
   },
+  "type": "module",
+  "main": "index.js",
   "scripts": {
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
