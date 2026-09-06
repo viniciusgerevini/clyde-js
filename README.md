@@ -58,7 +58,7 @@ There are three Node libraries which can be used to play with this language:
 
 ### Language server
 
-[@clyde-lang/lsp](./lsp): Language Server for Clyde. Can be installed from the releases page or via NPM.
+[@clyde-lang/ls](./language_server): Language Server for Clyde. Can be installed from the releases page or via NPM.
 
 ### Online Editor and Interpreter
 

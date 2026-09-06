@@ -1,5 +1,5 @@
 {
-  "name": "@clyde-lang/lsp",
+  "name": "@clyde-lang/ls",
   "version": "0.0.1",
   "private": false,
   "description": "Language server for Clyde dialogues",

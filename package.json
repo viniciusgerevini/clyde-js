@@ -4,7 +4,7 @@
     "cli",
     "editor",
     "interpreter",
-    "lsp",
+    "language_server",
     "parser"
   ]
 }
