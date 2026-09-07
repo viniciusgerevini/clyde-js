@@ -23,7 +23,7 @@
     "test": "vitest run --coverage"
   },
   "dependencies": {
-    "@clyde-lang/parser": "^2.6.0",
+    "@clyde-lang/parser": "^2.7.0",
     "vscode-languageserver": "^10.1.0",
     "vscode-languageserver-textdocument": "^1.0.12"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@clyde-lang/cli",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "CLI tool for executing, parsing and debugging Clyde dialogue files",
   "license": "MIT",
   "author": "Vinicius Gerevini <thisisvini.com>",
@@ -34,8 +34,8 @@
     "lint:fix": "oxlint --fix"
   },
   "dependencies": {
-    "@clyde-lang/interpreter": "5.0.0",
-    "@clyde-lang/parser": "2.6.0",
+    "@clyde-lang/interpreter": "5.0.1",
+    "@clyde-lang/parser": "2.7.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {

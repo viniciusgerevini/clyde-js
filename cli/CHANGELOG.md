@@ -2,6 +2,10 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+### 4.0.1 (2026-09-07)
+
+Bumping parser and interpreter. Multiline fixes
+
 ### 4.0.0 (2025-09-08)
 
 Bumping major dependencies to support match block and changes in the language

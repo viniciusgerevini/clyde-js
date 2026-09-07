@@ -1,6 +1,6 @@
 # Clyde Language Server Changelog
 
-# Unreleased
+# 0.0.1 (2026-09-07)
 
 Initial release
 
