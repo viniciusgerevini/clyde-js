@@ -1,0 +1,45 @@
+{
+  "name": "@clyde-lang/language-server",
+  "version": "0.0.1",
+  "private": false,
+  "description": "Language server for Clyde dialogues",
+  "license": "MIT",
+  "author": "Vinicius Gerevini (thisisvini.com)",
+  "bin": {
+    "clydels": "./dist/index.js"
+  },
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "build": "tsc",
+    "build:bundle": "node build_bundle.js",
+    "build:sea": "node --build-sea sea-config.json",
+    "build:app": "yarn build:bundle && yarn build:sea",
+    "pre-commit": "lint-staged",
+    "test": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@clyde-lang/parser": "^2.6.0",
+    "vscode-languageserver": "^10.1.0",
+    "vscode-languageserver-textdocument": "^1.0.12"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "@vitest/coverage-istanbul": "^4.1.11",
+    "@vitest/coverage-v8": "4.1.11",
+    "esbuild": "^0.28.2",
+    "lint-staged": "^17.5.0",
+    "oxfmt": "^0.63.0",
+    "oxlint": "^1.78.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  },
+  "lint-staged": {
+    "*": "oxfmt --no-error-on-unmatched-pattern",
+    "*.{js,jsx,ts,tsx,mjs,cjs}": "yarn run lint"
+  }
+}

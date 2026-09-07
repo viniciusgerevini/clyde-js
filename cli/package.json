@@ -3,7 +3,7 @@
   "version": "4.0.0",
   "description": "CLI tool for executing, parsing and debugging Clyde dialogue files",
   "license": "MIT",
-  "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
+  "author": "Vinicius Gerevini <thisisvini.com>",
   "bin": {
     "clyde": "./dist/cjs/cli.js"
   },
@@ -30,6 +30,7 @@
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "lint": "oxlint",
+    "pre-commit": "lint-staged",
     "lint:fix": "oxlint --fix"
   },
   "dependencies": {
@@ -41,11 +42,16 @@
     "@types/jest": "^28.1.1",
     "@types/yargs": "^17.0.10",
     "jest": "^28.1.1",
+    "lint-staged": "^17.5.0",
     "oxfmt": "^0.63.0",
     "oxlint": "^1.78.0",
     "ts-jest": "^28.0.4",
     "tsc-esm-fix": "^2.18.0",
     "typescript": "^4.7.3"
+  },
+  "lint-staged": {
+    "*": "oxfmt --no-error-on-unmatched-pattern",
+    "*.{js,jsx,ts,tsx,mjs,cjs}": "yarn run lint"
   },
   "jest": {
     "preset": "ts-jest",

@@ -4,6 +4,14 @@
     "cli",
     "editor",
     "interpreter",
+    "language_server",
     "parser"
-  ]
+  ],
+  "scripts": {
+    "prepare": "husky",
+    "pre-commit": "yarn workspaces run pre-commit"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
 }

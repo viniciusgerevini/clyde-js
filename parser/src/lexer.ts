@@ -111,6 +111,7 @@ export type Token = {
   value?: string;
   line: number;
   column: number;
+  length?: number;
 };
 
 interface TokenList {
@@ -275,6 +276,7 @@ export function tokenize(input: string): TokenList {
           line: initialLine,
           column: initialColumn,
           value: value.join("").trim(),
+          length: column - initialColumn,
         };
       }
 
@@ -350,7 +352,7 @@ export function tokenize(input: string): TokenList {
     column += 1;
     position += 1;
     stackMode(LexerMode.OPTION);
-    return { token, line, column: initialColumn };
+    return { token, line, column: initialColumn, length: 1 };
   };
 
   const handleOptionDisplayChar = () => {
@@ -371,7 +373,13 @@ export function tokenize(input: string): TokenList {
       position += 1;
       column += 1;
     }
-    const idToken = { token: TOKENS.LINE_ID, line, column: initialColumn, value: values.join("") };
+    const idToken = {
+      token: TOKENS.LINE_ID,
+      line,
+      column: initialColumn,
+      value: values.join(""),
+      length: column - initialColumn,
+    };
 
     const tokens = [idToken];
 
@@ -394,7 +402,13 @@ export function tokenize(input: string): TokenList {
       column += 1;
     }
 
-    return { token: TOKENS.ID_SUFFIX, line, column: initialColumn, value: values.join("") };
+    return {
+      token: TOKENS.ID_SUFFIX,
+      line,
+      column: initialColumn,
+      value: values.join(""),
+      length: column - initialColumn,
+    };
   };
 
   const handleTag = () => {
@@ -408,7 +422,13 @@ export function tokenize(input: string): TokenList {
       position += 1;
       column += 1;
     }
-    return { token: TOKENS.TAG, line, column: initialColumn, value: values.join("") };
+    return {
+      token: TOKENS.TAG,
+      line,
+      column: initialColumn,
+      value: values.join(""),
+      length: column - initialColumn,
+    };
   };
 
   const handleLink = () => {
@@ -473,7 +493,13 @@ export function tokenize(input: string): TokenList {
       position += 1;
       column += 1;
     }
-    return { token: TOKENS.BLOCK, line, column: initialColumn, value: values.join("").trim() };
+    return {
+      token: TOKENS.BLOCK,
+      line,
+      column: initialColumn,
+      value: values.join("").trim(),
+      length: column - initialColumn,
+    };
   };
 
   const handleDivert = (): TokenHandlerReturn => {
@@ -500,7 +526,13 @@ export function tokenize(input: string): TokenList {
         column += 1;
       }
 
-      token = { token: TOKENS.DIVERT, line, column: initialColumn, value: values.join("").trim() };
+      token = {
+        token: TOKENS.DIVERT,
+        line,
+        column: initialColumn,
+        length: column - initialColumn,
+        value: values.join("").trim(),
+      };
     }
 
     const linebreak = getFollowingLineBreak();
@@ -534,7 +566,13 @@ export function tokenize(input: string): TokenList {
 
     const value = JSON.stringify({ link: linkName, block: linkBlock });
 
-    return { token: TOKENS.DIVERT, line, column: initialColumn, value: value };
+    return {
+      token: TOKENS.DIVERT,
+      line,
+      column: initialColumn,
+      value: value,
+      length: column - initialColumn,
+    };
   };
 
   const handleDivertToParent = () => {
@@ -542,7 +580,7 @@ export function tokenize(input: string): TokenList {
     position += 2;
     column += 2;
 
-    const token = { token: TOKENS.DIVERT_PARENT, line, column: initialColumn };
+    const token = { token: TOKENS.DIVERT_PARENT, line, column: initialColumn, length: 2 };
     const linebreak = getFollowingLineBreak();
 
     if (linebreak) {
@@ -605,7 +643,7 @@ export function tokenize(input: string): TokenList {
     }
 
     if (checkSequence(input, position, "match")) {
-      const token = { token: TOKENS.KEYWORD_MATCH, line, column };
+      const token = { token: TOKENS.KEYWORD_MATCH, line, column, length: 5 };
       position += 5;
       column += 5;
 
@@ -637,7 +675,7 @@ export function tokenize(input: string): TokenList {
     let statement: TokenHandlerReturn | undefined;
 
     if (checkSequence(input, position, "default:")) {
-      statement = { token: TOKENS.KEYWORD_DEFAULT, line, column: column };
+      statement = { token: TOKENS.KEYWORD_DEFAULT, line, column: column, length: 8 };
       position += 7;
       column += 7;
     } else {
@@ -733,26 +771,26 @@ export function tokenize(input: string): TokenList {
   ): TokenHandlerReturn => {
     switch (value.toLowerCase()) {
       case "not":
-        return { token: TOKENS.NOT, line, column: initialColumn };
+        return { token: TOKENS.NOT, line, column: initialColumn, length: value.length };
       case "and":
-        return { token: TOKENS.AND, line, column: initialColumn };
+        return { token: TOKENS.AND, line, column: initialColumn, length: value.length };
       case "or":
-        return { token: TOKENS.OR, line, column: initialColumn };
+        return { token: TOKENS.OR, line, column: initialColumn, length: value.length };
       case "is":
-        return { token: TOKENS.EQUAL, line, column: initialColumn };
+        return { token: TOKENS.EQUAL, line, column: initialColumn, length: value.length };
       case "isnt":
-        return { token: TOKENS.NOT_EQUAL, line, column: initialColumn };
+        return { token: TOKENS.NOT_EQUAL, line, column: initialColumn, length: value.length };
       case "true":
       case "false":
         return { token: TOKENS.BOOLEAN_LITERAL, line, column: initialColumn, value };
       case "null":
-        return { token: TOKENS.NULL_TOKEN, line, column: initialColumn };
+        return { token: TOKENS.NULL_TOKEN, line, column: initialColumn, length: value.length };
       case "set":
-        return { token: TOKENS.KEYWORD_SET, line, column: initialColumn };
+        return { token: TOKENS.KEYWORD_SET, line, column: initialColumn, length: value.length };
       case "trigger":
-        return { token: TOKENS.KEYWORD_TRIGGER, line, column: initialColumn };
+        return { token: TOKENS.KEYWORD_TRIGGER, line, column: initialColumn, length: value.length };
       case "when":
-        return { token: TOKENS.KEYWORD_WHEN, line, column: initialColumn };
+        return { token: TOKENS.KEYWORD_WHEN, line, column: initialColumn, length: value.length };
     }
   };
 
@@ -760,14 +798,14 @@ export function tokenize(input: string): TokenList {
     const initialColumn = column;
     column += 1;
     position += 1;
-    return { token: TOKENS.NOT, line, column: initialColumn };
+    return { token: TOKENS.NOT, line, column: initialColumn, length: 1 };
   };
 
   const handleLogicOperator = (token: string, length: number): Token => {
     const initialColumn = column;
     column += length;
     position += length;
-    return { token, line, column: initialColumn };
+    return { token, line, column: initialColumn, length };
   };
 
   const handleLogicNumber = () => {
@@ -791,17 +829,23 @@ export function tokenize(input: string): TokenList {
     column += 1;
     position += 1;
 
-    token.token = TOKENS.STRING_LITERAL;
-    token.column = initialColumn;
-
-    return token;
+    return {
+      ...token,
+      token: TOKENS.STRING_LITERAL,
+      column: initialColumn,
+      length: column - initialColumn,
+    };
   };
 
-  const createSimpleToken = (token: string, length = 1): Token => {
+  const createSimpleToken = (
+    token: string,
+    length: number,
+    includeLength: boolean = false,
+  ): Token => {
     const initialColumn = column;
     column += length;
     position += length;
-    return { token, line, column: initialColumn };
+    return { token, line, column: initialColumn, ...(includeLength ? { length } : {}) };
   };
 
   const handleLogicBlock = (): TokenHandlerReturn => {
@@ -861,63 +905,63 @@ export function tokenize(input: string): TokenList {
     }
 
     if (input[position] === "=") {
-      return createSimpleToken(TOKENS.ASSIGN);
+      return createSimpleToken(TOKENS.ASSIGN, 1, true);
     }
 
     if (checkSequence(input, position, "?=")) {
-      return createSimpleToken(TOKENS.ASSIGN_INIT, 2);
+      return createSimpleToken(TOKENS.ASSIGN_INIT, 2, true);
     }
 
     if (checkSequence(input, position, "-=")) {
-      return createSimpleToken(TOKENS.ASSIGN_SUB, 2);
+      return createSimpleToken(TOKENS.ASSIGN_SUB, 2, true);
     }
 
     if (checkSequence(input, position, "+=")) {
-      return createSimpleToken(TOKENS.ASSIGN_SUM, 2);
+      return createSimpleToken(TOKENS.ASSIGN_SUM, 2, true);
     }
 
     if (checkSequence(input, position, "*=")) {
-      return createSimpleToken(TOKENS.ASSIGN_MULT, 2);
+      return createSimpleToken(TOKENS.ASSIGN_MULT, 2, true);
     }
 
     if (checkSequence(input, position, "/=")) {
-      return createSimpleToken(TOKENS.ASSIGN_DIV, 2);
+      return createSimpleToken(TOKENS.ASSIGN_DIV, 2, true);
     }
 
     if (checkSequence(input, position, "^=")) {
-      return createSimpleToken(TOKENS.ASSIGN_POW, 2);
+      return createSimpleToken(TOKENS.ASSIGN_POW, 2, true);
     }
 
     if (checkSequence(input, position, "%=")) {
-      return createSimpleToken(TOKENS.ASSIGN_MOD, 2);
+      return createSimpleToken(TOKENS.ASSIGN_MOD, 2, true);
     }
 
     if (input[position] === "+") {
-      return createSimpleToken(TOKENS.PLUS, 1);
+      return createSimpleToken(TOKENS.PLUS, 1, true);
     }
 
     if (input[position] === "-") {
-      return createSimpleToken(TOKENS.MINUS, 1);
+      return createSimpleToken(TOKENS.MINUS, 1, true);
     }
 
     if (input[position] === "*") {
-      return createSimpleToken(TOKENS.MULT, 1);
+      return createSimpleToken(TOKENS.MULT, 1, true);
     }
 
     if (input[position] === "/") {
-      return createSimpleToken(TOKENS.DIV, 1);
+      return createSimpleToken(TOKENS.DIV, 1, true);
     }
 
     if (input[position] === "^") {
-      return createSimpleToken(TOKENS.POWER, 1);
+      return createSimpleToken(TOKENS.POWER, 1, true);
     }
 
     if (input[position] === "%") {
-      return createSimpleToken(TOKENS.MOD, 1);
+      return createSimpleToken(TOKENS.MOD, 1, true);
     }
 
     if (input[position] === ",") {
-      return createSimpleToken(TOKENS.COMMA, 1);
+      return createSimpleToken(TOKENS.COMMA, 1, true);
     }
 
     if (input[position] === "!") {

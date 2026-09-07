@@ -3,7 +3,7 @@
   "version": "5.0.0",
   "description": "Interpreter for Clyde dialogue language",
   "license": "MIT",
-  "author": "Vinicius Gerevini <viniciusgerevini@gmail.com>",
+  "author": "Vinicius Gerevini <thisisvini.com>",
   "files": [
     "./dist",
     "README.md",
@@ -27,7 +27,8 @@
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "lint": "oxlint",
-    "lint:fix": "oxlint --fix"
+    "lint:fix": "oxlint --fix",
+    "pre-commit": "lint-staged"
   },
   "dependencies": {
     "@clyde-lang/parser": "2.6.0"
@@ -35,11 +36,16 @@
   "devDependencies": {
     "@types/jest": "^28.1.1",
     "jest": "^28.1.1",
+    "lint-staged": "^17.5.0",
     "oxfmt": "^0.63.0",
     "oxlint": "^1.78.0",
     "ts-jest": "^28.0.4",
     "tsc-esm-fix": "^2.18.0",
     "typescript": "^4.7.3"
+  },
+  "lint-staged": {
+    "*": "oxfmt --no-error-on-unmatched-pattern",
+    "*.{js,jsx,ts,tsx,mjs,cjs}": "yarn run lint"
   },
   "jest": {
     "preset": "ts-jest",
