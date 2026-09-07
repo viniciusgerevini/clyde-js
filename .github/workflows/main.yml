@@ -159,7 +159,7 @@ jobs:
         path-to-lcov: ./language_server/coverage/lcov.info
 
   finish:
-    needs: [parser, interpreter, language_server]
+    needs: [parser, interpreter, cli, language_server]
     runs-on: ubuntu-latest
     steps:
     - name: Coveralls Finished
