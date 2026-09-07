@@ -19,6 +19,7 @@
     "build:bundle": "node build_bundle.js",
     "build:sea": "node --build-sea sea-config.json",
     "build:app": "yarn build:bundle && yarn build:sea",
+    "pre-commit": "lint-staged",
     "test": "vitest run --coverage"
   },
   "dependencies": {
@@ -31,9 +32,14 @@
     "@vitest/coverage-istanbul": "^4.1.11",
     "@vitest/coverage-v8": "4.1.11",
     "esbuild": "^0.28.2",
+    "lint-staged": "^17.5.0",
     "oxfmt": "^0.63.0",
     "oxlint": "^1.78.0",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11"
+  },
+  "lint-staged": {
+    "*": "oxfmt --no-error-on-unmatched-pattern",
+    "*.{js,jsx,ts,tsx,mjs,cjs}": "yarn run lint"
   }
 }
