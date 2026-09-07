@@ -125,6 +125,10 @@ export default function parse(doc: string): ClydeDocumentRoot {
     }
   };
 
+  const hasNext = (expected?: string[], offset = 0): boolean => {
+    return Boolean(peek(expected, offset));
+  };
+
   const Document = (): ClydeDocumentRoot => {
     const expected = [
       TOKENS.EOF,
@@ -288,7 +292,7 @@ export default function parse(doc: string): ClydeDocumentRoot {
 
     consume([TOKENS.INDENT]);
 
-    while (peek([TOKENS.DEDENT, TOKENS.EOF]) == null) {
+    while (hasNext() && !hasNext([TOKENS.DEDENT, TOKENS.EOF])) {
       consume([TOKENS.TEXT]);
       const line = TextLine();
       line.speaker = speakerToken.value;
@@ -318,45 +322,65 @@ export default function parse(doc: string): ClydeDocumentRoot {
   const TextLine = (): LineNode | OptionsNode => {
     const { value } = currentToken;
     const next = peek([TOKENS.LINE_ID, TOKENS.TAG]);
-    let line: LineNode | OptionsNode;
+    let baseLine: LineNode;
 
     if (next) {
       consume([TOKENS.LINE_ID, TOKENS.TAG]);
-      line = LineWithMetadata();
-      line.value = value;
+      baseLine = LineWithMetadata();
+      baseLine.value = value;
     } else {
-      line = new LineNode(value);
+      baseLine = new LineNode(value);
     }
+
+    let resultLine: LineNode | OptionsNode = baseLine;
 
     if (isMultilineEnabled && peek([TOKENS.INDENT])) {
       consume([TOKENS.INDENT]);
 
       if (peek([TOKENS.OPTION, TOKENS.STICKY_OPTION, TOKENS.FALLBACK_OPTION])) {
         const options = Options();
-        options.id = line.id;
-        options.name = line.value;
-        options.tags = line.tags;
-        options.id_suffixes = line.id_suffixes;
-        line = options;
+        options.id = baseLine.id;
+        options.name = baseLine.value;
+        options.tags = baseLine.tags;
+        options.id_suffixes = baseLine.id_suffixes;
+        resultLine = options;
       } else {
-        while (!peek([TOKENS.DEDENT, TOKENS.EOF])) {
+        while (hasNext() && !hasNext([TOKENS.DEDENT, TOKENS.EOF])) {
           consume([TOKENS.TEXT]);
-          const nextLine = TextLine() as LineNode;
-          line.value += ` ${nextLine.value}`;
-          if (nextLine.id) {
-            line.id = nextLine.id;
-            line.id_suffixes = nextLine.id_suffixes;
-          }
+          const nextLine = TextLine();
 
-          if (nextLine.tags) {
-            line.tags = nextLine.tags;
+          if (nextLine.type === "options") {
+            nextLine.name = baseLine.value + " " + nextLine.name;
+            if (baseLine.id) {
+              nextLine.id = baseLine.id;
+              nextLine.id_suffixes = baseLine.id_suffixes;
+            }
+
+            if (baseLine.tags) {
+              nextLine.tags = baseLine.tags;
+            }
+
+            resultLine = nextLine;
+          } else {
+            baseLine.value += ` ${nextLine.value}`;
+            if (nextLine.id) {
+              baseLine.id = nextLine.id;
+              baseLine.id_suffixes = nextLine.id_suffixes;
+            }
+
+            if (nextLine.tags) {
+              baseLine.tags = nextLine.tags;
+            }
           }
         }
-        consume([TOKENS.DEDENT, TOKENS.EOF]);
+
+        if (hasNext()) {
+          consume([TOKENS.DEDENT, TOKENS.EOF]);
+        }
       }
     }
 
-    return line;
+    return resultLine;
   };
 
   const LineWithMetadata = (): LineNode => {
