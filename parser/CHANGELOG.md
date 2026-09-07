@@ -9,6 +9,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Error thrown by parser now is a `UnexpectedTokenError` which contains extra token metadata.
 - Lexer exposes token length (necesary for better language server error reporting)
 
+## Fixed
+
+- Mutiline edge cases when at end of the file and with nested options.
+
 ## 2.6.0 (2025-09-08)
 
 ### Added
