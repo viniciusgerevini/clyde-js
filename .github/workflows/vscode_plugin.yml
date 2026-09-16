@@ -1,0 +1,39 @@
+name: VSCode Plugin CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - vscode_plugin/**
+  pull_request:
+    branches: [ main ]
+    paths:
+      - vscode_plugin/**
+
+jobs:
+  vscode_plugin:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./vscode_plugin
+
+    strategy:
+      matrix:
+        node-version: [26]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: VSCode Plugin - Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: |
+        cd ..
+        # yarn workspace @clyde-lang/parser install
+        # yarn workspace @clyde-lang/parser build
+        # yarn workspace @clyde-lang/language-server install
+        # yarn workspace @clyde-lang/language-server build
+        yarn workspace @clyde-lang/vscode install
+        yarn workspace @clyde-lang/vscode build
+        yarn workspace @clyde-lang/vscode lint
+        yarn workspace @clyde-lang/vscode fmt:check
