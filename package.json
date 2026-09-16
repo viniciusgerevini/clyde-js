@@ -5,6 +5,7 @@
     "editor",
     "interpreter",
     "language_server",
+    "vscode_plugin",
     "parser"
   ],
   "scripts": {
