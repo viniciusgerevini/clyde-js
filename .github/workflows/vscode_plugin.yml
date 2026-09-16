@@ -28,12 +28,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: |
-        cd ..
-        # yarn workspace @clyde-lang/parser install
-        # yarn workspace @clyde-lang/parser build
-        # yarn workspace @clyde-lang/language-server install
-        # yarn workspace @clyde-lang/language-server build
-        yarn workspace @clyde-lang/vscode install
-        yarn workspace @clyde-lang/vscode build
-        yarn workspace @clyde-lang/vscode lint
-        yarn workspace @clyde-lang/vscode fmt:check
+        yarn install
+        yarn build
+        yarn lint
+        yarn fmt:check
