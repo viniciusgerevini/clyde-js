@@ -1,0 +1,4 @@
+node_modules
+*.vsix
+server_dist/
+tsconfig.tsbuildinfo

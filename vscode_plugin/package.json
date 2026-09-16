@@ -1,0 +1,63 @@
+{
+  "name": "clyde-dialogue-language-vscode",
+  "displayName": "Clyde Dialogue Language",
+  "version": "0.1.2",
+  "private": false,
+  "description": "Clyde Dialogue Language tools and LSP support",
+  "categories": [
+    "Programming Languages"
+  ],
+  "license": "MIT",
+  "author": "Vinicius Gerevini (thisisvini.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/viniciusgerevini/clyde-js.git"
+  },
+  "publisher": "viniciusgerevini",
+  "type": "module",
+  "main": "./dist/extension.js",
+  "scripts": {
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "build": "tsc",
+    "copy-server": "mkdir -p server_dist && cp -R ../language_server/dist_sea/clyde.js ./server_dist/clyde.cjs",
+    "pre-commit": "lint-staged",
+    "watch": "tsc -b -w"
+  },
+  "dependencies": {
+    "@types/vscode": "^1.137.0",
+    "vscode-languageclient": "^10.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "lint-staged": "^17.5.0",
+    "oxfmt": "^0.63.0",
+    "oxlint": "^1.78.0",
+    "typescript": "^7.0.2"
+  },
+  "lint-staged": {
+    "*": "oxfmt --no-error-on-unmatched-pattern",
+    "*.{js,jsx,ts,tsx,mjs,cjs}": "yarn run lint"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "clyde",
+        "aliases": [
+          "Clyde",
+          "clyde"
+        ],
+        "extensions": [
+          ".clyde"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ]
+  },
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.137.0"
+  }
+}

@@ -1,0 +1,34 @@
+name: VSCode Plugin CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - vscode_plugin/**
+  pull_request:
+    branches: [ main ]
+    paths:
+      - vscode_plugin/**
+
+jobs:
+  vscode_plugin:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./vscode_plugin
+
+    strategy:
+      matrix:
+        node-version: [26]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: VSCode Plugin - Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: |
+        yarn install
+        yarn build
+        yarn lint
+        yarn fmt:check
