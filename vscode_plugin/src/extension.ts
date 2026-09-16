@@ -11,7 +11,7 @@ import {
 let client: LanguageClient | undefined;
 
 export async function activate(context: ExtensionContext) {
-  let serverModule = context.asAbsolutePath(path.join("server_dist", "index.js"));
+  let serverModule = context.asAbsolutePath(path.join("server_dist", "clyde.cjs"));
 
   let serverOptions: ServerOptions = {
     run: { module: serverModule, transport: TransportKind.ipc },

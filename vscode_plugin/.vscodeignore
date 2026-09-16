@@ -2,3 +2,8 @@
 .vscode-test/**
 .gitignore
 vsc-extension-quickstart.md
+**/.DS_Store
+coverage/
+tsconfig.json
+tsconfig.tsbuildinfo
+vitest.config.ts
