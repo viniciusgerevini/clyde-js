@@ -2,11 +2,16 @@ name: Publish Online Editor Page
 
 on:
   push:
-    branches: [ main, gh_workflow_fix ]
+    branches: [ main ]
     paths:
       - online_editor/**
       - interpreter/**
       - parser/**
+
+  pull_request:
+    branches: [ main ]
+    paths:
+      - online_editor/**
 
   workflow_dispatch:
 
