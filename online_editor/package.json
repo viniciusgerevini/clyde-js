@@ -10,6 +10,7 @@
     "lint:fix": "oxlint --fix",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
+    "pre-commit": "lint-staged",
     "preview": "vite preview"
   },
   "dependencies": {

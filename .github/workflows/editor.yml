@@ -4,11 +4,11 @@ on:
   push:
     branches: [ main ]
     paths:
-      - editor/**
+      - online_editor/**
   pull_request:
     branches: [ main ]
     paths:
-      - editor/**
+      - online_editor/**
 
 jobs:
   editor:
@@ -19,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [24]
+        node-version: [26]
 
     steps:
     - uses: actions/checkout@v2
@@ -28,4 +28,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     # using workspace as yarn workspaces only geenrate lock files in the root
-    - run: yarn install && yarn workspace @clyde-lang/parser build && yarn workspace @clyde-lang/interpreter build && yarn workspace clyde-editor test --coverage
+    - run: |
+        yarn install
+        yarn workspace @clyde-lang/parser build
+        yarn workspace @clyde-lang/interpreter build
+        yarn workspace clyde-online-editor lint
+        yarn workspace clyde-online-editor fmt:check
