@@ -2,7 +2,6 @@
   "private": true,
   "workspaces": [
     "cli",
-    "editor",
     "interpreter",
     "language_server",
     "online_editor",
