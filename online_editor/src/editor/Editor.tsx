@@ -85,10 +85,23 @@ function replaceInterpolatedVars(line: string, t: Lexer.Token) {
   return line.slice(0, t.column) + text + line.slice(t.column + l);
 }
 
-const DEFAULT_DIALOGUE = `vini:
-	Hello my friends!!
-	Welcome to jackass
+const DEFAULT_DIALOGUE = `--
+-- Clyde Editor Sample dialogue
+--
 
+NPC: Hello! You can try Clyde in this editor!
+Guide:
+	This dialogue will show back if you leave the editor empty
+		and reload the page.
+	The content in this editor is automatically saved in your
+		local store for convenience.
+	If you open you browser's inspector you can see logs for
+		events and variable changes
+	Also, properties set in "window.clydeVariables" can be
+    accessed as external variables. For example, if you
+    set "clydeVariables.myVar = true", you can access it
+    like \\{ \\@myVar \\}
+	That's all folks! #goodbye
 `;
 
 interface EditorParams {
@@ -153,7 +166,7 @@ export function Editor({ onContentChanged }: EditorParams) {
   return (
     <>
       <code-input template="syntax-highlighted" className="code-input-container">
-        <textarea data-code-input-fallback>{initialDialogue}</textarea>
+        <textarea data-code-input-fallback defaultValue={initialDialogue}></textarea>
       </code-input>
     </>
   );

@@ -94,6 +94,9 @@
       }
 
       .metadata {
+        display: flex;
+        justify-content: end;
+        opacity: 0.6;
       }
 
       button {
