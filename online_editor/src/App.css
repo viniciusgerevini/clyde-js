@@ -1,0 +1,39 @@
+.app-container {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  header {
+    margin: 20px;
+
+    h1 {
+      margin-bottom: 10px;
+    }
+  }
+  main {
+    height: 100%;
+    overflow: hidden;
+    padding: 10px;
+  }
+}
+
+.editor-panel,
+.player-panel {
+  overflow: hidden;
+  padding: 20px 10px;
+  height: 100%;
+}
+
+.player-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.separator {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border-left: 1px solid var(--highlight-color);
+  margin: 0px 20px;
+}

@@ -1,0 +1,119 @@
+.player-container {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .action-bar {
+    display: flex;
+    gap: 4px;
+
+    select {
+      flex-grow: 1;
+      background-color: var(--highlight-color);
+      border: 1px solid;
+      padding: 4px;
+      border-radius: 5px;
+    }
+
+    button {
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      background-color: var(--highlight-color);
+      border: 1px solid;
+      border-radius: 5px;
+    }
+  }
+
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--orange);
+  }
+
+  .entries {
+    height: 100%;
+    overflow-y: auto;
+    padding-top: 20px;
+
+    .bubble {
+      display: flex;
+      flex-direction: column;
+      padding: 30px;
+      gap: 5px;
+      margin: 5px auto;
+      align-items: top;
+      border-radius: 40px;
+      background-color: var(--highlight-color);
+      clip-path: url(#bubble);
+      height: auto;
+
+      &.bubble-event {
+        align-items: center;
+        justify-content: center;
+        background-color: var(--nav-expanded-bg-color);
+      }
+
+      &.bubble-end {
+        align-items: center;
+        justify-content: center;
+        background-color: var(--bg-red);
+      }
+
+      .speaker {
+        font-family: var(--special-font);
+        font-size: 1.2em;
+      }
+
+      ul {
+        padding-left: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        gap: 5px;
+
+        li {
+          list-style-type: none;
+        }
+      }
+
+      .option,
+      .option-selected {
+        &:disabled {
+          background-color: transparent;
+          &:hover {
+            background-color: transparent;
+          }
+        }
+      }
+
+      .option-selected {
+        color: var(--orange);
+      }
+
+      .metadata {
+        display: flex;
+        justify-content: end;
+        opacity: 0.6;
+      }
+
+      button {
+        border: 0px;
+        background-color: var(--bg-color);
+        font-family: var(--special-font);
+        font-size: 1.5em;
+        padding: 4px 8px;
+        margin-right: 20px;
+        cursor: pointer;
+        clip-path: url(#bubble);
+        float: right;
+
+        &:hover {
+          filter: brightness(110%);
+        }
+      }
+    }
+  }
+}

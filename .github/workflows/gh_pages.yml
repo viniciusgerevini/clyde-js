@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - editor/**
+      - online_editor/**
       - interpreter/**
       - parser/**
 
@@ -13,7 +13,7 @@ env:
 
 defaults:
   run:
-    working-directory: ./editor
+    working-directory: ./online_editor
 
 jobs:
   publish-gh-pages:
@@ -28,11 +28,11 @@ jobs:
         yarn install
         yarn workspace @clyde-lang/parser build
         yarn workspace @clyde-lang/interpreter build
-        yarn workspace clyde-editor build
+        yarn workspace clyde-online-editor build
 
     - name: Deploy  🚀
       uses: peaceiris/actions-gh-pages@v3
       with:
         deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-        publish_dir: ./editor/build
+        publish_dir: ./online_editor/dist
 
