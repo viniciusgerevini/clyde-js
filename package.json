@@ -5,6 +5,7 @@
     "editor",
     "interpreter",
     "language_server",
+    "online_editor",
     "parser"
   ],
   "scripts": {

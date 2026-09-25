@@ -1,0 +1,117 @@
+:root {
+  --bg-color: #fef7e7;
+  --text-color: #1d1d1d;
+  --nav-expanded-bg-color: #fdf0d3;
+  --highlight-color: #ffd589;
+  --bg-red: #ffd4c1;
+  --orange: #ff5e00;
+  --code-bg-color: var(--highlight-color);
+
+  --link-color: #1e6b8a;
+  --link-hover-color: rgb(255, 145, 103);
+
+  --table-border-color: #d3d3c3;
+  --table-odd-bg: var(--nav-expanded-bg-color);
+  --table-head-color: var(--highlight-color);
+
+  --default-font:
+    "Inconsolata", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
+  --special-font: Gluten;
+  --default-bolder-font: Inconsolata-Bold;
+
+  --player-avatar-radius-blob: 40% 40% 40% 40% / 60% 30% 60% 50%;
+}
+
+* {
+  font-family: var(--default-font);
+  font-size: 18px;
+  line-height: 25px;
+  color: var(--text-color);
+}
+
+html,
+body,
+#root {
+  font-family: var(--default-font);
+  height: 100%;
+  font-size: 18px;
+  line-height: 25px;
+  color: var(--text-color);
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--bg-color);
+}
+
+a {
+  font-family: var(--default-font);
+  color: var(--link-color);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin-bottom: 24px;
+  font-family: var(--special-font);
+  font-weight: 600;
+  line-height: 1.2em;
+  letter-spacing: -2%;
+}
+
+h1 {
+  font-size: 3em;
+}
+h2 {
+  font-size: 2.4em;
+}
+h3 {
+  font-size: 1.5em;
+}
+h4 {
+  font-size: 1.2em;
+}
+
+@font-face {
+  font-family: "Gluten";
+  src: url("./assets/fonts/Gluten-Regular.eot");
+  src:
+    url("./assets/fonts/Gluten-Regular.eot?#iefix") format("embedded-opentype"),
+    url("./assets/fonts/Gluten-Regular.woff2") format("woff2"),
+    url("./assets/fonts/Gluten-Regular.woff") format("woff"),
+    url("./assets/fonts/Gluten-Regular.svg#Gluten-Regular") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inconsolata";
+  src:
+    url("./assets/fonts/Inconsolata.ttf.woff") format("woff"),
+    url("./assets/fonts/Inconsolata.ttf.svg#Inconsolata") format("svg"),
+    url("./assets/fonts/Inconsolata.ttf.eot"),
+    url("./assets/fonts/Inconsolata.ttf.eot?#iefix") format("embedded-opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Inconsolata-Bold";
+  src:
+    url("./assets/fonts/Inconsolata-Bold.ttf.woff") format("woff"),
+    url("./assets/fonts/Inconsolata-Bold.ttf.svg#Inconsolata-Bold") format("svg"),
+    url("./assets/fonts/Inconsolata-Bold.ttf.eot"),
+    url("./assets/fonts/Inconsolata-Bold.ttf.eot?#iefix") format("embedded-opentype");
+  font-weight: normal;
+  font-style: normal;
+}
