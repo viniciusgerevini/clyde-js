@@ -1,38 +1,66 @@
-name: Publish Demo Page
+name: Publish Online Editor Page
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, gh_workflow_fix ]
     paths:
       - online_editor/**
       - interpreter/**
       - parser/**
 
+  workflow_dispatch:
+
 env:
   CI: true
+
+# Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
 
 defaults:
   run:
     working-directory: ./online_editor
 
+
 jobs:
-  publish-gh-pages:
+  # Single deploy job since we're just deploying
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Install and Build
-      # using workspace as yarn workspaces only geenrate lock files in the root
-      run: |
-        yarn install
-        yarn workspace @clyde-lang/parser build
-        yarn workspace @clyde-lang/interpreter build
-        yarn workspace clyde-online-editor build
-
-    - name: Deploy  🚀
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-        publish_dir: ./online_editor/dist
-
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: lts/*
+          cache: 'npm'
+      - name: Install dependencies
+        run: |
+          yarn install
+          yarn workspace @clyde-lang/parser build
+          yarn workspace @clyde-lang/interpreter build
+      - name: Lint and Build
+        run: |
+          yarn workspace clyde-online-editor lint
+          yarn workspace clyde-online-editor fmt:check
+          yarn workspace clyde-online-editor build
+      - name: Setup Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        with:
+          # Upload dist folder
+          path: './dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
