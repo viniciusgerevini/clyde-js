@@ -8,6 +8,8 @@ on:
       - interpreter/**
       - parser/**
 
+  workflow_dispatch:
+
 env:
   CI: true
 
@@ -28,6 +30,8 @@ jobs:
         yarn install
         yarn workspace @clyde-lang/parser build
         yarn workspace @clyde-lang/interpreter build
+        yarn workspace clyde-online-editor lint
+        yarn workspace clyde-online-editor fmt:check
         yarn workspace clyde-online-editor build
 
     - name: Deploy  🚀

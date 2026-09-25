@@ -1,10 +1,6 @@
 name: Editor tests
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - online_editor/**
   pull_request:
     branches: [ main ]
     paths:

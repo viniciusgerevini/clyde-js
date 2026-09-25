@@ -110,7 +110,7 @@ interface EditorParams {
 
 export function Editor({ onContentChanged }: EditorParams) {
   const state = loadState();
-  const initialDialogue = state?.dialogue.trim() ? state.dialogue : DEFAULT_DIALOGUE;
+  const initialDialogue = state?.dialogue?.trim() ? state.dialogue : DEFAULT_DIALOGUE;
 
   useEffect(() => {
     codeInput.registerTemplate(
