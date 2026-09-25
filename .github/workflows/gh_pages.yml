@@ -10,8 +10,6 @@ on:
 
   pull_request:
     branches: [ main ]
-    paths:
-      - online_editor/**
 
   workflow_dispatch:
 
